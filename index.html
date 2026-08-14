@@ -1,0 +1,994 @@
+<title>Six Months</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+
+<style>
+/* ============================================================
+   TOKENS
+   Light palette on bare :root. Dark redefines TOKENS ONLY, twice:
+   once for the un-stamped system-default state, once for the
+   explicit toggle. No component ever sets a color inside a media
+   or [data-theme] block.
+   ============================================================ */
+:root{
+  --ground:#EDF0EF;
+  --surface:#F8FAF9;
+  --surface-2:#E1E7E6;
+  --ink:#12262F;
+  --ink-2:#3B535E;
+  --muted:#5B7079;
+  --hair:#C7D3D3;
+  --hair-strong:#A8B9BA;
+
+  --commit:#0D6E7A;              /* decided / booked */
+  --commit-wash:rgba(13,110,122,.10);
+  --commit-edge:rgba(13,110,122,.32);
+  --commit-solid:#0D6E7A;
+  --on-commit:#FFFFFF;
+
+  --open:#B0561F;                /* unresolved / needs you */
+  --open-wash:rgba(176,86,31,.09);
+  --open-edge:rgba(176,86,31,.34);
+
+  --alert:#9E3A2E;
+  --ok:#376B4A;
+
+  --shadow:0 1px 2px rgba(18,38,47,.07), 0 8px 24px rgba(18,38,47,.06);
+  --sheet-shadow:0 -8px 40px rgba(18,38,47,.18);
+  --scrim:rgba(18,38,47,.42);
+
+  --font-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --font-data:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+
+  --rail:3.25rem;
+  --lane:5rem;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#081216;
+    --surface:#0F1D23;
+    --surface-2:#16272E;
+    --ink:#E3ECED;
+    --ink-2:#B2C5C9;
+    --muted:#84999F;
+    --hair:#21363D;
+    --hair-strong:#33505A;
+
+    --commit:#4FBACA;
+    --commit-wash:rgba(79,186,202,.12);
+    --commit-edge:rgba(79,186,202,.34);
+    --commit-solid:#17646F;
+    --on-commit:#E9F7F9;
+
+    --open:#E4915A;
+    --open-wash:rgba(228,145,90,.11);
+    --open-edge:rgba(228,145,90,.36);
+
+    --alert:#DE7060;
+    --ok:#63A87C;
+
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.32);
+    --sheet-shadow:0 -8px 40px rgba(0,0,0,.55);
+    --scrim:rgba(2,8,10,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#081216;
+  --surface:#0F1D23;
+  --surface-2:#16272E;
+  --ink:#E3ECED;
+  --ink-2:#B2C5C9;
+  --muted:#84999F;
+  --hair:#21363D;
+  --hair-strong:#33505A;
+
+  --commit:#4FBACA;
+  --commit-wash:rgba(79,186,202,.12);
+  --commit-edge:rgba(79,186,202,.34);
+  --commit-solid:#17646F;
+  --on-commit:#E9F7F9;
+
+  --open:#E4915A;
+  --open-wash:rgba(228,145,90,.11);
+  --open-edge:rgba(228,145,90,.36);
+
+  --alert:#DE7060;
+  --ok:#63A87C;
+
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.32);
+  --sheet-shadow:0 -8px 40px rgba(0,0,0,.55);
+  --scrim:rgba(2,8,10,.6);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--font-ui);
+  font-size:15px;
+  line-height:1.5;
+  padding-bottom:5.5rem;
+  overflow-x:clip;   /* clip, not hidden — hidden would create a scroll
+                        container and break position:sticky on block heads */
+}
+button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--commit);outline-offset:2px;border-radius:3px}
+.num{font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-family:var(--font-data);font-size:.625rem;text-transform:uppercase;
+  letter-spacing:.11em;color:var(--muted);
+}
+
+/* ---------- masthead ---------- */
+.masthead{
+  padding:1.5rem 1rem .875rem;
+  border-bottom:1px solid var(--hair);
+  background:var(--surface);
+}
+.masthead h1{
+  font-family:var(--font-display);
+  font-size:clamp(1.75rem,7vw,2.5rem);
+  font-weight:600;line-height:1.05;margin:.25rem 0 0;
+  letter-spacing:-.015em;text-wrap:balance;
+}
+.masthead .dates{color:var(--muted);font-size:.8125rem;margin-top:.25rem}
+
+.readout{display:flex;gap:1.25rem;margin-top:1rem;flex-wrap:wrap}
+.readout div{display:flex;flex-direction:column;gap:.0625rem}
+.readout .v{font-family:var(--font-data);font-variant-numeric:tabular-nums;
+  font-size:1.25rem;line-height:1.1;font-weight:600}
+.readout .undecided .v{color:var(--open)}
+
+.decided-meter{
+  margin-top:.875rem;height:5px;border-radius:3px;
+  background:var(--surface-2);overflow:hidden;display:flex;
+}
+.decided-meter i{display:block;height:100%;background:var(--commit)}
+
+/* ---------- controls ---------- */
+.controls{
+  display:flex;gap:.375rem;align-items:center;
+  padding:.625rem 1rem;border-bottom:1px solid var(--hair);
+  background:var(--surface);position:sticky;top:0;z-index:30;
+  overflow-x:auto;scrollbar-width:none;
+}
+.controls::-webkit-scrollbar{display:none}
+.seg{display:flex;background:var(--surface-2);border-radius:7px;padding:2px;flex:0 0 auto}
+.seg button{
+  padding:.3125rem .625rem;border-radius:5px;font-size:.75rem;
+  color:var(--muted);white-space:nowrap;
+}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);
+  box-shadow:0 1px 2px rgba(0,0,0,.1);font-weight:600}
+.controls .spacer{flex:1 0 .5rem}
+.icon-btn{
+  flex:0 0 auto;padding:.3125rem .625rem;border-radius:6px;font-size:.75rem;
+  border:1px solid var(--hair-strong);color:var(--ink-2);white-space:nowrap;
+}
+
+.warnbar{
+  margin:0;padding:.625rem 1rem;background:var(--open-wash);
+  border-bottom:1px solid var(--open-edge);color:var(--open);font-size:.75rem;
+}
+
+/* ---------- spine ---------- */
+.spine{position:relative;padding:.75rem 1rem 2rem}
+.monthmark{
+  position:absolute;left:0;width:100%;pointer-events:none;z-index:0;
+  border-top:1px solid var(--hair-strong);
+}
+.monthmark span{
+  position:absolute;left:1rem;top:.1875rem;background:var(--ground);
+  padding-right:.4375rem;font-family:var(--font-data);font-size:.5625rem;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
+}
+
+.row{position:relative;z-index:1;display:flex;gap:.5rem;align-items:stretch}
+.rail{
+  flex:0 0 var(--rail);padding-top:.375rem;
+  font-family:var(--font-data);font-variant-numeric:tabular-nums;
+  font-size:.6875rem;color:var(--muted);line-height:1.25;
+}
+.rail .d{color:var(--ink-2);font-weight:600}
+
+.block{
+  flex:1 1 auto;min-width:0;position:relative;
+  border-radius:9px;padding:.5rem .625rem;text-align:left;
+  display:flex;flex-direction:column;
+  transition:opacity .12s ease;
+}
+.block:active{opacity:.82}
+/* Tall blocks are the norm here — a 64-night gap is 700px. The label
+   sticks so you always know which stretch you're looking at. */
+.block .head{
+  position:sticky;top:3.4rem;display:flex;flex-direction:column;gap:.125rem;
+}
+.block .title{font-size:.875rem;font-weight:600;line-height:1.2}
+.block .sub{font-size:.75rem;color:var(--muted);line-height:1.3}
+.block .cta{
+  font-size:.6875rem;color:var(--open);margin-top:.375rem;
+  display:inline-flex;align-items:center;gap:.25rem;
+}
+.block .cta::before{content:"＋";font-size:.75rem;line-height:1}
+.block.tight{justify-content:center;padding:.25rem .625rem}
+.block.tight .head{position:static}
+.block.tight .title{font-size:.8125rem}
+
+/* Commitment reads as solidity. Anchors are opaque (ground + wash), so the
+   month rules behind them are hidden; gaps have no background-color, so the
+   rules show through the hatching — which is exactly where you need them. */
+.block.anchor{
+  background-color:var(--ground);
+  background-image:linear-gradient(var(--commit-wash),var(--commit-wash));
+  border:1px solid var(--commit-edge);
+}
+.block.anchor.booked{
+  background-color:var(--commit-solid);background-image:none;
+  border-color:var(--commit-solid);
+}
+.block.anchor.booked .title{color:var(--on-commit)}
+.block.anchor.booked .sub{color:var(--on-commit);opacity:.78}
+.block.anchor.booked .pin{background:var(--on-commit)}
+.block.gap{
+  border:1px dashed var(--open-edge);
+  background-image:repeating-linear-gradient(135deg,
+    var(--open-wash) 0 6px, transparent 6px 13px);
+}
+.block.gap .title{color:var(--open)}
+
+.pin{
+  position:absolute;top:.5rem;right:.5rem;width:5px;height:5px;border-radius:50%;
+  background:var(--commit);
+}
+.float-hint{
+  position:absolute;right:.5rem;bottom:.5rem;font-family:var(--font-data);
+  font-size:.5625rem;letter-spacing:.06em;color:var(--commit);
+  border:1px solid var(--commit-edge);border-radius:3px;padding:0 .1875rem;
+}
+.fill-state{
+  position:absolute;left:0;bottom:0;height:3px;background:var(--open);opacity:.55;
+  border-bottom-left-radius:9px;
+}
+
+/* ---------- legs ---------- */
+.leg{display:flex;gap:.5rem;align-items:center;height:46px}
+.leg .rail{flex:0 0 var(--rail);padding-top:0;display:flex;align-items:center}
+.leg .body{
+  flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:.5rem;
+  border-top:1px dashed var(--hair-strong);padding-top:0;
+  height:100%;
+}
+.leg .chip{
+  display:inline-flex;align-items:center;gap:.3125rem;
+  border:1px solid var(--hair-strong);border-radius:99px;
+  padding:.1875rem .5rem;font-size:.6875rem;color:var(--ink-2);
+  background:var(--surface);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;max-width:100%;
+}
+.leg .chip b{font-weight:600}
+
+/* ---------- lane ---------- */
+.lane{
+  flex:0 0 var(--lane);padding-top:.375rem;text-align:right;
+  font-family:var(--font-data);font-variant-numeric:tabular-nums;
+  font-size:.6875rem;color:var(--muted);line-height:1.3;
+  display:flex;flex-direction:column;gap:.0625rem;align-items:flex-end;
+}
+.lane .strong{color:var(--ink-2);font-weight:600;font-size:.75rem}
+.lane .warn{color:var(--open)}
+.lane .status{
+  font-family:var(--font-data);font-size:.5625rem;text-transform:uppercase;
+  letter-spacing:.08em;border:1px solid var(--hair-strong);border-radius:3px;
+  padding:0 .25rem;color:var(--muted);
+}
+.lane .status.decided,.lane .status.booked{color:var(--commit);border-color:var(--commit-edge)}
+.lane .status.idea{color:var(--open);border-color:var(--open-edge)}
+
+/* ---------- footer ---------- */
+.footer{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:var(--surface);border-top:1px solid var(--hair);
+  padding:.625rem 1rem calc(.625rem + env(safe-area-inset-bottom));
+  box-shadow:0 -2px 12px rgba(0,0,0,.06);
+}
+.footer .line{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+.footer .at{font-family:var(--font-data);font-size:.6875rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.09em}
+.footer .money{font-family:var(--font-data);font-variant-numeric:tabular-nums;
+  font-size:1rem;font-weight:600}
+.footer .note{font-size:.6875rem;color:var(--muted);margin-top:.125rem}
+.footer .bench-btn{
+  margin-top:.5rem;width:100%;border:1px solid var(--open-edge);
+  background:var(--open-wash);color:var(--open);border-radius:7px;
+  padding:.5rem;font-size:.8125rem;font-weight:600;
+}
+
+/* ---------- sheets ---------- */
+.scrim{
+  position:fixed;inset:0;background:var(--scrim);z-index:50;
+  opacity:0;pointer-events:none;transition:opacity .18s ease;
+}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:var(--surface);border-radius:16px 16px 0 0;
+  box-shadow:var(--sheet-shadow);
+  max-height:86vh;display:flex;flex-direction:column;
+  transform:translateY(101%);transition:transform .24s cubic-bezier(.32,.72,0,1);
+}
+.sheet.open{transform:translateY(0)}
+.sheet .grab{width:34px;height:4px;border-radius:2px;background:var(--hair-strong);
+  margin:.625rem auto .25rem;flex:0 0 auto}
+.sheet header{padding:.5rem 1.125rem .75rem;border-bottom:1px solid var(--hair);flex:0 0 auto}
+.sheet header h2{font-family:var(--font-display);font-size:1.375rem;
+  font-weight:600;margin:.125rem 0 0;line-height:1.15;letter-spacing:-.01em}
+.sheet .scroll{overflow-y:auto;padding:1rem 1.125rem 1.5rem;-webkit-overflow-scrolling:touch}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:.375rem 1rem;margin:0 0 1rem}
+.kv dt{font-family:var(--font-data);font-size:.625rem;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--muted);padding-top:.125rem}
+.kv dd{margin:0;font-size:.875rem;font-family:var(--font-data);
+  font-variant-numeric:tabular-nums}
+.prose{font-size:.875rem;line-height:1.55;color:var(--ink-2);margin:0 0 1rem;
+  max-width:60ch}
+
+.card{
+  width:100%;text-align:left;border:1px solid var(--hair);border-radius:9px;
+  background:var(--ground);padding:.75rem;margin-bottom:.5rem;display:block;
+}
+.card .top{display:flex;justify-content:space-between;gap:.75rem;align-items:baseline}
+.card .nm{font-size:.9375rem;font-weight:600;line-height:1.2}
+.card .rg{font-family:var(--font-data);font-size:.625rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+.card .nt{font-size:.75rem;color:var(--muted);margin-top:.25rem;line-height:1.4}
+.fits{display:flex;gap:.375rem;margin-top:.5rem;flex-wrap:wrap}
+.fit{
+  display:inline-flex;align-items:center;gap:.3125rem;font-size:.6875rem;
+  border:1px solid var(--hair);border-radius:99px;padding:.125rem .4375rem;
+  color:var(--muted);
+}
+.fit i{width:6px;height:6px;border-radius:50%;background:var(--muted);flex:0 0 auto}
+.fit.good{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.fit.good i{background:var(--ok)}
+.fit.warn{color:var(--open);border-color:var(--open-edge)}
+.fit.warn i{background:var(--open)}
+.fit.bad{color:var(--alert);border-color:color-mix(in srgb,var(--alert) 40%,transparent)}
+.fit.bad i{background:var(--alert)}
+
+.placed{
+  display:flex;justify-content:space-between;align-items:center;gap:.75rem;
+  border:1px solid var(--commit-edge);background:var(--commit-wash);
+  border-radius:7px;padding:.5rem .625rem;margin-bottom:.375rem;font-size:.8125rem;
+}
+.placed button{color:var(--alert);font-size:.6875rem;font-family:var(--font-data);
+  text-transform:uppercase;letter-spacing:.07em}
+.remaining{
+  font-family:var(--font-data);font-size:.75rem;color:var(--muted);
+  margin:0 0 .75rem;
+}
+.remaining b{color:var(--open);font-weight:600}
+.remaining.done b{color:var(--ok)}
+.empty{font-size:.8125rem;color:var(--muted);font-style:italic;margin:0 0 1rem}
+.sample-note{
+  font-size:.6875rem;color:var(--muted);border-top:1px solid var(--hair);
+  padding-top:.75rem;margin-top:.5rem;line-height:1.5;
+}
+
+@media (min-width:760px){
+  body{padding-bottom:6rem}
+  .wrap{max-width:940px;margin:0 auto}
+  :root{--rail:5rem;--lane:8rem}
+  .sheet{left:50%;transform:translate(-50%,101%);width:min(620px,100%);
+    border-radius:16px 16px 0 0}
+  .sheet.open{transform:translate(-50%,0)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+
+<div class="wrap">
+  <div class="masthead">
+    <div class="eyebrow">Itinerary skeleton</div>
+    <h1 id="mh-title">Six Months</h1>
+    <div class="dates num" id="mh-dates"></div>
+    <div class="readout">
+      <div><span class="eyebrow">Total</span><span class="v" id="ro-total"></span></div>
+      <div class="undecided"><span class="eyebrow">Undecided</span><span class="v" id="ro-open"></span></div>
+      <div><span class="eyebrow">Gaps</span><span class="v" id="ro-gaps"></span></div>
+    </div>
+    <div class="decided-meter" title="Share of nights committed"><i id="ro-meter"></i></div>
+  </div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Lane">
+      <button data-lane="status" aria-pressed="true">Status</button>
+      <button data-lane="budget" aria-pressed="false">Budget</button>
+      <button data-lane="pace" aria-pressed="false">Pace</button>
+      <button data-lane="season" aria-pressed="false">Season</button>
+    </div>
+    <span class="spacer"></span>
+    <button class="icon-btn" id="density-btn">Compact</button>
+  </div>
+
+  <div id="warn"></div>
+  <div class="spine" id="spine"></div>
+</div>
+
+<div class="footer">
+  <div class="line">
+    <span class="at" id="ft-at"></span>
+    <span class="money" id="ft-money"></span>
+  </div>
+  <div class="note" id="ft-note"></div>
+  <button class="bench-btn" id="bench-btn">Open the Bench</button>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="grab"></div>
+  <header>
+    <div class="eyebrow" id="sheet-eyebrow"></div>
+    <h2 id="sheet-title"></h2>
+  </header>
+  <div class="scroll" id="sheet-body"></div>
+</div>
+
+<script src="itinerary.js"></script>
+<script>
+(function(){
+"use strict";
+
+var D = window.ITINERARY;
+var MS = 864e5;
+var DENSITY = { comfortable: 11, compact: 6 };
+var MIN_BLOCK = 36;
+var LEG_H = 46;
+
+/* ---------- storage ---------- */
+var KEY = "worldtravel.v1";
+var store = load();
+function load(){
+  try { return JSON.parse(localStorage.getItem(KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){}
+}
+store.placements = store.placements || {};   // gapId -> [benchId]
+store.lane = store.lane || "status";
+store.density = store.density || "comfortable";
+
+/* ---------- dates ---------- */
+function parse(s){ var p = s.split("-"); return Date.UTC(+p[0], +p[1]-1, +p[2]); }
+function addDays(t,n){ return t + n*MS; }
+function diffDays(a,b){ return Math.round((b-a)/MS); }
+var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmt(t){ var d = new Date(t); return MON[d.getUTCMonth()] + " " + d.getUTCDate(); }
+function fmtY(t){ var d = new Date(t); return fmt(t) + ", " + d.getUTCFullYear(); }
+function monthsSpanned(t, nights){
+  var out = [], cur = t, end = addDays(t, nights);
+  while (cur < end) {
+    var m = new Date(cur).getUTCMonth();
+    if (out.indexOf(m) < 0) out.push(m);
+    cur = addDays(cur, 1);
+  }
+  return out;
+}
+
+/* ---------- geometry ---------- */
+function haversine(a, b){
+  if (!a || !b) return null;
+  var R = 6371, rad = Math.PI/180;
+  var dLat = (b.lat-a.lat)*rad, dLon = (b.lon-a.lon)*rad;
+  var la1 = a.lat*rad, la2 = b.lat*rad;
+  var h = Math.sin(dLat/2)*Math.sin(dLat/2) +
+          Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+
+/* Detour ratio: how far out of your way is this idea?
+   (from -> idea -> to) divided by (from -> to). */
+function detour(gap, card){
+  var a = gap.fromGeo, b = gap.toGeo, c = card.geo;
+  if (!a || !b || !c) return null;
+  var direct = haversine(a,b);
+  var via = haversine(a,c) + haversine(c,b);
+  if (direct < 400) return via / 800;   // endpoints ~same place: judge on absolute
+  return via / direct;
+}
+
+/* ---------- derived ---------- */
+var segs = D.segments.slice();
+var T0 = parse(D.meta.start);
+
+segs.forEach(function(s){
+  s._start = parse(s.start);
+  s._end = addDays(s._start, s.nights);
+});
+
+function continuityWarnings(){
+  var w = [], cursor = T0;
+  segs.forEach(function(s){
+    if (s.kind === "leg") return;
+    if (s._start !== cursor) {
+      var d = diffDays(cursor, s._start);
+      w.push((d > 0 ? d + " unaccounted night" + (d>1?"s":"") + " before "
+                    : Math.abs(d) + " night overlap at ")
+             + (s.name || s.to || s.id));
+    }
+    cursor = s._end;
+  });
+  return w;
+}
+
+function nightsOf(kind){
+  return segs.filter(function(s){ return s.kind === kind; })
+             .reduce(function(a,s){ return a + s.nights; }, 0);
+}
+var totalNights = segs.reduce(function(a,s){ return a + s.nights; }, 0);
+var openNights = nightsOf("gap");
+var gapCount = segs.filter(function(s){ return s.kind === "gap"; }).length;
+
+function benchById(id){
+  for (var i=0;i<D.bench.length;i++) if (D.bench[i].id === id) return D.bench[i];
+  return null;
+}
+function placedIn(gapId){
+  return (store.placements[gapId] || []).map(benchById).filter(Boolean);
+}
+function usedNights(gapId){
+  return placedIn(gapId).reduce(function(a,c){ return a + c.nights[0]; }, 0);
+}
+
+/* ---------- masthead ---------- */
+document.getElementById("mh-title").textContent = D.meta.title;
+document.getElementById("mh-dates").textContent =
+  fmtY(T0) + " – " + fmtY(parse(D.meta.end)) + " · " + totalNights + " nights";
+document.getElementById("ro-total").textContent = totalNights + "n";
+document.getElementById("ro-open").textContent =
+  Math.round(openNights/totalNights*100) + "%";
+document.getElementById("ro-gaps").textContent = gapCount;
+document.getElementById("ro-meter").style.width =
+  ((totalNights-openNights)/totalNights*100).toFixed(1) + "%";
+
+var warns = continuityWarnings();
+if (warns.length) {
+  document.getElementById("warn").innerHTML =
+    '<p class="warnbar">Timeline doesn’t chain: ' + warns.join("; ") + '</p>';
+}
+
+/* ---------- render spine ---------- */
+var spine = document.getElementById("spine");
+
+function laneCell(s){
+  var lane = store.lane, out = [];
+  if (lane === "status") {
+    var st = s.status || "idea";
+    out.push('<span class="status ' + st + '">' + st + '</span>');
+    if (s.kind === "gap") {
+      var p = placedIn(s.id).length;
+      if (p) out.push('<span>' + p + ' placed</span>');
+    }
+  } else if (lane === "budget") {
+    if (s.cost != null) out.push('<span class="strong">' + money(s.cost) + '</span>');
+    else if (s.kind === "gap") out.push('<span class="warn">not costed</span>');
+    else out.push('<span>—</span>');
+  } else if (lane === "pace") {
+    if (s.kind === "leg") out.push('<span>transit</span>');
+    else {
+      out.push('<span class="strong">' + s.nights + 'n</span>');
+      if (s.kind === "gap") out.push('<span>unplanned</span>');
+      else if (s.nights < 3) out.push('<span class="warn">short stop</span>');
+    }
+  } else if (lane === "season") {
+    if (s.kind !== "leg") {
+      out.push('<span class="strong">' +
+        monthsSpanned(s._start, s.nights).map(function(m){ return MON[m]; }).join(" · ") +
+        '</span>');
+      if (s.seasonNote) out.push('<span style="text-align:right">' + s.seasonNote + '</span>');
+    }
+  }
+  return '<div class="lane">' + out.join("") + '</div>';
+}
+
+function money(n){
+  return "$" + n.toLocaleString("en-US");
+}
+
+function render(){
+  var px = DENSITY[store.density];
+  var html = "";
+
+  segs.forEach(function(s){
+    if (s.kind === "leg") {
+      html += '<div class="row leg" data-id="' + s.id + '">' +
+        '<div class="rail">' + fmt(s._start) + '</div>' +
+        '<div class="body"><span class="chip">' +
+          (s.mode === "ship" ? "⚓" : "✈") + ' ' +
+          '<b>' + esc(s.from) + '</b> → <b>' + esc(s.to) + '</b>' +
+        '</span></div>' +
+        laneCell(s) +
+      '</div>';
+      return;
+    }
+
+    var h = Math.max(s.nights * px, MIN_BLOCK);
+    var tight = h < 52;
+    var cls = "block " + (s.kind === "gap" ? "gap" : "anchor " + (s.status || ""));
+    var title, sub;
+
+    if (s.kind === "gap") {
+      title = s.nights + " nights open";
+      sub = esc(s.from) + " → " + esc(s.to);
+    } else {
+      title = esc(s.name);
+      sub = s.nights + " night" + (s.nights>1?"s":"") +
+            (s.to ? " · to " + esc(s.to) : "");
+    }
+
+    var extra = "", cta = "";
+    if (s.kind === "anchor" && s.fixed) extra += '<div class="pin"></div>';
+    if (s.floating) {
+      var slide = diffDays(parse(s.floating.earliest), parse(s.floating.latest));
+      extra += '<div class="float-hint">slides ±' + slide + 'd</div>';
+    }
+    if (s.kind === "gap") {
+      var used = usedNights(s.id);
+      var frac = Math.min(used / s.nights, 1);
+      if (frac > 0) extra += '<div class="fill-state" style="width:' + (frac*100) + '%"></div>';
+      if (!tight) {
+        cta = '<span class="cta">' + (used
+          ? (s.nights - used) + ' nights still to place'
+          : 'Tap to fill from the Bench') + '</span>';
+      }
+    }
+
+    html += '<div class="row" data-id="' + s.id + '">' +
+      '<div class="rail"><span class="d">' + fmt(s._start) + '</span></div>' +
+      '<button class="' + cls + (tight ? " tight" : "") + '" ' +
+        'style="min-height:' + h + 'px" data-open="' + s.id + '">' +
+        '<span class="head">' +
+          '<span class="title">' + title + '</span>' +
+          '<span class="sub">' + sub + '</span>' + cta +
+        '</span>' + extra +
+      '</button>' +
+      laneCell(s) +
+    '</div>';
+  });
+
+  spine.innerHTML = html;
+  drawMonths();
+  updateFooter();
+}
+
+function drawMonths(){
+  /* Month rules sit at TRUE month boundaries, interpolated inside whichever
+     block contains them — so the nine-week winter gap visibly crosses Jan
+     and Feb instead of being one undifferentiated slab. Measured from the
+     DOM rather than computed from px/night, so min-height on short blocks
+     doesn't push everything out of true. */
+  var rows = spine.querySelectorAll(".row");
+  var base = spine.getBoundingClientRect().top + window.scrollY;
+  var tops = [], rects = [];
+
+  rows.forEach(function(row, i){
+    var r = row.getBoundingClientRect();
+    rects[i] = { top: r.top + window.scrollY - base, h: r.height };
+    if (segs[i].kind !== "leg") tops.push(rects[i].top);
+  });
+
+  function yFor(t){
+    for (var i = 0; i < segs.length; i++) {
+      var s = segs[i];
+      if (s.kind === "leg" || !rects[i]) continue;
+      if (t >= s._start && t < s._end) {
+        return rects[i].top + (diffDays(s._start, t) / s.nights) * rects[i].h;
+      }
+    }
+    return null;
+  }
+
+  var frag = "";
+  var d = new Date(T0);
+  var cur = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1);
+  var last = parse(D.meta.end);
+
+  while (cur < last) {
+    var y = yFor(cur);
+    if (y != null) {
+      var dt = new Date(cur);
+      // Suppress the label when it lands on a block edge — the rail already
+      // prints that date, and two labels in one gutter is soup.
+      var crowded = tops.some(function(t){ return Math.abs(t - y) < 20; });
+      frag += '<div class="monthmark" style="top:' + y.toFixed(1) + 'px">' +
+        (crowded ? "" : '<span>' + MON[dt.getUTCMonth()] + " " +
+          dt.getUTCFullYear() + '</span>') + '</div>';
+    }
+    cur = Date.UTC(new Date(cur).getUTCFullYear(), new Date(cur).getUTCMonth() + 1, 1);
+  }
+  spine.insertAdjacentHTML("beforeend", frag);
+}
+
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+  });
+}
+
+/* ---------- footer: reads scroll position ---------- */
+var ftAt = document.getElementById("ft-at");
+var ftMoney = document.getElementById("ft-money");
+var ftNote = document.getElementById("ft-note");
+
+function updateFooter(){
+  var rows = spine.querySelectorAll(".row");
+  var mark = window.innerHeight * 0.38;
+  var cur = null, curIdx = 0, frac = 0;
+
+  rows.forEach(function(row, i){
+    var r = row.getBoundingClientRect();
+    if (r.top <= mark) {
+      cur = segs[i]; curIdx = i;
+      frac = Math.min(Math.max((mark - r.top) / Math.max(r.height,1), 0), 1);
+    }
+  });
+  if (!cur) { cur = segs[0]; curIdx = 0; frac = 0; }
+
+  var at = addDays(cur._start, Math.round(cur.nights * frac));
+  var spent = 0, hasNull = false;
+  for (var i = 0; i <= curIdx; i++) {
+    if (segs[i].cost != null) spent += segs[i].cost;
+    else if (segs[i].kind !== "gap") hasNull = true;
+  }
+
+  ftAt.textContent = "through " + fmtY(at);
+  ftMoney.textContent = money(spent);
+
+  var bits = [];
+  if (D.meta.budgetTarget) {
+    bits.push(Math.round(spent / D.meta.budgetTarget * 100) + "% of target");
+  } else {
+    bits.push("committed so far · no target set");
+  }
+  if (D.meta.usingSampleCosts) bits.push("sample figures");
+  if (hasNull) bits.push("some costs missing");
+  ftNote.textContent = bits.join(" · ");
+}
+
+var ticking = false;
+window.addEventListener("scroll", function(){
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(function(){ updateFooter(); ticking = false; });
+}, {passive:true});
+
+/* ---------- sheets ---------- */
+var scrim = document.getElementById("scrim");
+var sheet = document.getElementById("sheet");
+var sheetBody = document.getElementById("sheet-body");
+var sheetTitle = document.getElementById("sheet-title");
+var sheetEyebrow = document.getElementById("sheet-eyebrow");
+var lastFocus = null;
+
+function openSheet(eyebrow, title, html){
+  sheetEyebrow.textContent = eyebrow;
+  sheetTitle.textContent = title;
+  sheetBody.innerHTML = html;
+  sheetBody.scrollTop = 0;
+  scrim.classList.add("open");
+  sheet.classList.add("open");
+}
+function closeSheet(){
+  scrim.classList.remove("open");
+  sheet.classList.remove("open");
+  if (lastFocus) { try { lastFocus.focus(); } catch(e){} }
+}
+scrim.addEventListener("click", closeSheet);
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape") closeSheet();
+});
+
+function segById(id){
+  for (var i=0;i<segs.length;i++) if (segs[i].id === id) return segs[i];
+  return null;
+}
+
+function fitFor(gap, card){
+  var out = [];
+  var remaining = gap.nights - usedNights(gap.id);
+
+  // duration
+  var lo = card.nights[0], hi = card.nights[1];
+  if (lo <= remaining) out.push(["good", lo + "–" + hi + "n fits"]);
+  else out.push(["bad", "needs " + lo + "n, " + remaining + " left"]);
+
+  // season
+  var ms = monthsSpanned(gap._start, gap.nights).map(function(m){ return m+1; });
+  var hits = ms.filter(function(m){ return card.months.indexOf(m) >= 0; });
+  if (hits.length >= Math.min(2, ms.length)) out.push(["good", "in season"]);
+  else if (hits.length) out.push(["warn", "edge of season"]);
+  else out.push(["bad", "wrong season"]);
+
+  // geography
+  /* Calibrated against the real gaps: Budapest→Japan puts Taiwan at ×1.2 and
+     Thailand at ×1.4 (genuinely on the way), Argentina at ×3.3. DR→Budapest
+     puts Morocco at ×1.1. A tighter cut than 1.5 wrongly penalised SE Asia. */
+  var r = detour(gap, card);
+  if (r == null) out.push(["", "route unknown"]);
+  else if (r <= 1.5) out.push(["good", "on the way ×" + r.toFixed(1)]);
+  else if (r <= 2.2) out.push(["warn", "detour ×" + r.toFixed(1)]);
+  else out.push(["bad", "far off route ×" + r.toFixed(1)]);
+
+  return out;
+}
+
+function cardHTML(card, gap){
+  var fits = "";
+  if (gap) {
+    fits = '<div class="fits">' + fitFor(gap, card).map(function(f){
+      return '<span class="fit ' + f[0] + '"><i></i>' + esc(f[1]) + '</span>';
+    }).join("") + '</div>';
+  }
+  return '<button class="card" data-place="' + card.id + '"' +
+    (gap ? ' data-gap="' + gap.id + '"' : '') + '>' +
+    '<span class="top"><span class="nm">' + esc(card.name) + '</span>' +
+    '<span class="rg">' + esc(card.region) + '</span></span>' +
+    '<span class="nt">' + esc(card.note) + '</span>' + fits + '</button>';
+}
+
+function openGap(s){
+  var placed = placedIn(s.id);
+  var used = usedNights(s.id);
+  var remaining = s.nights - used;
+  var h = "";
+
+  h += '<dl class="kv">' +
+    '<dt>Window</dt><dd>' + fmtY(s._start) + " → " + fmtY(s._end) + '</dd>' +
+    '<dt>Nights</dt><dd>' + s.nights + '</dd>' +
+    '<dt>Route</dt><dd>' + esc(s.from) + " → " + esc(s.to) + '</dd>' +
+    '</dl>';
+
+  if (s.note) h += '<p class="prose">' + esc(s.note) + '</p>';
+
+  h += '<p class="remaining' + (remaining <= 0 ? ' done' : '') + '">' +
+       used + ' of ' + s.nights + ' nights placed · <b>' +
+       Math.max(remaining,0) + ' remaining</b></p>';
+
+  if (placed.length) {
+    h += placed.map(function(c){
+      return '<div class="placed"><span>' + esc(c.name) +
+        ' <span class="num" style="color:var(--muted)">' + c.nights[0] + '–' +
+        c.nights[1] + 'n</span></span>' +
+        '<button data-unplace="' + c.id + '" data-gap="' + s.id + '">remove</button></div>';
+    }).join("");
+  }
+
+  h += '<div class="eyebrow" style="margin:1.25rem 0 .5rem">From the Bench</div>';
+
+  var avail = D.bench.filter(function(c){
+    return (store.placements[s.id] || []).indexOf(c.id) < 0;
+  });
+  if (!avail.length) h += '<p class="empty">Nothing left on the Bench.</p>';
+  else h += avail.map(function(c){ return cardHTML(c, s); }).join("");
+
+  h += '<p class="sample-note">Bench entries are sample data. Replace them in ' +
+       '<span class="num">itinerary.js</span>. Fit is computed: duration against ' +
+       'nights remaining, season against the months this gap spans, and route as a ' +
+       'detour ratio — how much longer <em>from → idea → to</em> is than flying direct.</p>';
+
+  openSheet(s.nights + " open nights", esc(s.from) + " → " + esc(s.to), h);
+}
+
+function openAnchor(s){
+  var h = '<dl class="kv">' +
+    '<dt>Dates</dt><dd>' + fmtY(s._start) + " → " + fmtY(s._end) + '</dd>' +
+    '<dt>Nights</dt><dd>' + s.nights + '</dd>' +
+    (s.to ? '<dt>Ends in</dt><dd>' + esc(s.to) + '</dd>' : '') +
+    '<dt>Status</dt><dd>' + esc(s.status || "idea") + '</dd>' +
+    (s.cost != null ? '<dt>Cost</dt><dd>' + money(s.cost) +
+      (D.meta.usingSampleCosts ? ' <span style="color:var(--muted)">sample</span>' : '') +
+      '</dd>' : '') +
+    (s.floating ? '<dt>Floats</dt><dd>start ' + fmt(parse(s.floating.earliest)) +
+      " – " + fmt(parse(s.floating.latest)) + '</dd>' : '') +
+    (s.seasonNote ? '<dt>Season</dt><dd style="font-family:var(--font-ui)">' +
+      esc(s.seasonNote) + '</dd>' : '') +
+    '</dl>';
+  if (s.note) h += '<p class="prose">' + esc(s.note) + '</p>';
+  openSheet(s.fixed ? "Fixed anchor" : "Floating anchor", s.name, h);
+}
+
+function openLeg(s){
+  var h = '<dl class="kv">' +
+    '<dt>Date</dt><dd>' + fmtY(s._start) + '</dd>' +
+    '<dt>From</dt><dd>' + esc(s.from) + '</dd>' +
+    '<dt>To</dt><dd>' + esc(s.to) + '</dd>' +
+    '<dt>Status</dt><dd>' + esc(s.status || "idea") + '</dd>' +
+    (s.cost != null ? '<dt>Est.</dt><dd>' + money(s.cost) + '</dd>' : '') +
+    '</dl>';
+  if (s.note) h += '<p class="prose">' + esc(s.note) + '</p>';
+  h += '<p class="sample-note">Legs are first-class objects, not the space between ' +
+       'blocks — they carry cost, date and booking status. They render at fixed ' +
+       'height rather than scaled, since a travel day would otherwise be invisible.</p>';
+  openSheet("Crossing", esc(s.from) + " → " + esc(s.to), h);
+}
+
+function openBench(){
+  var h = '<p class="prose">Ideas with nowhere to be yet. Open a gap to see which ' +
+          'of these actually fit it.</p>';
+  h += D.bench.map(function(c){ return cardHTML(c, null); }).join("");
+  h += '<p class="sample-note">Sample data — replace the <span class="num">bench</span> ' +
+       'array in <span class="num">itinerary.js</span> with your own shortlist.</p>';
+  openSheet("Unplaced ideas", "The Bench", h);
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", function(e){
+  var t = e.target.closest("[data-open]");
+  if (t) {
+    lastFocus = t;
+    var s = segById(t.getAttribute("data-open"));
+    if (!s) return;
+    if (s.kind === "gap") openGap(s); else openAnchor(s);
+    return;
+  }
+
+  var legRow = e.target.closest(".row.leg");
+  if (legRow) { openLeg(segById(legRow.getAttribute("data-id"))); return; }
+
+  var place = e.target.closest("[data-place]");
+  if (place) {
+    var gid = place.getAttribute("data-gap");
+    if (!gid) return;
+    store.placements[gid] = store.placements[gid] || [];
+    store.placements[gid].push(place.getAttribute("data-place"));
+    save(); render(); openGap(segById(gid));
+    return;
+  }
+
+  var un = e.target.closest("[data-unplace]");
+  if (un) {
+    var g = un.getAttribute("data-gap");
+    var id = un.getAttribute("data-unplace");
+    store.placements[g] = (store.placements[g] || []).filter(function(x){ return x !== id; });
+    save(); render(); openGap(segById(g));
+    return;
+  }
+});
+
+document.querySelectorAll(".seg button").forEach(function(b){
+  b.addEventListener("click", function(){
+    store.lane = b.getAttribute("data-lane");
+    document.querySelectorAll(".seg button").forEach(function(x){
+      x.setAttribute("aria-pressed", String(x === b));
+    });
+    save(); render();
+  });
+});
+
+var dBtn = document.getElementById("density-btn");
+function syncDensity(){
+  dBtn.textContent = store.density === "comfortable" ? "Compact" : "Comfortable";
+}
+dBtn.addEventListener("click", function(){
+  store.density = store.density === "comfortable" ? "compact" : "comfortable";
+  syncDensity(); save(); render();
+});
+
+document.getElementById("bench-btn").addEventListener("click", function(){
+  lastFocus = this; openBench();
+});
+
+/* ---------- boot ---------- */
+document.querySelectorAll(".seg button").forEach(function(x){
+  x.setAttribute("aria-pressed", String(x.getAttribute("data-lane") === store.lane));
+});
+syncDensity();
+render();
+window.addEventListener("resize", function(){ render(); });
+})();
+</script>
