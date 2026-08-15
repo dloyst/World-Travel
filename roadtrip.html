@@ -1,0 +1,2193 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biscay to Mediterranean — Oct 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400;12..96,75..100,600;12..96,75..100,800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;1,6..72,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   PALETTE — hypsometric. Colour encodes elevation band, which is
+   the actual subject of the trip: Biscay sea level to Envalira at
+   2408 m and back down to the Mediterranean.
+   ============================================================ */
+:root{
+  --paper:#e7eae3;         /* pale lichen — topo sheet ground */
+  --surface:#f6f8f3;
+  --surface-2:#eef1ea;
+  --ink:#16211f;
+  --ink-2:#41504c;
+  --ink-3:#6d7b76;
+  --rule:#c8d0c6;
+  --rule-2:#d9e0d5;
+
+  /* elevation bands */
+  --e0:#1f6f78;   /* 0–100 m    coast / estuary  */
+  --e1:#5c8f4e;   /* 100–300 m  plain, vineyard  */
+  --e2:#c39a1f;   /* 300–900 m  foothill         */
+  --e3:#b0632c;   /* 900–1600 m mountain         */
+  --e4:#8d8f9c;   /* 1600 m+    high Pyrenees    */
+
+  --accent:#1f6f78;
+  --warn:#b0632c;
+  --alert:#9c3722;
+  --ok:#4a7a3f;
+
+  --shadow:0 1px 0 rgba(22,33,31,.06), 0 8px 24px -14px rgba(22,33,31,.35);
+  --radius:3px;
+  --dur:.28s;
+}
+@media (prefers-reduced-motion: reduce){ :root{ --dur:0s } *{animation:none !important} }
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Newsreader",Georgia,serif; font-size:16.5px; line-height:1.55;
+  font-variant-numeric:tabular-nums;
+}
+h1,h2,h3,h4,.dsp{font-family:"Bricolage Grotesque","Helvetica Neue",sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:0}
+.mono{font-family:"DM Mono",ui-monospace,monospace;font-size:.82em;letter-spacing:-.01em}
+a{color:var(--accent)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:2px}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.rule{height:1px;background:var(--rule);border:0;margin:0}
+
+/* ---------- masthead ---------- */
+.mast{padding:34px 0 20px;border-bottom:2px solid var(--ink)}
+.mast .kicker{font-family:"DM Mono",monospace;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.mast h1{font-size:clamp(30px,5.4vw,58px);margin:.18em 0 .1em;font-stretch:88%}
+.mast .sub{font-size:clamp(15px,1.6vw,18px);color:var(--ink-2);max-width:62ch;font-weight:300}
+.routestrip{display:flex;flex-wrap:wrap;gap:5px 0;align-items:center;margin-top:16px;font-family:"DM Mono",monospace;font-size:11.5px;letter-spacing:.04em}
+.routestrip i{font-style:normal;color:var(--ink-3);padding:0 7px}
+.routestrip b{font-weight:500}
+.flagdot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:1px}
+
+/* ---------- hero transect ---------- */
+.hero{padding:22px 0 6px}
+.hero-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.hero-head h2{font-size:15px;letter-spacing:.02em}
+.hero-head .note{font-size:12.5px;color:var(--ink-3);font-family:"DM Mono",monospace}
+#transect{width:100%;display:block;background:var(--surface);border:1px solid var(--rule)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 0;font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-2)}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:14px;height:8px;display:block;border-radius:1px}
+
+/* ---------- panels ---------- */
+.panel{background:var(--surface);border:1px solid var(--rule);padding:16px 18px;margin:0}
+.panel h3{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:10px}
+.grid{display:grid;gap:14px}
+
+/* ---------- date controls ---------- */
+.dates{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0}
+.field label{display:block;font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.field input[type=date]{width:100%;font:inherit;font-family:"DM Mono",monospace;font-size:14px;padding:8px 10px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:var(--radius)}
+.field .hint{font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.35}
+.field .hint.good{color:var(--ok)}
+
+/* ---------- presets ---------- */
+.presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px;margin:6px 0 22px}
+.preset{text-align:left;background:var(--surface);border:1px solid var(--rule);padding:12px 13px;border-radius:var(--radius);transition:border-color var(--dur),transform var(--dur),box-shadow var(--dur)}
+.preset:hover{border-color:var(--ink-3);transform:translateY(-1px);box-shadow:var(--shadow)}
+.preset[aria-pressed=true]{border-color:var(--ink);border-width:2px;padding:11px 12px;background:var(--surface-2)}
+.preset .pname{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:15.5px;letter-spacing:-.01em;display:block}
+.preset .pdesc{font-size:13px;color:var(--ink-2);line-height:1.4;margin:4px 0 8px;font-weight:300}
+.preset .pstats{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid var(--rule-2);padding-top:7px}
+
+/* ---------- workbench ---------- */
+.bench{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;margin-bottom:22px}
+.stack{display:grid;gap:14px;align-content:start}
+@media (max-width:900px){.bench{grid-template-columns:1fr}}
+
+/* budget meter */
+.meter{margin-bottom:14px}
+.meter-top{display:flex;justify-content:space-between;align-items:baseline;font-family:"DM Mono",monospace;font-size:12px;margin-bottom:6px}
+.meter-top b{font-size:20px;font-weight:500;font-family:"Bricolage Grotesque",sans-serif}
+.meter-bar{height:9px;background:var(--surface-2);border:1px solid var(--rule);border-radius:99px;overflow:hidden;display:flex}
+.meter-fill{background:var(--accent);transition:width var(--dur) cubic-bezier(.4,0,.2,1)}
+.meter-over{background:var(--alert)}
+.meter-msg{font-size:13px;margin-top:7px;line-height:1.4}
+.meter-msg.over{color:var(--alert)}
+.meter-msg.under{color:var(--ink-2)}
+.meter-msg.ok{color:var(--ok)}
+
+/* stepper rows */
+.brow{display:grid;grid-template-columns:14px 1fr auto auto;gap:9px;align-items:center;padding:9px 0;border-top:1px solid var(--rule-2)}
+.brow:first-of-type{border-top:0}
+.brow.flash{animation:flash .85s ease-out}
+@keyframes flash{0%{background:#f5e2b8}100%{background:transparent}}
+.bswatch{width:10px;height:26px;border-radius:1px}
+.bname{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15px;letter-spacing:-.01em;line-height:1.15}
+.bmeta{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);margin-top:2px}
+.bmeta.warn{color:var(--warn)}
+.stepper{display:flex;align-items:center;gap:2px}
+.stepper button{width:28px;height:28px;border:1px solid var(--rule);background:var(--surface);border-radius:var(--radius);line-height:1;font-size:15px;display:grid;place-items:center;transition:background var(--dur),border-color var(--dur)}
+.stepper button:hover:not(:disabled){background:var(--surface-2);border-color:var(--ink-3)}
+.stepper button:disabled{opacity:.3;cursor:not-allowed}
+.stepper .n{width:30px;text-align:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:17px}
+.lockbtn{width:28px;height:28px;border:1px solid var(--rule);background:var(--surface);border-radius:var(--radius);display:grid;place-items:center;font-size:13px;opacity:.45;transition:opacity var(--dur),background var(--dur)}
+.lockbtn[aria-pressed=true]{opacity:1;background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.bfixed{font-family:"DM Mono",monospace;font-size:12px;color:var(--ink-3);padding-right:4px}
+
+/* satellites */
+.sats{display:grid;gap:7px}
+.sat{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:9px 10px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--surface);transition:border-color var(--dur),background var(--dur);text-align:left;width:100%}
+.sat:hover{border-color:var(--ink-3)}
+.sat[aria-pressed=true]{border-color:var(--ink);background:var(--surface-2)}
+.sat .box{width:15px;height:15px;border:1.5px solid var(--ink-3);border-radius:2px;margin-top:3px;display:grid;place-items:center;font-size:11px;color:transparent}
+.sat[aria-pressed=true] .box{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.sat .sname{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:14px;letter-spacing:-.01em}
+.sat .swhy{font-size:12.5px;color:var(--ink-2);line-height:1.35;margin-top:2px;font-weight:300}
+.sat .scost{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);margin-top:4px}
+.sat .scost.free{color:var(--ok)}
+
+/* metrics */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.mcell{background:var(--surface);padding:11px 12px}
+.mcell .v{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:25px;line-height:1;letter-spacing:-.03em;font-stretch:88%}
+.mcell .v small{font-size:13px;font-weight:600;color:var(--ink-3);letter-spacing:0}
+.mcell .k{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-top:5px}
+.mcell.amber .v{color:var(--warn)}
+
+.leglist{margin-top:12px;font-size:13px}
+.legrow{display:grid;grid-template-columns:auto 1fr auto;gap:9px;padding:6px 0;border-top:1px solid var(--rule-2);align-items:baseline}
+.legrow .ldate{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3);white-space:nowrap}
+.legrow .lroute{line-height:1.3}
+.legrow .lnum{font-family:"DM Mono",monospace;font-size:11px;white-space:nowrap}
+.legrow.long .lnum{color:var(--warn);font-weight:500}
+.legrow .peak{color:var(--e4);font-size:10.5px}
+
+/* warnings */
+.warns{display:grid;gap:8px;margin:0 0 22px}
+.warn-item{border-left:3px solid var(--warn);background:var(--surface);padding:10px 14px;font-size:14px;line-height:1.45}
+.warn-item.alert{border-left-color:var(--alert)}
+.warn-item.info{border-left-color:var(--accent)}
+.warn-item b{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:13.5px;display:block;margin-bottom:2px;letter-spacing:-.01em}
+.warn-item .src{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+
+/* ---------- explorer ---------- */
+.section-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:8px;margin:34px 0 16px}
+.section-head h2{font-size:clamp(21px,3vw,30px);font-stretch:90%}
+.section-head p{margin:0;font-size:13.5px;color:var(--ink-3);max-width:52ch}
+
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;align-items:center}
+.tag{font-family:"DM Mono",monospace;font-size:11px;padding:4px 9px;border:1px solid var(--rule);background:var(--surface);border-radius:99px;letter-spacing:.03em;transition:all var(--dur)}
+.tag:hover{border-color:var(--ink-3)}
+.tag[aria-pressed=true]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tag.clear{border-style:dashed}
+
+.basegroup{margin-bottom:26px}
+.basegroup > h3{font-size:19px;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:9px;margin-bottom:3px}
+.basegroup > h3 .swatch{width:11px;height:20px;border-radius:1px}
+.basegroup > .gmeta{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3);margin-bottom:10px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--rule);padding:13px 14px;display:flex;flex-direction:column;gap:7px;transition:border-color var(--dur)}
+.card:hover{border-color:var(--ink-3)}
+.card.picked{border-color:var(--ink);border-width:2px;padding:12px 13px;background:var(--surface-2)}
+.card h4{font-size:15.5px;font-weight:700;letter-spacing:-.015em;line-height:1.2}
+.card .ctype{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.card .cdesc{font-size:14px;line-height:1.45;font-weight:300;color:var(--ink-2)}
+.card .cunc{font-size:13px;line-height:1.4;border-left:2px solid var(--rule);padding-left:8px;color:var(--ink-2);font-style:italic}
+.card .coct{font-family:"DM Mono",monospace;font-size:11px;line-height:1.45;background:var(--surface-2);border:1px solid var(--rule-2);padding:7px 8px;border-radius:2px}
+.card.picked .coct{background:var(--surface)}
+.card .coct b{font-weight:500;letter-spacing:.05em}
+.card .coct.unver{border-color:var(--warn);color:var(--warn)}
+.card .cfoot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:auto;padding-top:5px}
+.card .ctags{display:flex;flex-wrap:wrap;gap:4px}
+.card .ctags i{font-style:normal;font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.05em;color:var(--ink-3);border:1px solid var(--rule-2);padding:1px 5px;border-radius:99px}
+.card .cmeta{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.addbtn{font-family:"DM Mono",monospace;font-size:11px;padding:5px 11px;border:1px solid var(--ink-3);background:var(--surface);border-radius:99px;transition:all var(--dur);white-space:nowrap}
+.addbtn:hover{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.card.picked .addbtn{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.booklink{font-family:"DM Mono",monospace;font-size:10.5px;text-decoration:none;border-bottom:1px solid currentColor}
+.bookflag{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--alert);border:1px solid var(--alert);padding:1px 5px;border-radius:99px}
+
+/* ---------- day plan ---------- */
+.plan{display:grid;gap:0;border-top:1px solid var(--rule)}
+.planbase{border-bottom:1px solid var(--rule);padding:14px 0;display:grid;grid-template-columns:150px 1fr;gap:18px}
+@media (max-width:640px){.planbase{grid-template-columns:1fr;gap:6px}}
+.planbase .pleft .pdate{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink-3);line-height:1.5}
+.planbase .pleft .pname{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:17px;letter-spacing:-.015em;display:flex;align-items:center;gap:7px}
+.planbase .pleft .pname .swatch{width:9px;height:17px;border-radius:1px}
+.planbase .pnights{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3);margin-top:3px}
+.travel{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--rule-2);padding:6px 10px;margin-bottom:9px;border-radius:2px}
+.travel.long{border-color:var(--warn);color:var(--warn)}
+.planitems{display:grid;gap:6px}
+.planitem{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:14px;align-items:baseline;padding:4px 0;border-bottom:1px dotted var(--rule-2)}
+.planitem .pi-name{font-weight:400}
+.planitem .pi-meta{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);white-space:nowrap}
+.planitem .rm{border:0;background:none;color:var(--ink-3);font-size:14px;padding:0 4px;line-height:1}
+.planitem .rm:hover{color:var(--alert)}
+.empty{font-size:13.5px;color:var(--ink-3);font-style:italic}
+
+/* ---------- actions ---------- */
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin:22px 0 12px}
+.btn{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:14px;padding:9px 17px;border:1.5px solid var(--ink);background:var(--surface);border-radius:var(--radius);transition:all var(--dur)}
+.btn:hover{background:var(--ink);color:var(--surface)}
+.btn.primary{background:var(--ink);color:var(--surface)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent)}
+dialog{border:1.5px solid var(--ink);background:var(--surface);max-width:840px;width:calc(100% - 32px);padding:0;border-radius:var(--radius);color:var(--ink)}
+dialog::backdrop{background:rgba(22,33,31,.5)}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--rule)}
+.dlg-head h3{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+dialog textarea{width:100%;height:56vh;border:0;border-top:0;padding:14px 16px;font-family:"DM Mono",monospace;font-size:12px;line-height:1.6;resize:vertical;background:var(--surface);color:var(--ink)}
+dialog textarea:focus{outline:none}
+
+footer{border-top:2px solid var(--ink);margin-top:34px;padding:18px 0 44px;font-size:12.5px;color:var(--ink-3);line-height:1.6}
+footer .mono{font-size:11px}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);background:var(--ink);color:var(--surface);padding:9px 17px;border-radius:99px;font-family:"DM Mono",monospace;font-size:12px;opacity:0;pointer-events:none;transition:opacity var(--dur),transform var(--dur);z-index:99}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- print ---------- */
+@media print{
+  :root{--paper:#fff;--surface:#fff;--surface-2:#fff;--rule:#bbb;--rule-2:#ddd}
+  body{font-size:10.5pt}
+  .presets,.filters,.explorer,.actions,.sats,.hero-head .note,.lockbtn,.stepper button,.addbtn,dialog,.toast{display:none !important}
+  .bench{grid-template-columns:1fr 1fr;gap:12px}
+  .mast{padding-top:0;page-break-after:avoid}
+  .planbase{page-break-inside:avoid}
+  #transect{border:1px solid #bbb}
+  .card{break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+  .panel{border:1px solid #ccc}
+  footer{page-break-inside:avoid}
+}
+</style>
+
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="kicker">Road trip planner &middot; October 2026 &middot; two travellers, one car</div>
+    <h1>Biscay to Mediterranean</h1>
+    <p class="sub">Bilbao to Barcelona over roughly nineteen nights, with twelve hours of unavoidable driving. This tool exists to answer one question: how many nights where, and what does each one cost somewhere else.</p>
+    <div class="routestrip" id="routestrip"></div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-head">
+      <h2>The transect</h2>
+      <div class="note">width&nbsp;=&nbsp;nights &middot; height&nbsp;=&nbsp;elevation &middot; ramps&nbsp;=&nbsp;driving days</div>
+    </div>
+    <svg id="transect" role="img" aria-labelledby="transect-desc"></svg>
+    <p id="transect-desc" class="sr"></p>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section class="dates" aria-label="Trip dates">
+    <div class="field">
+      <label for="f-arrive">Land at Bilbao</label>
+      <input type="date" id="f-arrive" min="2026-10-05" max="2026-10-20">
+      <div class="hint" id="hint-arrive"></div>
+    </div>
+    <div class="field">
+      <label for="f-target">Target Barcelona arrival</label>
+      <input type="date" id="f-target" min="2026-10-15" max="2026-11-01">
+      <div class="hint">Sets the night budget. The plan below shows where you <em>actually</em> arrive.</div>
+    </div>
+    <div class="field">
+      <label for="f-cruise">Cruise departs</label>
+      <input type="date" id="f-cruise" min="2026-10-20" max="2026-11-10">
+      <div class="hint">Barcelona nights are whatever falls between arriving and sailing.</div>
+    </div>
+  </section>
+
+  <section aria-label="Itinerary presets">
+    <div class="section-head" style="margin-top:8px">
+      <h2>Six ways to spend it</h2>
+      <p>Each preset is a philosophy, not just a set of numbers. Load one, then edit freely — nothing is locked in.</p>
+    </div>
+    <div class="presets" id="presets"></div>
+  </section>
+
+  <div class="bench">
+   <div class="stack">
+    <div class="panel">
+      <h3>Night allocator</h3>
+      <div class="meter">
+        <div class="meter-top">
+          <span><b id="m-alloc">0</b> <span class="mono">of <span id="m-budget">0</span> nights placed</span></span>
+          <span class="mono" id="m-spare"></span>
+        </div>
+        <div class="meter-bar"><div class="meter-fill" id="m-fill" style="width:0"></div><div class="meter-over" id="m-overfill" style="width:0"></div></div>
+        <div class="meter-msg" id="m-msg"></div>
+      </div>
+      <div id="rows"></div>
+    </div>
+    <div class="panel">
+      <h3>Optional bases</h3>
+      <div class="sats" id="sats"></div>
+    </div>
+   </div>
+
+   <div class="stack">
+    <div class="panel">
+      <h3>Running totals</h3>
+      <div class="mgrid" id="metrics"></div>
+      <div class="leglist" id="legs"></div>
+    </div>
+    <div class="warns" id="warns"></div>
+   </div>
+  </div>
+
+  <section class="explorer">
+    <div class="section-head">
+      <h2>What to actually do</h2>
+      <p>Every entry carries a verified October 2026 operating status. Add anything to the plan; it appears in the day-by-day and the export.</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div id="explorer"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Day by day</h2>
+      <p>Built from your allocation and shortlist.</p>
+    </div>
+    <div class="plan" id="plan"></div>
+    <div class="actions">
+      <button class="btn primary" id="btn-export">Export Markdown</button>
+      <button class="btn" id="btn-share">Copy shareable link</button>
+      <button class="btn" id="btn-print">Print / PDF</button>
+      <button class="btn" id="btn-reset">Reset</button>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>On the research.</b> October operating status was verified against official sources where reachable. Entries marked <span class="mono">UNVERIFIED</span> are ones where the official site could not be read directly — treat those as "phone before you drive". Distances and drive times are typical-conditions estimates for planning, not routing output. Toll figures are 2026 published car rates where confirmed; treat the running total as an order of magnitude.</p>
+    <p class="mono">Accommodation is deliberately out of scope. No hotels here, by design.</p>
+  </footer>
+</div>
+
+<dialog id="dlg">
+  <div class="dlg-head"><h3 id="dlg-title">Markdown export</h3><button class="btn" id="dlg-close">Close</button></div>
+  <textarea id="dlg-text" spellcheck="false" aria-label="Markdown export"></textarea>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* ================================================================
+   DATA — everything editable lives here. Logic starts at ENGINE.
+   ================================================================ */
+
+const DATA = {
+
+/* ---- BASES ------------------------------------------------------
+   order  = position in the route. Satellites slot in by geography.
+   elev   = metres, drives the transect and the colour band.
+   min    = hard floor in nights. rec = recommended range.
+   outdoor= counts toward the "nights based outdoors" metric.
+------------------------------------------------------------------ */
+bases: [
+ {id:"bilbao", name:"Bilbao", country:"ES", order:10, elev:19, lat:43.263, lon:-2.935,
+  core:true, min:1, rec:[2,3], outdoor:false,
+  recWhy:"Two nights covers the reopened Bellas Artes and one day out to Urdaibai or Gorbeia. One night means you see a city and none of Bizkaia."},
+
+ {id:"rioja", name:"Rioja Alavesa", sub:"Laguardia", country:"ES", order:12, elev:635, lat:42.553, lon:-2.583,
+  core:false, min:1, rec:[1,2], outdoor:true,
+  recWhy:"Baigorri shuts Sun–Mon, Remelluri is Tue–Sat by appointment. Two nights is what it takes to fit two cellars and the dolmen half-day.",
+  satWhy:"A walled hill town that empties at 18:00 when the day coaches leave. Doing these cellars from Bilbao is a 2h40 round trip on a tasting day — a bad idea.",
+  costNote:"Rioja sits south; the Basque coast sits north. Enabling both routes you Bilbao → Laguardia → Getaria, which is the sane order."},
+
+ {id:"basque-coast", name:"Basque Coast", sub:"Getaria / Zumaia", country:"ES", order:14, elev:12, lat:43.297, lon:-2.255,
+  core:false, min:1, rec:[1,2], outdoor:true,
+  recWhy:"The flysch platform at Sakoneta is only walkable near low water, and in late October that often falls early morning or dusk. You need to be sleeping nearby.",
+  satWhy:"Working fishing ports with genuine off-season life. Txomin Etxaniz, the Balenciaga archive and the GR-121 trailhead are all inside ten minutes."},
+
+ {id:"san-sebastian", name:"San Sebastián", country:"ES", order:20, elev:6, lat:43.318, lon:-1.981,
+  core:true, min:1, rec:[3,4], outdoor:false,
+  recWhy:"Three nights gets a cooking class, a night in Gros and a day on the coast without rushing any of them."},
+
+ {id:"french-basque", name:"French Basque", sub:"Sare / Espelette", country:"FR", order:22, elev:70, lat:43.312, lon:-1.578,
+  core:false, min:1, rec:[2,3], outdoor:true,
+  recWhy:"La Rhune's first train, Zugarramurdi, Irouléguy and Saint-Jean-Pied-de-Port do not compress into one day.",
+  satWhy:"Sits almost on the San Sebastián→Bordeaux line. If you can be here on 24–25 October you can walk into the Fête du Piment instead of driving into a closed village.",
+  costNote:"Barely off the direct line — one of the two cheapest satellites on the route."},
+
+ {id:"arcachon", name:"Arcachon Basin", sub:"Cap Ferret", country:"FR", order:26, elev:5, lat:44.658, lon:-1.168,
+  core:false, min:1, rec:[1,2], outdoor:true,
+  recWhy:"Two nights splits ocean side and bay side. One forces a choice between the dune and the oyster villages.",
+  satWhy:"October is genuinely the right month here, not a compromise: peak autumn swell, peak bird passage at Le Teich, oysters in season, and the dune without the summer crowd.",
+  costNote:"Nearly free — it sits just off the A63 you would drive anyway."},
+
+ {id:"bordeaux", name:"Bordeaux", country:"FR", order:30, elev:6, lat:44.837, lon:-0.579,
+  core:true, min:1, rec:[3,4], outdoor:false,
+  recWhy:"One day right-bank, one day in the city, one spare. Fewer than three and the Castillon estates get cut."},
+
+ {id:"dordogne", name:"Dordogne & Lot", sub:"Sarlat", country:"FR", order:34, elev:145, lat:44.889, lon:1.216,
+  core:false, min:2, rec:[3,4], outdoor:true,
+  recWhy:"Three nights is the floor that justifies the detour: one cave day, one river or garden day, one for the Lot on the way out.",
+  satWhy:"Padirac, Pech Merle and Rouffignac all close on 1 November — this window is the last week of their season. Font-de-Gaume is 78 people a day and the hardest ticket in France.",
+  costNote:"The one genuinely expensive detour. Route out via Cahors, not back the way you came."},
+
+ {id:"toulouse", name:"Toulouse", country:"FR", order:40, elev:146, lat:43.605, lon:1.444,
+  core:true, min:1, rec:[2,3], outdoor:false,
+  recWhy:"Two nights covers the Halle de La Machine and either the Airbus line or a Gaillac day."},
+
+ {id:"ariege", name:"Ariège", sub:"Tarascon / Foix", country:"FR", order:44, elev:480, lat:42.845, lon:1.605,
+  core:false, min:1, rec:[2,3], outdoor:true,
+  recWhy:"One cave day plus one mountain-road day. Three if you want Bethmale and the Couserans beech valleys, which are 1h30 west.",
+  satWhy:"The strongest satellite on the route and it costs nothing. Niaux runs daily only to 31 October; Bédeilhac to 1 November. This is the last of the season.",
+  costNote:"Sits directly on the N20 you would drive anyway. Breaking the leg here is faster than the single push."},
+
+ {id:"vall-de-boi", name:"Vall de Boí", sub:"Aigüestortes", country:"ES", order:46, elev:1500, lat:42.518, lon:0.847,
+  core:false, min:2, rec:[2,3], outdoor:true,
+  recWhy:"Two nights minimum — one weather day is not optional at 1,500 m in late October.",
+  satWhy:"Nine UNESCO Romanesque churches and the only national park in Catalonia. Spectacular and genuinely uncommon.",
+  costNote:"The expensive one. It sits west of Andorra, so it only makes sense reached from Toulouse via the Val d'Aran, not backtracked from Andorra."},
+
+ {id:"andorra", name:"Andorra", sub:"la Vella", country:"AD", order:50, elev:1023, lat:42.507, lon:1.521,
+  core:true, min:1, rec:[2,3], outdoor:true,
+  recWhy:"Two nights means one weather day and no hiking day. Madriu needs a full clear day on its own."},
+
+ {id:"cerdanya", name:"Cerdanya", sub:"Puigcerdà", country:"ES", order:54, elev:1202, lat:42.432, lon:1.928,
+  core:false, min:1, rec:[1,2], outdoor:true,
+  recWhy:"One night is enough unless the Núria railway is running, in which case take two.",
+  satWhy:"A high sunlit basin with Llívia, a Spanish enclave marooned inside France, sitting in the middle of it.",
+  costNote:"Leaves Andorra eastward over Envalira, then drops to Barcelona through the Cadí."},
+
+ {id:"penedes", name:"Penedès", sub:"Sant Sadurní", country:"ES", order:57, elev:218, lat:41.346, lon:1.699,
+  core:false, min:1, rec:[1,2], outdoor:false,
+  recWhy:"One night is plenty. Two if you want both Recaredo and Gramona without hurrying either.",
+  satWhy:"Grower sparkling wine that needs booked, unhurried, mid-week visits. Staying over also removes the drink-driving problem on your last day.",
+  costNote:"Montserrat does not justify a base — it justifies a dawn stop on the drive down."},
+
+ {id:"barcelona", name:"Barcelona", country:"ES", order:60, elev:12, lat:41.385, lon:2.173,
+  core:true, terminal:true, min:0, rec:[2,3], outdoor:false,
+  recWhy:"Whatever falls between rolling into the city and the ship sailing."}
+],
+
+/* ---- LEGS -------------------------------------------------------
+   km / h are typical-conditions estimates. peak = highest point in
+   metres, drawn on the transect. toll = 2026 car estimate in EUR.
+   Anything not listed falls back to a great-circle estimate.
+------------------------------------------------------------------ */
+legs: {
+ "bilbao>san-sebastian":      {km:100, h:1.08, toll:6,  road:"AP-8"},
+ "bilbao>rioja":              {km:111, h:1.32, toll:9,  road:"AP-68", peak:600},
+ "bilbao>basque-coast":       {km:85,  h:1.08, toll:4,  road:"AP-8 / N-634"},
+ "rioja>san-sebastian":       {km:163, h:1.90, toll:12, road:"A-1 / AP-1", peak:600},
+ "rioja>basque-coast":        {km:145, h:1.83, toll:9,  road:"A-1 / AP-8", peak:600},
+ "basque-coast>san-sebastian":{km:30,  h:0.58, toll:3,  road:"N-634"},
+ "san-sebastian>bordeaux":    {km:280, h:2.75, toll:24, road:"AP-8 / A63"},
+ "san-sebastian>french-basque":{km:45, h:0.83, toll:2,  road:"N-121 / D4"},
+ "french-basque>bordeaux":    {km:250, h:2.50, toll:18, road:"A63"},
+ "french-basque>arcachon":    {km:195, h:2.00, toll:14, road:"A63"},
+ "san-sebastian>arcachon":    {km:235, h:2.33, toll:20, road:"AP-8 / A63"},
+ "arcachon>bordeaux":         {km:65,  h:0.83, toll:0,  road:"A660"},
+ "bordeaux>toulouse":         {km:245, h:2.50, toll:23, road:"A62"},
+ "bordeaux>dordogne":         {km:205, h:2.33, toll:12, road:"A89 / D710"},
+ "dordogne>toulouse":         {km:204, h:2.80, toll:3,  road:"D820 via Cahors"},
+ "toulouse>andorra":          {km:185, h:2.83, toll:14, road:"A66 / N20", peak:2408, peakName:"Port d'Envalira"},
+ "toulouse>ariege":           {km:105, h:1.33, toll:6,  road:"A66 / N20"},
+ "toulouse>vall-de-boi":      {km:215, h:3.00, toll:8,  road:"A64 / Vielha tunnel", peak:1630, peakName:"Vielha tunnel"},
+ "ariege>andorra":            {km:86,  h:1.42, toll:8,  road:"N20", peak:2408, peakName:"Port d'Envalira"},
+ "ariege>vall-de-boi":        {km:290, h:4.20, toll:8,  road:"A64 / Vielha tunnel", peak:1630, peakName:"Vielha tunnel"},
+ "vall-de-boi>andorra":       {km:175, h:2.83, toll:0,  road:"N-260 via Sort", peak:1310, peakName:"Coll de Nargó"},
+ "andorra>barcelona":         {km:200, h:3.00, toll:15, road:"N-145 / C-16", peak:1220, peakName:"Túnel del Cadí"},
+ "andorra>cerdanya":          {km:60,  h:1.17, toll:0,  road:"N-260 via La Seu"},
+ "cerdanya>barcelona":        {km:150, h:2.50, toll:0,  road:"Collada de Toses / C-17", peak:1800, peakName:"Collada de Toses"},
+ "andorra>penedes":           {km:250, h:3.50, toll:22, road:"C-16 / AP-7", peak:1220, peakName:"Túnel del Cadí"},
+ "cerdanya>penedes":          {km:195, h:3.00, toll:12, road:"C-17 / AP-7", peak:1800, peakName:"Collada de Toses"},
+ "penedes>barcelona":         {km:55,  h:0.83, toll:4,  road:"AP-7 / C-32"}
+},
+
+/* ---- CONTEXTUAL WARNINGS ---------------------------------------
+   `on` decides when it shows: "always", a base id, or "leg:a>b".
+------------------------------------------------------------------ */
+warnings: [
+ {on:"andorra", level:"alert", title:"Andorra must be named on the rental agreement",
+  body:"Andorra is outside the EU and the crossing is an international border. All four majors permit it from a Spanish pickup, but only with written authorisation: Hertz charges a flat €30 with a €600 penalty for undeclared cross-border use, Sixt bills roughly €8 per day — a materially different number over nineteen days. Standard cover does not extend automatically. France is a separate permission from Andorra: get both countries printed on the agreement at the counter, not agreed verbally.",
+  src:"Verified against Hertz Spain rental terms and the Sixt ES terms PDF, 2026."},
+
+ {on:"leg:toulouse>andorra", level:"warn", title:"Port d'Envalira, 2,408 m — have the tunnel as plan B",
+  body:"You cross Envalira on the way in from Toulouse, not on the way out. The pass is the highest paved road in the Pyrenees and closes at short notice on snowfall; the Envalira tunnel at 2,080 m is the all-weather alternative, €8.10 for a car in 2026. Andorra's winter tyre-or-chains mandate runs 1 Nov – 15 May with a €180 fine, so it ends two days after you leave and does not legally apply — which is irrelevant to the weather. Snow at 2,408 m in late October is routine, not freakish. Check mobilitat.ad the morning you cross.",
+  src:"Verified: tuneldenvalira.com 2026 tariff, Andorran winter equipment regulation."},
+
+ {on:"leg:ariege>andorra", level:"warn", title:"Port d'Envalira, 2,408 m — have the tunnel as plan B",
+  body:"Same crossing, shorter run-up. The pass closes without warning on snowfall; the tunnel at 2,080 m is €8.10 and open year-round. The winter tyre mandate starts 1 November, just after you leave — which changes the law, not the weather. Check mobilitat.ad before committing to the pass.",
+  src:"Verified: tuneldenvalira.com 2026 tariff."},
+
+ {on:"leg:andorra>barcelona", level:"warn", title:"Customs at La Farga de Moles — budget the slack",
+  body:"Every vehicle passes the post and is subject to inspection; officers check tobacco systematically, though not every boot is opened. Allowances are per adult and not poolable: 300 cigarettes, 1.5 L spirits over 22%, 5 L still wine, 12 L beer each. A weekday crossing in late October should run 15–30 minutes. A Sunday afternoon can hit 90. Build it into the day, especially if you are driving on to Barcelona the same afternoon.",
+  src:"Verified: Andorran Chamber of Commerce duty-free allowances."},
+
+ {on:"always", level:"warn", title:"Crit'Air sticker — order it before you fly",
+  body:"France voted to abolish low-emission zones in April 2026, but the Conseil constitutionnel struck that provision down on 21 May, so the Bordeaux and Toulouse ZFEs remain in force. A Spanish-plated rental is a foreign-registered vehicle and needs a Crit'Air sticker ordered in advance from the official French site — the rental company will not supply one. Bordeaux only restricts Crit'Air 5 and unclassified, so a modern rental can enter, but the sticker must be displayed. Fines start around €68 and get passed on.",
+  src:"Verified: Conseil constitutionnel decision, 21 May 2026."},
+
+ {on:"always", level:"info", title:"AP-8 is not free, and there is a direct flight",
+  body:"Two corrections to the earlier plan. The Basque AP-8 still charges cars — new tariffs took effect 1 January 2026 — so budget €10–15 Bilbao to the French border rather than nothing. And Budapest to Bilbao is not connection-only: Wizz Air flies it nonstop in about three hours, Tuesdays, Thursdays and Saturdays. In your window that makes Tuesday 13 October a direct, while the 11th and 12th need a stop via Barcelona or Milan. Arriving on the 13th costs two nights but removes a connection.",
+  src:"Verified: Bidegi 2026 AP-8 tariffs; Wizz Air W62413 schedule."}
+],
+
+/* ---- PRESETS ----------------------------------------------------
+   nights: base id → nights. Bases not listed are disabled.
+------------------------------------------------------------------ */
+presets: [
+ {id:"balanced", name:"Balanced", desc:"The sane default. Two satellites that cost almost nothing, and enough time at each core base to stop looking at the clock.",
+  nights:{bilbao:2, "san-sebastian":4, "french-basque":2, bordeaux:4, toulouse:2, ariege:2, andorra:3},
+  picks:["oma","otzarreta","mimo","rhune","espelette","capucins","castillon","machine","niaux","corniches","madriu","tristaina"]},
+
+ {id:"fewest", name:"Fewest moves", desc:"Five bases, five drives, nothing under three nights. You stop unpacking and start recognising people in the bakery.",
+  nights:{bilbao:3, "san-sebastian":4, bordeaux:4, toulouse:3, andorra:5},
+  picks:["bellasartes","kafe","otzarreta","mimo","gros","chillida","capucins","rocher","ecole","machine","victorhugo","madriu","sorteny","caldea"]},
+
+ {id:"mountain", name:"Mountain-weighted", desc:"Maximum Pyrenean time. Ariège caves, Andorran high valleys and the Cerdanya on the way down. Accepts thin city time.",
+  nights:{bilbao:2, "san-sebastian":3, bordeaux:2, toulouse:1, ariege:3, andorra:5, cerdanya:3},
+  picks:["otzarreta","urkiola","niaux","bedeilhac","lers","corniches","bethmale","madriu","tristaina","sorteny","comapedrosa","nuria","llivia","dorres"]},
+
+ {id:"atlantic", name:"Atlantic-weighted", desc:"Coast, swell, oysters and flysch. Three ocean satellites and a fast run over the mountains at the end.",
+  nights:{bilbao:2, "basque-coast":2, "san-sebastian":4, "french-basque":2, arcachon:2, bordeaux:3, toulouse:1, andorra:3},
+  picks:["mundaka","gaztelugatxe","flyschwalk","txomin","balenciaga","elantxobe","albaola","rhune","pilat","oysters","phare","teich","surf"]},
+
+ {id:"wine", name:"Wine spine", desc:"Rioja Alavesa, the Bordeaux satellites, Irouléguy, Cahors Malbec and grower cava. One appellation per base, all the way down.",
+  nights:{bilbao:1, rioja:2, "basque-coast":1, "san-sebastian":2, "french-basque":2, bordeaux:3, dordogne:3, toulouse:1, andorra:2, penedes:2},
+  picks:["ysios","baigorri","remelluri","fabulista","txomin","irouleguy","castillon","ecole","capucins","cahors","plageoles","recaredo","gramona","canrafols"]},
+
+ {id:"maximalist", name:"Detour maximalist", desc:"Every satellite that survives the editorial cut, at the price of a driving day roughly every other day. For people who like the car.",
+  nights:{bilbao:1, rioja:1, "basque-coast":1, "san-sebastian":2, "french-basque":2, arcachon:1, bordeaux:2, dordogne:3, toulouse:1, ariege:2, andorra:2, cerdanya:1},
+  picks:["oma","ysios","flyschwalk","mimo","rhune","espelette","pilat","oysters","castillon","padirac","fontdegaume","stcirq","machine","niaux","corniches","madriu","llivia"]}
+]
+};
+
+/* ---- POIS -------------------------------------------------------
+   `oct` is the verified October 2026 operating status. Entries whose
+   oct string opens with UNVERIFIED / PARTLY / PARTIALLY render with a
+   warning border — the official source could not be read directly.
+------------------------------------------------------------------ */
+const POIS = [
+
+/* ============ BILBAO & BIZKAIA ============ */
+{id:"bellasartes", base:"bilbao", type:"museum", name:"Museo de Bellas Artes",
+ desc:"Bilbao's real art museum, shut since 2023 for Norman Foster's Agravitas extension. The full building and rehung collection reopen 5 October 2026, the museum's 115th anniversary. El Greco, Zurbarán, Gauguin, Bacon — and the best Basque painting anywhere: Zuloaga, Regoyos, Iturrino, Oteiza.",
+ uncommon:"Almost every visitor does the Guggenheim and skips this. In October 2026 it is a brand-new building nobody has seen yet.",
+ url:"https://www.museobilbao.com/", time:"2-3h", drive:"walkable",
+ oct:"VERIFIED via Basque press: full reopening 5 October 2026 with the Plácido Arango show; the new Plaza Arriaga atrium open since June. UNVERIFIED: post-reopening hours and closed days — the museum's own site was unreachable. Confirm two weeks out.",
+ booking:false, tags:["museum","culture","uncommon"]},
+
+{id:"guggenheim", base:"bilbao", type:"museum · anchor", name:"Guggenheim — for the Serra room",
+ desc:"The obvious anchor, and it earns a visit for two things: Richard Serra's The Matter of Time, eight torqued steel ellipses you walk inside, and a strong autumn slate. Skip the atrium selfie scrum, go at 10:00 on a weekday, give the Serra room an hour on its own.",
+ uncommon:"Not uncommon at all — included with a caveat. The justification is Serra plus the October programme, not the Gehry exterior.",
+ url:"https://www.guggenheim-bilbao.eus/en/exhibitions", time:"2-3h", drive:"walkable",
+ oct:"VERIFIED from the museum's 2026 programme: Steve McQueen opens 9 Oct, runs to Jan 2027; Pipilotti Rist from 1 Oct; Jasper Johns closes 12 Oct, so catchable only on the 11th-12th. Tue-Sun 10:00-19:00, CLOSED MONDAYS. Book a timed slot.",
+ booking:true, tags:["museum","culture"]},
+
+{id:"kafe", base:"bilbao", type:"live music", name:"Kafe Antzokia",
+ desc:"A 1920s cinema turned engine room of Basque-language culture since 1995. Pintxos and txakoli at the bar downstairs, a 600-capacity room upstairs running trikitixa, Basque rock, Cuban son, Afrobeat, DJs until 05:00 at weekends. Turn up without knowing the band.",
+ uncommon:"A working Basque cultural institution, not a folklore show. Almost no guidebook itinerary puts a night here.",
+ url:"https://www.kafeantzokia.eus/en/calendar/", time:"evening", drive:"walkable",
+ oct:"VERIFIED that the venue is programming through October 2026 — listings show gigs most nights. The specific 11-30 Oct line-up was not yet published in August; check the official calendar three weeks out and buy online, popular nights sell out.",
+ booking:true, tags:["music","culture","food","uncommon"]},
+
+{id:"cookbilbao", base:"bilbao", type:"cooking", name:"Private Basque cooking class",
+ desc:"The txoko — members-only gastronomic societies where Basque men have cooked for each other for 150 years — is closed without an invitation. The workable substitute is a private market-led class: shop the Ribera with the chef, then cook bacalao al pil-pil and txangurro and eat them with txakoli.",
+ uncommon:"Only if you book private and market-based. The €50 group pintxo classes are a coach-tour product and fail the test.",
+ url:"https://www.northernspaingastronomy.com/private-basque-cooking-bilbao", time:"4-5h", drive:"in city",
+ oct:"UNVERIFIED: no operator publishes a firm October 2026 calendar. These are year-round private bookings with no seasonal closure, so availability is near-certain, but you must email to fix a date. The Ribera market is closed Sunday and quiet Monday — book Tue-Sat for the market component.",
+ booking:true, tags:["cooking","food","culture"]},
+
+{id:"oma", base:"bilbao", type:"land art", name:"Bosque de Oma — the new painted forest",
+ desc:"Agustín Ibarrola painted eyes, figures and geometry across a pine stand in the 1980s; fungus killed the trees and the original closed. Between 2021 and 2023 Bizkaia migrated the whole work onto a new 10-12 ha plot minutes away — 47 painted sets, some 200 more trees than before. Figures only resolve from specific standing points.",
+ uncommon:"Most published guides still describe the dead original. This is a different, larger forest that reopened at the end of 2023.",
+ url:"https://www.bizkaia.eus/en/web/bosque-oma-basoa", time:"3h", drive:"45 min from Bilbao",
+ oct:"VERIFIED open and operating in 2026, and ADVANCE RESERVATION IS MANDATORY — for self-guided visits as well as guided ones. Guided tours reported Fri/Sat/Sun at 12:00 and 17:00. UNVERIFIED: exact October slots and whether the 17:00 guided slot survives the end of DST on 25 Oct. Free but capacity-capped; book the moment slots open.",
+ booking:true, tags:["nature","culture","car-only","uncommon","romantic"]},
+
+{id:"birdcenter", base:"bilbao", type:"wildlife station", name:"Urdaibai Bird Center",
+ desc:"A three-floor hide built into recovered marsh in the middle of the Urdaibai estuary, with scopes, live cameras and a ringing station. October is the point: this is the last freshwater stop on the western European flyway before the Bay of Biscay crossing, so ospreys, spoonbills, godwits and thousands of passerines are moving through.",
+ uncommon:"A serious ornithological research station rather than a visitor centre, and the one month it is genuinely spectacular is the month you are there.",
+ url:"https://www.birdcenter.org/en/", time:"2-3h", drive:"45 min from Bilbao",
+ oct:"PARTLY VERIFIED and sources conflict. Weekends and holidays 11:00-19:00 is confirmed for Sept-Oct. Weekday opening is reported as 11:00-16:00 by one official listing and could not be confirmed by another. CLOSED MONDAYS; €7. Phone before making a weekday trip. October is explicitly the peak autumn-passage month.",
+ booking:false, tags:["nature","ocean","car-only","uncommon"]},
+
+{id:"mundaka", base:"bilbao", type:"surf coast", name:"Mundaka rivermouth",
+ desc:"One of the two or three best left-hand barrels on earth, thrown by a sandbar at the Oka rivermouth inside a UNESCO biosphere reserve. On a clean north-west groundswell it runs several hundred metres and the whole village walks out to the Santa Katalina point to watch. October is when it wakes up after the flat summer.",
+ uncommon:"October is the season opener, not a tourist month. You are watching a surf town at work rather than visiting a viewpoint.",
+ url:"https://www.surf-forecast.com/breaks/Mundaka", time:"half day, swell-dependent", drive:"40 min from Bilbao",
+ oct:"VERIFIED seasonal pattern: Mundaka's season is October to March, groundswell dominant 65-85% of the time from October. Mid-to-late October sits at the opening of that window. Expert-only over a shallow sandbar with a strict local pecking order, and it can be flat for a week — watch from Santa Katalina and surf Laga or Bakio instead.",
+ booking:false, tags:["ocean","adventure","nature","car-only"]},
+
+{id:"elantxobe", base:"bilbao", type:"coast drive", name:"Elantxobe and the Lekeitio causeway",
+ desc:"Elantxobe is stacked vertically down the face of Cape Ogoño with no room to turn a car — the bus terminus is a turntable. Twenty minutes east, Lekeitio has a working fishing fleet and, at low water, a stone causeway you walk dry-shod to the wooded islet of San Nicolás sitting in the middle of its bay.",
+ uncommon:"The BI-3234 corniche between them is the part of the Bizkaian coast coaches cannot physically drive.",
+ url:"https://www.visitbiscay.eus/en/", time:"half day", drive:"55 min from Bilbao",
+ oct:"VERIFIED: road and villages open year-round, no seasonal closure. TIDE-DEPENDENT — the causeway to Isla de San Nicolás is only crossable around low water and the stones are slick with weed. Check Lekeitio tide times and do not linger on the flood. Park in the UPPER car park at Elantxobe; the lower village genuinely has nowhere to turn.",
+ booking:false, tags:["ocean","nature","car-only","romantic","uncommon"]},
+
+{id:"gaztelugatxe", base:"bilbao", type:"coastal walk", name:"Gaztelugatxe — the weekday workaround",
+ desc:"241 steps along a stone causeway to a hermitage on a sea stack, with a serious Atlantic swell running underneath in October. It is genuinely spectacular and genuinely overrun; the entire trick is timing. Come on an ordinary weekday, ideally at first light, and combine it with the Bakio-to-Bermeo cliff road.",
+ uncommon:"Included for the access mechanics: knowing the weekday exemption turns a bucket-list scrum into an empty morning walk.",
+ url:"https://tiketa.eus/", time:"1.5-2h", drive:"45 min from Bilbao",
+ oct:"VERIFIED for 2026: access is always FREE, but a free timed reservation is REQUIRED on autumn weekends and public holidays — in this window that means Sun 11, Mon 12 (Fiesta Nacional), Sat 17, Sun 18, Sat 24 and Sun 25 Oct. On ordinary October weekdays there is no ticket at all. Restricted days run 09:30-19:00, last entry 18:15. Go Tue-Fri and ignore the system.",
+ booking:true, tags:["ocean","hiking","nature","car-only"]},
+
+{id:"kayak", base:"bilbao", type:"paddling", name:"Kayak the Urdaibai estuary",
+ desc:"Put in near Murueta at the top of the ría and ride the tide down past sandbanks, reedbeds and oak slopes to Laida or Mundaka — two to three hours, negligible effort if the guide has read the tide table right, and the only way to see the middle of the UNESCO reserve. Operators run transfers so you paddle one way, downstream.",
+ uncommon:"Nearly all Urdaibai visitors see the estuary from a viewpoint. Being on the water at eye level with the birds is a different reserve.",
+ url:"https://urdaibai.com/kayak-de-mar-en-urdaibai-costa-vasca/", time:"half day", drive:"50 min from Bilbao",
+ oct:"UNVERIFIED — the weakest October item in this segment. Several operators run it but none publishes a confirmed October 2026 calendar. Laida Kanoak in particular is a beach-season operation likely shut or on-request by mid-October. Email a week ahead and have a wet-weather fallback. Departures are tide-locked, so you take the slot you are given.",
+ booking:true, tags:["adventure","nature","ocean","uncommon"]},
+
+{id:"gernika", base:"bilbao", type:"agricultural fair", name:"Gernikako Azken Astelehena",
+ desc:"Once a year Gernika's centre fills with 300-plus farm stalls: Gernika peppers, Idiazabal, txakoli, honey, cider, and the alubia black bean it is really about. Judging in the morning, prizes and a charity auction of half the winning cheese at midday in front of the Mercury fountain, then everyone eats. Livestock, bertsolari singers, brass.",
+ uncommon:"A working agricultural fair Basques travel for, not a heritage re-enactment — and it falls inside your dates by luck.",
+ url:"https://tourism.euskadi.eus/en/calendar-events/october-fairs-in-gernika/webtur00-evento/en/", time:"half day", drive:"35 min from Bilbao",
+ oct:"VERIFIED: Monday 26 October 2026, inside your window. Stalls roughly 09:00-15:30, prize-giving and cheese auction around midday. Free, no booking. Gernika is gridlocked by 10:00 — park on the outskirts and walk, or take the Euskotren from Bilbao-Atxuri. A smaller first-Monday fair falls 5 October.",
+ booking:false, tags:["food","culture","uncommon"]},
+
+{id:"doniene", base:"bilbao", type:"winery", name:"Doniene Gorrondona txakoli, Bakio",
+ desc:"A 16th-century caserío on terraces above Bakio, working Hondarrabi Zuri and the near-extinct red Hondarrabi Beltza. Not spritzy supermarket txakoli: barrel-fermented whites, a sparkling, a red, and grape spirit, from vines 800 m from the Atlantic. The tasting looks at the sea.",
+ uncommon:"Bizkaiko Txakolina is a tiny, mostly locally-drunk DO. Serious barrel-aged txakoli and Hondarrabi Beltza red barely leave the province.",
+ url:"https://donienegorrondona.com/visitas/", time:"2h", drive:"35 min from Bilbao",
+ oct:"PARTLY VERIFIED: harvest runs 24 Sept - 16 Oct 2026, so a visit on the 11th-16th coincides with picking — great atmosphere, but they may restrict cellar-floor access. Booking rules confirmed: prepayment proof at least 3 days ahead, visits 1-1.5h. IMPORTANT: MINIMUM GROUP SIZE IS 4, so as a couple you join an existing slot or pay for four.",
+ booking:true, tags:["wine","food","ocean","car-only","uncommon"]},
+
+{id:"otzarreta", base:"bilbao", type:"autumn woodland", name:"Hayedo de Otzarreta & the Gujuli falls",
+ desc:"Otzarreta is a pollarded beech stand on the Barazar pass where centuries of cutting left every trunk branching from the same height above a moss floor. In late October the canopy turns and the ground goes copper. Drive the far side of Gorbeia to the Gujuli falls, where the Oiardo drops over 100 m into a gorge.",
+ uncommon:"The single best autumn week of the Basque interior, entirely car-dependent. Gujuli is dry all summer and only performs in the rains.",
+ url:"https://www.euskadi.eus/parque-natural-de-gorbeia/web01-a2gorbei/es/", time:"half to full day", drive:"45 min, then 40 min on to Gujuli",
+ oct:"VERIFIED as peak season rather than a closure risk: Otzarreta's leaf turn is at its best late October, and Gujuli only has real flow in the autumn rains. Public road, free, 24/7, no gates or lifts. Weekend parking at Otzarreta fills by 10:00 in late October — go on a weekday or arrive early.",
+ booking:false, tags:["nature","hiking","car-only","romantic"]},
+
+{id:"urkiola", base:"bilbao", type:"hike", name:"Urkiola — Anboto and the Tres Cruces",
+ desc:"Limestone, not the soft green of Gorbeia. From the sanctuary car park you can do the easy Tres Cruces viewpoint, or commit to Anboto at 1,331 m via the Asuntze col — a steep, exposed ridge finish with real drop on the Atxondo side. Anboto's north face holds the cave where Mari, the pre-Christian Basque goddess, is said to live.",
+ uncommon:"A living pagan geography rather than a scenic park. Locals still speak of Mari, and the sanctuary is a Christian overlay on a much older site.",
+ url:"https://www.euskadi.eus/parque-natural-de-urkiola/web01-a2urkiol/es/", time:"half day, or 6h for Anboto", drive:"45 min from Bilbao",
+ oct:"VERIFIED: the Toki Alai centre runs the April-October schedule of 10:00-14:00 and 16:00-18:00, open through October. Park, roads and the BI-623 pass are open year-round with no gates. CAVEAT: Urkiola is notoriously fog-bound and the Anboto ridge is genuinely dangerous in wet limestone or cloud. Check the AEMET mountain forecast and keep the low route as a fallback.",
+ booking:false, tags:["hiking","nature","car-only","culture"]},
+
+{id:"encartada", base:"bilbao", type:"industrial museum", name:"La Encartada beret factory, Balmaseda",
+ desc:"A wool mill on the Cadagua that made berets from 1892 until it shut in 1992, preserved intact — hydraulic turbine, line shafting, carding machines, looms, the office ledgers, the workers' housing. Staff run the machinery. The txapela on every Basque farmer's head was largely made here, and the place still smells of lanolin and oil.",
+ uncommon:"Industrial archaeology of the most specific kind, in a valley almost no visitor drives into. Nobody goes to Balmaseda.",
+ url:"https://www.visitenkarterri.com/ver-hacer/museos/boinas-la-encartada-museoa.html", time:"2h", drive:"35 min from Bilbao",
+ oct:"VERIFIED: the summer schedule runs 1 May - 31 October, so the whole window is covered — Tue-Sat 10:00-14:00 and 16:00-19:00, Sun and holidays 10:00-14:00. CLOSED MONDAYS. €5.50. The schedule changes on 1 November, so 30 October is the last day of these hours.",
+ booking:false, tags:["museum","culture","car-only","uncommon"]},
+
+/* ============ RIOJA ALAVESA ============ */
+{id:"ysios", base:"rioja", type:"winery", name:"Bodegas Ysios",
+ desc:"Calatrava's 1999 cellar — a 200 m aluminium roof rippling against the Sierra de Cantabria, set on the axis of Laguardia so the town sits framed in the doorway. Single-estate Tempranillo only, no bought fruit. The tour goes through the barrel hall and finishes in the Salón Laguardia with the wines and Iberian charcuterie.",
+ uncommon:"The architecture is photographed constantly but very few people actually book in, and the estate-fruit-only policy makes the wines worth the 90 minutes.",
+ url:"https://www.ysios.com/", time:"2h", drive:"5 min from Laguardia",
+ oct:"PARTLY VERIFIED: published tours Mon-Sat 10:00 / 11:00 / 12:30 and Sun 10:30, €35pp for 90 min, advance booking mandatory. UNVERIFIED: October 2026 specifics or any harvest-period suspension — some Rioja cellars close tours for a week or two during vendimia. Book 3-4 weeks out and confirm by email.",
+ booking:true, tags:["wine","culture","romantic"]},
+
+{id:"baigorri", base:"rioja", type:"winery", name:"Bodegas Baigorri, Samaniego",
+ desc:"From the road it is a glass cube in a vineyard; inside, seven floors drop 30 m into the hillside and the entire process runs on gravity — no pumps anywhere. You descend level by level. The restaurant on the top floor does a tasting menu paired with their wines and looks out over the Sierra de Cantabria.",
+ uncommon:"Genuinely engineering-led rather than a signature-architect shell, and the gravity descent is a better tour than anything else in the Rioja Alavesa.",
+ url:"https://www.bodegasbaigorri.com/", time:"2h, or 4h with the menu", drive:"12 min from Laguardia",
+ oct:"PARTLY VERIFIED: Tue-Sat 10:00-18:00, CLOSED MONDAYS AND SUNDAYS. Tours 10:30-12:30 and 15:30-17:30; tour with tasting menu at 13:00 Tue-Sat. UNVERIFIED: October 2026 specifics and harvest-period changes. Plan around the Sunday/Monday closure — it is the single biggest scheduling constraint in this base.",
+ booking:true, tags:["wine","food","culture"]},
+
+{id:"remelluri", base:"rioja", type:"winery", name:"Granja Remelluri, Labastida",
+ desc:"A 14th-century monastic farm on the skirts of the Sierra de Toloño, run by Telmo and Amaia Rodríguez. Rioja's most convincing single estate: all fruit from the property, plus dolmens, a hermitage, old presses and an ethnographic collection scattered across the land. The vineyard walk through the altitude blocks is the reason to come, not the cellar.",
+ uncommon:"A château-model estate in a region built on blending bought fruit — and Telmo Rodríguez is the most interesting winemaker in northern Spain.",
+ url:"https://www.remelluri.com/", time:"2-3h", drive:"20 min from Laguardia",
+ oct:"PARTLY VERIFIED: visits Tuesday to Saturday, STRICTLY BY PRIOR APPOINTMENT — no walk-ins, and all tastings, dining and vineyard walks must be arranged in advance. UNVERIFIED: October 2026 times and whether visits pause during vendimia. Book this one first; slots are few.",
+ booking:true, tags:["wine","nature","culture","uncommon","car-only"]},
+
+{id:"fabulista", base:"rioja", type:"winery", name:"El Fabulista and the calados",
+ desc:"Laguardia's walled old town is undermined by roughly 300 medieval calados — hand-dug cellars 7 m down, originally refuges, later used for wine. El Fabulista works three linked ones under an 18th-century palace: fermentation in one, ageing in another, tasting in the third. Tiny production, grapes still foot-trodden in the street-level lagar.",
+ uncommon:"The opposite of the architect wineries — and the reason the old town bans through traffic, since heavy vehicles would collapse it.",
+ url:"https://bodegaelfabulista.com/visitas-guiadas-bodega-el-fabulista/", time:"1h", drive:"walkable in Laguardia",
+ oct:"PARTLY VERIFIED: Mon-Sat 11:30-13:00 and 17:30-19:00, Sundays mornings only. One-hour visits, booking preferred though walk-ins are sometimes taken. UNVERIFIED: October 2026 confirmation and whether the theatrical version runs on your dates. Laguardia's old town is pedestrianised — park outside the walls.",
+ booking:true, tags:["wine","culture","uncommon","romantic"]},
+
+{id:"lagunas", base:"rioja", type:"wetland & dolmen", name:"Lagunas, the Hechicera dolmen and the Balcón de la Rioja",
+ desc:"Half a day of the Rioja Alavesa that has nothing to do with cellars. The Prao de la Paul lagoon has a flat 2.5 km circuit and a hide. Ten minutes north at Elvillar, the Chabola de la Hechicera is a 5,000-year-old nine-stone dolmen standing open in a field with no fence and usually nobody there. Then drive the Puerto de Herrera for the whole Ebro valley at once.",
+ uncommon:"Neolithic burial chambers you walk into unattended, a Ramsar-grade wetland and a mountain pass viewpoint — three things nobody comes to Rioja for.",
+ url:"https://turismo.euskadi.eus/es/espacios-naturales/biotopo-protegido-complejo-lagunar-de-laguardia/webtur00-content/es/", time:"half day", drive:"5-20 min from Laguardia",
+ oct:"VERIFIED as in-season and unrestricted: a Protected Biotope with open access year-round, explicitly recommended for autumn because of higher bird numbers. The 2.5 km circuit is NOT advised in wet weather — October rain makes it muddy. Dolmen is open field access, free, 24/7. The Balcón de la Rioja viewpoint is a public road with no seasonal closure.",
+ booking:false, tags:["nature","hiking","culture","romantic","car-only","uncommon"]},
+
+/* ============ BASQUE COAST ============ */
+{id:"flyschwalk", base:"basque-coast", type:"coastal hike", name:"Deba to Zumaia flysch coast, GR-121",
+ desc:"Fourteen kilometres of clifftop over sixty million years of stacked seabed, with 600 m of ascent and real exposure. The reason to go is the detour off the GR at Sakoneta, where at low water an enormous wave-cut platform of tilted strata is exposed and you walk out onto rock laid down before the Pyrenees existed.",
+ uncommon:"Everyone photographs Itzurun beach from the car park. Almost nobody walks the platform at Sakoneta, which needs a tide table and a car.",
+ url:"https://zumaia.eus/en/tourism/what-to-do/trekking/walking-around-zumaia", time:"4-5h one way", drive:"5 min to the trailhead",
+ oct:"VERIFIED: trail open year-round, no seasonal closure. TIDE-CRITICAL and this is the whole point — the Sakoneta and Algorri platforms are only walkable around low water. Be down 60 minutes before low tide with a 30-minute exit buffer; check Zumaia tides on Puertos del Estado. October ranges are large and autumn rain leaves the slabs genuinely slippery. Boots, not trainers.",
+ booking:false, tags:["hiking","nature","ocean","car-only","uncommon"]},
+
+{id:"flyschboat", base:"basque-coast", type:"geopark boat", name:"Flysch boat, Zumaia to Deba",
+ desc:"The cliffs only resolve from the water: from a small boat you see the full vertical stack of alternating hard and soft beds, the hundred-metre palaeo-landslides, and the iridium layer that records the Cretaceous impact. A UNESCO geopark guide narrates it as geology plus the whaling and shipbuilding history of Mutriku and Deba.",
+ uncommon:"A guided geological reading of the coastline rather than a scenic cruise, and the only way to see sections the footpath cannot reach.",
+ url:"https://geoparkea.eus/en/guided-tours/flysch-tour", time:"1-2.5h", drive:"Zumaia harbour",
+ oct:"PARTLY VERIFIED and the weakest verification in this segment. Confirmed: the season runs roughly March to October, so this is the tail end; departures are weather- and sea-state dependent; a 6-passenger minimum applies; departures usually 16:30 but shift to 10:30 on some tides. UNVERIFIED: the exact 11-30 Oct 2026 sailing calendar. Phone the Zumaia Geoparkea office before building a day around it and hold the GR-121 walk as the fallback.",
+ booking:true, tags:["ocean","nature","adventure","uncommon"]},
+
+{id:"txomin", base:"basque-coast", type:"winery", name:"Txomin Etxaniz txakoli, Getaria",
+ desc:"Vines trellised high on the slope straight above the Cantabrian, farmed by the same family since 1649. Ninety minutes walked through the parcels and cellar by a family member, then Hondarrabi Zuri poured with Getaria anchovies and bonito. The wine is saline and barely nine hundred metres from the sea that made it that way.",
+ uncommon:"Txakoli is a tiny, almost entirely locally-drunk DO, and this is a working family estate you must write to, not a tasting room.",
+ url:"https://www.txominetxaniz.com/en/enoturismoa/", time:"1.5h", drive:"10 min from Zumaia",
+ oct:"VERIFIED: visits Monday to Saturday excluding public holidays, starting 11:00 and 11:30, 90 minutes, hosted by a family member. You must request via the website form and receive written confirmation — no walk-ins. IMPORTANT: this window overlaps the txakoli vendimia and harvest weeks can suspend or reschedule visits at short notice. Mon 12 Oct is a public holiday, so assume closed.",
+ booking:true, tags:["wine","food","car-only"]},
+
+{id:"balenciaga", base:"basque-coast", type:"museum", name:"Cristóbal Balenciaga Museoa, Getaria",
+ desc:"Balenciaga was a fisherman's-village tailor's son from Getaria, and the museum sits above his birthplace in a black glass box grafted onto a palace. The holdings are the actual garments — the 1957 sack dress, the envelope coats — shown as engineering: single seams, cloth held away from the body. Even without an interest in fashion the construction is astonishing.",
+ uncommon:"A serious single-designer archive in a village of 2,700 people, reached only by car and rarely busy off-season.",
+ url:"https://www.cristobalbalenciagamuseoa.com/en/visit/opening-hours-and-prices/", time:"1.5-2h", drive:"in Getaria",
+ oct:"VERIFIED from the museum's own hours page: the September-October schedule is Tuesday to Sunday 11:00-19:00, last admission 18:30, CLOSED MONDAYS. Mon 12 Oct is a Spanish national holiday — holiday-Monday opening happens at some Basque museums but is NOT confirmed here, so assume closed and plan Getaria for another day.",
+ booking:false, tags:["museum","culture","uncommon"]},
+
+/* ============ SAN SEBASTIÁN ============ */
+{id:"mimo", base:"san-sebastian", type:"cooking school", name:"Mimo Cooking School",
+ desc:"A proper teaching kitchen rather than a demo-and-eat show: five hours on the fish, offal and vegetable techniques donostiarra cooks actually use, or the shorter market-tour format where you buy at La Bretxa first and cook what looked good. Chefs work bilingually, groups stay small, and the wine poured is txakoli and Rioja Alavesa.",
+ uncommon:"A working culinary school inside a hotel kitchen, not a group herded through a rented flat.",
+ url:"https://mimo.eus/cooking-classes", time:"3-5h", drive:"walkable",
+ oct:"VERIFIED: classes run daily year-round including October — a 5h Basque cooking class, a 4h Saturday market class from 11:00, and a 3h market tour plus seasonal class from 18:00. NOTE 2026-SPECIFIC: the 'Basque Cooking: the Basics' class is NOT running in 2026. Exact October dates could not be pulled directly; book direct.",
+ booking:true, tags:["cooking","food","culture"]},
+
+{id:"txoko", base:"san-sebastian", type:"private dinner", name:"Cook and dine inside a txoko",
+ desc:"Txokos are members-only basements where Basque men have cooked for each other for a century and a half; outsiders get in only as a member's guests. You cook the meal yourself on the communal ranges, drink from the honesty-system cider barrel, and eat at long shared tables. Blunt, unphotogenic, and the most Basque room you will sit in.",
+ uncommon:"Closed to the public by definition. Commercial access exists only through a handful of member-hosted operators, and there is nothing to queue for.",
+ url:"https://www.sansebastianpintxos.com/en/other-food-wine-experiences-donostia-san-sebastian/cook-dine-at-a-gastronomic-society", time:"4h, evening", drive:"walkable",
+ oct:"UNVERIFIED for specific October 2026 dates. Structural constraints confirmed and worth planning around: txokos take no direct external bookings, availability is very limited, and most operators need a 4-person minimum, contacting you 24-48h ahead with a refund if numbers fail. For a couple this usually means joining a shared table. Enquire several weeks out.",
+ booking:true, tags:["cooking","food","culture","uncommon"]},
+
+{id:"gros", base:"san-sebastian", type:"eating and drinking", name:"The Gros pintxos circuit",
+ desc:"Across the Urumea, Gros is where the city eats when it is not performing. Bar Bergara and Hidalgo 56 do the technically ambitious end, the smaller Zabaleta and Peña bars the txakoli-and-gilda end. Prices drop, the counters are Basque-speaking, and you can stand at a bar in October without being shoulder-to-shoulder with a cruise group.",
+ uncommon:"The old town's pintxo streets are now a queueing exercise. Gros is ten minutes away and still a neighbourhood.",
+ url:"https://www.sansebastianturismoa.eus/en/", time:"evening, 2-3h", drive:"walkable",
+ oct:"Year-round, no seasonality. Practical October notes: most Gros bars take one weekday off, commonly Monday or Tuesday, and shut mid-afternoon; kitchens run roughly 13:00-15:30 and 20:00-23:00. Mon 12 Oct is Spain's Fiesta Nacional, making 10-12 Oct a domestic long weekend — the city will be full and some bars swap their closing day.",
+ booking:false, tags:["food","culture","uncommon"]},
+
+{id:"albaola", base:"san-sebastian", type:"living shipyard", name:"Albaola Itsas Kultur Faktoria, Pasaia",
+ desc:"In a shed on the Pasaia channel, shipwrights are building a full-size San Juan — the Basque whaling galleon that sank at Red Bay, Labrador, in 1565 — using sixteenth-century tools, green oak and no metal fasteners. You walk the scaffold beside it while people are working. Pair it with the little motora ferry across to Pasai Donibane.",
+ uncommon:"An archaeological experiment you can smell, not a display case. Almost no coach itinerary includes Pasaia.",
+ url:"https://albaola.org/en/useful-information/", time:"2h, plus 1-2 for Pasai Donibane", drive:"15 min from San Sebastián",
+ oct:"VERIFIED: from 1 October the winter timetable applies — Tuesday and Sunday 10:00-14:00; Wednesday to Saturday 10:00-14:00 and 15:00-18:00; CLOSED MONDAYS. Caveat: in 2025 Albaola shut from 2 November for a project changeover. No equivalent 2026 closure was found, but the changeover is annual — confirm by phone before driving out.",
+ booking:false, tags:["museum","culture","ocean","uncommon"]},
+
+{id:"chillida", base:"san-sebastian", type:"sculpture park", name:"Chillida Leku, Hernani",
+ desc:"Forty-odd Chillida works — corten steel, granite, alabaster — set loose in a beech and oak meadow around a restored sixteenth-century farmhouse. There is no route and no queue; you wander, sit on wet grass, and the pieces rust at the same rate as the leaves turn. In late October the light is low and the place is close to empty.",
+ uncommon:"A landscape you walk for two unhurried hours, not a gallery you file through.",
+ url:"https://www.museochillidaleku.com/en/visit-us/practical-information/", time:"2-3h", drive:"15 min from San Sebastián",
+ oct:"VERIFIED: October opening 10:00-18:00, CLOSED TUESDAYS except bank holidays. Minor conflict flagged — one secondary source lists an Oct-Dec 10:00-17:00 band, so if you plan to arrive after 16:00 late in the month, confirm that week's closing hour. Note Tue 13 Oct falls in your window.",
+ booking:false, tags:["culture","museum","nature","romantic"]},
+
+{id:"dabadaba", base:"san-sebastian", type:"live music", name:"Dabadaba, Egia",
+ desc:"A converted warehouse behind Tabakalera with a trackside terrace by day and a 300-capacity room by night, programming over 300 acts a year with no house style — Basque post-punk, Malian guitar, techno, flamenco, jazz. Tickets are ten to twenty euros, the crowd is local and young, and nothing about it is curated for visitors.",
+ uncommon:"The city's actual music scene. San Sebastián's famous festivals are July and September, so October is when locals reclaim it.",
+ url:"https://dice.fm/venue/dabadaba-m6p9", time:"evening", drive:"10 min walk from Gros",
+ oct:"VERIFIED that the venue is actively programming through 2026, with 60+ dated shows listed across ticketing platforms. UNVERIFIED: the specific 11-30 Oct 2026 line-up was not yet published in mid-August. Check DICE about two weeks before travel and buy then — the room is small and the better-known acts sell out.",
+ booking:true, tags:["music","culture","uncommon"]},
+
+/* ============ FRENCH BASQUE ============ */
+{id:"espelette", base:"french-basque", type:"harvest festival", name:"Fête du Piment, Espelette",
+ desc:"Every house front in Espelette is hung with drying red peppers through autumn, and on the last October weekend the village holds a confraternity festival for them: bandas playing through the streets, a producers' fair, a sung mass in Basque that blesses the harvest, then a robed parade and the naming of the Piment of the Year in the arena.",
+ uncommon:"An actual agricultural confraternity rite that happens to admit outsiders — and it falls squarely inside your dates.",
+ url:"https://www.visitbayonne.com/en/preparing-your-stay/events/all-animations/espelette/FMAAQU064FS00UBN-fete-du-piment-despelette/", time:"full day", drive:"10 min from Sare",
+ oct:"VERIFIED across multiple sources including the official Bayonne-Pays Basque listing: Saturday 24 and Sunday 25 October 2026, opening Sat 08:00, closing Sun 20:00, entry free. Sunday 10:00 solemn mass and blessing of the peppers, 12:00 induction ceremony at the arena. The village is closed to traffic and completely mobbed — park well out and walk in, or stay within walking distance.",
+ booking:false, tags:["food","culture","music","uncommon"]},
+
+{id:"rhune", base:"french-basque", type:"rack railway", name:"Le Petit Train de la Rhune",
+ desc:"An original 1924 wooden cogwheel train grinding at eight km/h up La Rhune's 905 m ridge, through pottok ponies and manech sheep to a summit straddling the border, with the Bay of Biscay on one side and the Pyrenees on the other. Ride up, then walk down one of the smugglers' paths to Sare.",
+ uncommon:"A hundred-year-old wooden train, not a cable car — and October gives clear post-frontal air with none of the August queue.",
+ url:"https://www.rhune.com/en/opening-hours-and-prices", time:"half day", drive:"5 min from Sare",
+ oct:"VERIFIED across two independent checks: running DAILY 28 March to 1 November 2026, so the entire window is covered. October is low season — ticket office 09:00-16:10, departures 09:30, 10:50, 12:10, 14:10 and 15:30. Booking is ONLINE ONLY and at least 24h ahead, or in person at the window; no phone or email. IT REGULARLY SELLS OUT, especially weekends. Summit weather is entirely separate from the coast — check the webcam first.",
+ booking:true, tags:["nature","hiking","culture","romantic","car-only"]},
+
+{id:"irouleguy", base:"french-basque", type:"winery", name:"Irouléguy — Arretxea and Ilarria",
+ desc:"France's smallest and most westerly appellation: about 250 hectares of Tannat, Cabernet Franc and Petit Courbu on red schist terraces cut into Pyrenean foothills. Arretxea has farmed biodynamically since 1993 and will walk you through soil maps and lunar calendars before pouring in an 18th-century farmhouse. Ilarria adds a three-kilometre walk through the vines.",
+ uncommon:"Almost no Irouléguy leaves the Basque Country. These are two-person estates that receive by appointment, not a wine route.",
+ url:"https://www.tourisme64.com/en/your-desires-in-the-64/gastronomy/our-vineyards/irouleguy-vineyard/", time:"2h plus drive", drive:"45 min from Sare",
+ oct:"PARTLY VERIFIED: Arretxea receives BY APPOINTMENT ONLY, stated hours 14:30-18:00. The Cave d'Irouléguy cooperative is the reliable no-appointment fallback. UNVERIFIED: specific October 2026 availability. Real risk — October is harvest and early cellar work on very steep terraces, and small growers routinely become unavailable at short notice. Email a week ahead and offer flexible days.",
+ booking:true, tags:["wine","food","nature","car-only","uncommon"]},
+
+{id:"sjpp", base:"french-basque", type:"market town", name:"Saint-Jean-Pied-de-Port on a Monday",
+ desc:"Go on the one day the town belongs to the valley rather than the Camino. Monday morning the Cize and Baïgorry producers set up along the Place des Remparts with ossau-iraty, jambon de Kintoa, honey and cider; Monday afternoon there are bare-hand pelota games at the Trinquet Garat. Walk the pink-sandstone Rue de la Citadelle and up to the 1625 ramparts after.",
+ uncommon:"Monday market plus trinquet pelota is the local week. The pilgrim-outfitter high street is what everyone else sees.",
+ url:"https://www.en-pays-basque.fr/en/territory-and-destination/saint-jean-pied-de-port-and-its-valleys/saint-jean-pied-de-port/", time:"half to full day", drive:"40 min from Sare",
+ oct:"VERIFIED as a standing weekly fixture: market every Monday morning along the Place des Remparts, year-round. In this window that is Monday 12, 19 and 26 October. UNVERIFIED: whether a specific pelota fixture is scheduled on any given Monday — the trinquet does not publish far ahead; ask at the tourist office that morning. The Citadelle ramparts walk is free and unrestricted.",
+ booking:false, tags:["food","culture","uncommon"]},
+
+{id:"zugarramurdi", base:"french-basque", type:"cave & museum", name:"Zugarramurdi caves and the Witch Museum",
+ desc:"A vast natural tunnel cut by the Infernuko erreka, where villagers were accused of holding akelarres and where the 1610 Logroño auto-da-fé sent eleven of them to be burned. The museum in the old hospital tells it as documented judicial history and local memory rather than folklore kitsch, which makes it far bleaker and better.",
+ uncommon:"A serious, unglamorous account of a real witch panic, in a Navarrese border hamlet most people drive past en route to Sare.",
+ url:"https://www.turismozugarramurdi.com/museo-de-las-brujas/", time:"2h", drive:"15 min from Sare",
+ oct:"VERIFIED: the museum opens in October 11:00-18:00, Saturdays and Sundays until 19:00, CLOSED MONDAYS, with Tuesdays shut 13:30-15:00. Last ticket 45 minutes before closing, €4.50. The cave itself is an open-air walk-through not bound by those hours. The museum reserves the right to alter hours on specific days — check the site the week before.",
+ booking:false, tags:["culture","museum","nature","car-only","uncommon"]},
+
+{id:"bidarray", base:"french-basque", type:"whitewater & ridge", name:"Bidarray — the Nive gorge and the Iparla ridge",
+ desc:"Bidarray sits between two rivers under the Iparla ridge. Ur Bizia runs the Nive gorge in rafts, hydrospeed and inflatable kayaks through grade II with grade III passages. Above the village, the GR10 climbs to the Pic d'Iparla crest — a knife-edge above vulture-patrolled cliffs falling into Spain, one of the finest ridge walks in the western Pyrenees.",
+ uncommon:"Autumn rain gives the Nive better flow than August, and the Iparla ridge sees a handful of walkers a day off-season.",
+ url:"https://www.ur-bizia.com/en", time:"half day rafting; 5-6h for the ridge", drive:"30 min from Sare",
+ oct:"VERIFIED: the Ur Bizia base operates YEAR-ROUND, closing only the last week of December, and autumn rainfall generally means better levels than late summer. The associated campsite is May-October only, which is the source of the widely-repeated 'season ends in October' claim. UNVERIFIED: exact October departure times and group minimums. The Iparla ridge is exposed with no escape once committed — turn back in cloud or wind; sunset is 19:15 early in the window and 18:40 by the 30th.",
+ booking:true, tags:["adventure","hiking","nature","car-only"]},
+
+/* ============ ARCACHON BASIN ============ */
+{id:"pilat", base:"arcachon", type:"dune · anchor", name:"Dune du Pilat",
+ desc:"Europe's tallest dune, 100 m of sand advancing over pine forest, with the Atlantic on one side and the Landes canopy on the other. It earns its place despite the fame purely through October timing: the summer crowds are gone, the light at sunset is extraordinary, and the seasonal staircase is still installed. Walk south along the crest and you lose almost everyone within twenty minutes.",
+ uncommon:"In late October you can have the southern crest essentially alone at sunset.",
+ url:"https://ladunedupilat.com/en/preparation/tariffs-and-subscriptions/", time:"2-3h", drive:"15 min south of Arcachon",
+ oct:"VERIFIED: open natural space, accessible at any hour, free on foot. Car park €7 per vehicle for 4 hours. The wooden staircase is installed April to October so it should still be in place — confirm late in the month, as removal begins at season's end. No overnight parking between 02:00 and 05:00, €50 penalty.",
+ booking:false, tags:["nature","hiking","ocean","romantic","car-only"]},
+
+{id:"oysters", base:"arcachon", type:"oyster shacks", name:"Cabanes at L'Herbe, Le Canon and Petit Piquey",
+ desc:"Thirty-odd tasting shacks are strung through ten oyster villages on the peninsula, but most shut on 30 September. The ones that matter stay open: you sit at a trestle over the water with a plate straight from the parcs, bread, butter, pâté and a bottle of white. No cooking, no menu, no reservations culture. October is when the oysters are actually good.",
+ uncommon:"Half the shacks close on 30 September — the year-round growers are the real ones anyway.",
+ url:"https://www.lege-capferret.com/category/sorties/cabanes-huitres", time:"2h", drive:"45-55 min around the bay",
+ oct:"VERIFIED open year-round: Le Grand Banc at Petit Piquey, Romain Dupuyoo at Le Canon, Chez Guillaume at L'Herbe, La Cabane du Résinier. VERIFIED closed in October: Kaya Dégustation and Dégustation Techoueyres at Piraillan, both June-September only. Off-season days shift — phone the individual grower the morning of. Do not turn up at Piraillan expecting a choice.",
+ booking:false, tags:["food","ocean","uncommon","car-only"]},
+
+{id:"phare", base:"arcachon", type:"lighthouse", name:"Phare du Cap Ferret",
+ desc:"258 steps up a working lighthouse at the tip of the peninsula, with the whole geometry of the bay laid out at the top — the dune opposite, the oyster parcs, the Banc d'Arguin, the open Atlantic behind. It closes for the winter within days of your window, which makes the October visit feel like catching the last of something.",
+ uncommon:"It shuts on 2 November for six weeks. You are in the final fortnight of the season.",
+ url:"https://phareducapferret.com/horaires-et-tarifs", time:"1h", drive:"50 min around the bay, or ferry",
+ oct:"VERIFIED: October opening Wednesday to Sunday, 14:00-17:00, CLOSED MONDAY AND TUESDAY. Adult €7. Tickets on the door, no advance booking, last admission 30 min before closing. Annual closure begins 2 November 2026. The climb is barred in extreme weather — have a fallback.",
+ booking:false, tags:["ocean","nature","culture","car-only"]},
+
+{id:"teich", base:"arcachon", type:"bird reserve", name:"Réserve Ornithologique du Teich",
+ desc:"120 hectares of former fish ponds at the mouth of the Leyre, laid out with hides along several kilometres of trail. October is the peak of southbound migration: waders staging in numbers, spoonbills, greylags arriving, raptors moving through. Quiet, unhurried, and genuinely one of the better birding sites in western Europe rather than a municipal park with a heron.",
+ uncommon:"October is the reserve's best month — autumn passage, not the summer lull.",
+ url:"https://www.reserve-ornithologique-du-teich.com/en/practical-information/schedule/", time:"3-4h", drive:"15-20 min east of Arcachon",
+ oct:"VERIFIED: October-November opening 10:00-18:00 daily. Adult €9.90, family €30. Autumn migration programming confirmed for October 2026 including wader sessions on 9-10 October and a reserve-management day on 31 October. Bring binoculars; the hides are unheated.",
+ booking:false, tags:["nature","hiking","uncommon"]},
+
+{id:"pinasse", base:"arcachon", type:"boat trip", name:"Pinasse to the Île aux Oiseaux",
+ desc:"A pinasse is the bay's flat-bottomed traditional launch, and in October you may well be the only two aboard. The route threads the oyster parcs to the two stilt cabins marooned mid-bay, then out toward the Banc d'Arguin sandbank off the dune. Time it to high tide and the boat comes right to the cabin doors.",
+ uncommon:"Off-season the two-hour bay circuit stops being a shared excursion and becomes near-private.",
+ url:"https://www.pinasse-bassin-arcachon.com/nos-croisieres/croisiere-ile-oiseaux-cabanes-tchanquees/", time:"2h to full day", drive:"departs Arcachon jetty",
+ oct:"PARTLY VERIFIED: bay boat trips run year-round in principle, and operators advise booking high tide for the closest cabin approach. UNVERIFIED: specific October 2026 sailing frequency — several operators drop to weekends-only or on-demand after the school holidays, and the dedicated Banc d'Arguin shuttles from the dune are a summer service unlikely to run. Book direct and confirm the sailing exists before driving.",
+ booking:true, tags:["ocean","nature","romantic","adventure"]},
+
+{id:"surf", base:"arcachon", type:"surf", name:"Autumn surf at Le Porge and Lacanau",
+ desc:"The Gironde beach breaks come alive when the summer flatness ends. September and October bring clean North Atlantic groundswell at 1.5-2.5 m with morning offshores, water still 16-19°C, and the summer crowd gone entirely. Le Porge's Gressier beach is the less-developed of the two — forest road in, no resort, works at all tides.",
+ uncommon:"Locals call October the best month here. The tourist season calls it over.",
+ url:"https://leporge.com/surf-le-porge/", time:"half day", drive:"1h north of Arcachon",
+ oct:"VERIFIED: October is peak autumn swell season, water 16-19°C, a 3/2 wetsuit is sufficient. Surf schools at Le Porge operate April 'through autumn depending on the school', lessons roughly €35-45 for two hours. UNVERIFIED: which specific schools still staff late October — contact ahead rather than arriving on spec.",
+ booking:true, tags:["ocean","adventure","nature","car-only"]},
+
+/* ============ BORDEAUX ============ */
+{id:"castillon", base:"bordeaux", type:"winery", name:"Castillon & Francs Côtes de Bordeaux",
+ desc:"The limestone plateau east of Saint-Émilion makes structurally similar wine at a third the price, with none of the Grand Cru gatekeeping. Château Le Puy, farmed by the Amoreau family since 1610, works 50 ha Demeter-certified biodynamic and has bottled without added sulphur since 1990. Cult status among Paris and Tokyo sommeliers; still a working farm with cows and forest.",
+ uncommon:"Bordeaux's most famous natural wine estate sits in an appellation almost no visitor can name.",
+ url:"https://www.chateau-le-puy.com/", time:"2-3h including drive", drive:"55 min east of Bordeaux",
+ oct:"UNVERIFIED: estate visit hours and October tasting availability — the château's site could not be read directly, so booking must be confirmed with them. Region-wide, October is post-harvest on the right bank since Merlot is picked from mid-September, so cellars are settling and generally receptive to visitors.",
+ booking:true, tags:["wine","car-only","uncommon","food"]},
+
+{id:"vendanges", base:"bordeaux", type:"festival", name:"Fête des Vendanges, Saint-Émilion",
+ desc:"The Jurade's harvest weekend opens vineyard walks, cellar doors and tastings across the appellation, replacing the usual coach-park experience with something closer to a working village celebration. Timing is everything: only the Sunday is catchable, and only if you land on the 11th.",
+ uncommon:"The one weekend Saint-Émilion belongs to the growers rather than the tour buses.",
+ url:"https://www.bordeaux.com/fr/agenda/fete-des-vendanges-2026/", time:"half to full day", drive:"45 min east of Bordeaux",
+ oct:"VERIFIED: Saturday 10 - Sunday 11 October 2026. That falls at the very start of the window — realistically unreachable unless you land on the 11th and drive straight there, which you will not want to do. If arrival slips past the 11th this entry is dead; substitute the Castillon estates.",
+ booking:false, tags:["wine","food","culture","uncommon"]},
+
+{id:"ecole", base:"bordeaux", type:"wine school", name:"École du Vin de Bordeaux",
+ desc:"The CIVB's own school, in an 18th-century building opposite the tourist office, runs two-hour to full-day sessions from beginner tasting technique to specialist blending, plus cooking classes built specifically around pairing. Classes start around €32. The serious, non-gimmicky option in a city full of packaged wine experiences, and small enough to actually ask questions.",
+ uncommon:"Run by the growers' own trade body, not a tour operator — technique over theatre.",
+ url:"https://www.ecoleduvindebordeaux.com/en", time:"2h to full day", drive:"central, walkable",
+ oct:"VERIFIED: the school operates year-round with a rolling workshop calendar and October sessions are part of the standard programme. Exact October 2026 session dates and language of instruction must be picked from the live booking calendar — verify English-language slots when booking.",
+ booking:true, tags:["wine","cooking","food","culture"]},
+
+{id:"bassins", base:"bordeaux", type:"museum", name:"Bassins des Lumières",
+ desc:"A Nazi submarine pen — vast concrete bays, water still standing in them — converted into the largest digital art centre in the world. Projections play across 12 m walls and reflect off the basins, and the building's own brutal history does more work than the artwork. Roughly an hour, and unlike anything else in France.",
+ uncommon:"The venue is the point: a WWII U-boat bunker you walk through in the dark.",
+ url:"https://www.bassins-lumieres.com/en/plan-visit/opening-times-rates", time:"1h15", drive:"10 min north of centre",
+ oct:"VERIFIED: the Matisse and Frida Kahlo programmes run until 29 October 2026 — inside the window but ending two days before it closes. Admission €16; online booking recommended to avoid the entry queue. Check the run-out date if you are travelling in the final days of the month.",
+ booking:true, tags:["museum","culture","uncommon"]},
+
+{id:"rocher", base:"bordeaux", type:"live music", name:"Le Rocher de Palmer, Cenon",
+ desc:"Bordeaux's serious contemporary-music venue sits across the river in Cenon: three halls and a documentary resource centre for world music attached. Programming runs fado, jazz, Maghrebi, hip-hop, soul and folk rather than touring-arena fare, and the smaller rooms make for genuinely close-quarters gigs.",
+ uncommon:"A world-music research library with three concert halls bolted on — and Bordeaux's best booking.",
+ url:"https://lerocherdepalmer.fr/", time:"evening", drive:"15 min east of centre",
+ oct:"VERIFIED October 2026 dates announced: Myrath 16 Oct, So La Lune 17 Oct, Tremplin des 2 Rives 27 Oct, Elijah Fox jazz 29 Oct, Mammal Hands 31 Oct. NOTE: I.Boat, the Bassins à Flot venue usually recommended here, was placed in judicial liquidation on 11 Feb 2026 and is permanently closed — it still appears in most online nightlife lists. Do not route to it.",
+ booking:true, tags:["music","culture","uncommon"]},
+
+{id:"capucins", base:"bordeaux", type:"market & wine bars", name:"Marché des Capucins and the Chartrons",
+ desc:"Capucins is the city's working produce market — oysters and white wine standing at the counter by 9am, which is how locals actually do Saturday. Then walk the Chartrons quays, the old wine-merchant quarter, where the bars pour small-grower and low-intervention bottles and the crowd is residential rather than touristic.",
+ uncommon:"Oysters and Entre-deux-Mers at a market counter before 10am, alongside the stallholders.",
+ url:"https://www.marchedescapucins.com/", time:"half day", drive:"central, walkable",
+ oct:"VERIFIED: Capucins operates year-round, Tuesday to Sunday mornings, with the weekend oyster-counter tradition strongest Saturday and Sunday. October is squarely in oyster season, so this is arguably better in October than in August. Individual Chartrons bar hours vary; most are open year-round.",
+ booking:false, tags:["food","wine","culture","romantic"]},
+
+{id:"citeduvin", base:"bordeaux", type:"museum · skippable", name:"La Cité du Vin — verdict: skip it",
+ desc:"The decanter-shaped landmark is a well-made immersive museum about wine as a global cultural phenomenon, ending with a tasting on the 8th-floor belvedere. For a couple who have drunk their way across Europe it teaches little they do not know, at €23 a head and 400,000 visitors a year. The belvedere view is the strongest part.",
+ uncommon:"Included only to be told plainly: your tasting money is better spent in Castillon.",
+ url:"https://www.laciteduvin.com/en", time:"2-3h", drive:"10 min north of centre",
+ oct:"VERIFIED: open daily April-October, 10:00-19:00, €23 including one tasting pour. No October closure. SKIP unless it rains hard — the École du Vin workshop and a Castillon estate visit both deliver more for the same money and time.",
+ booking:false, tags:["museum","wine","culture"]},
+
+/* ============ DORDOGNE & LOT ============ */
+{id:"padirac", base:"dordogne", type:"cave", name:"Gouffre de Padirac",
+ desc:"A 75 m collapsed shaft drops you to an underground river you then travel by flat-bottomed boat, poled through galleries to a chamber whose ceiling vaults 90 m overhead. It is the region's headline cave and it still earns the visit — the boat section has no real equivalent in Europe.",
+ uncommon:"You are punted along a subterranean river 100 m below the causse, not walked past formations.",
+ url:"https://www.gouffre-de-padirac.com/en/prepare-my-visit/opening-dates-and-times", time:"2h on site", drive:"1h south-east of Sarlat",
+ oct:"VERIFIED AND CRITICAL: the 2026 season runs 28 March to 1 NOVEMBER 2026. The site closes for winter the day after your window ends, so late October is the final week of operation. 2026 online ticketing is open and the operator strongly advises booking a timeslot in advance; treat it as mandatory given the compressed end-of-season capacity.",
+ booking:true, tags:["nature","adventure","culture","car-only"]},
+
+{id:"fontdegaume", base:"dordogne", type:"cave", name:"Grotte de Font-de-Gaume",
+ desc:"The last cave in France with polychrome prehistoric painting still open to the public — original pigment, 17,000 years old, not a replica. Bison, mammoth, reindeer, and the celebrated pair of facing reindeer. Groups are capped at 12 and total daily admission at 78. The single most affecting thing in the Vézère valley and the hardest to get into.",
+ uncommon:"The last accessible polychrome originals in France. Seventy-eight people a day, worldwide.",
+ url:"https://www.sites-les-eyzies.fr/en/visit/practical-information", time:"1h", drive:"25 min west of Sarlat",
+ oct:"VERIFIED BOOKING REALITY: online reservation is the ONLY route — on-site booking was abolished in 2021. Maximum 78 visitors per day in groups of 12, and the daily figure is conservation-dependent and can be cut without notice. CLOSED SATURDAYS, including in October. Tickets release on a rolling window and go within minutes. UNVERIFIED: exact October 2026 daily hours. Book this before anything else in the trip is fixed; fallbacks are Les Combarelles and Abri du Cap Blanc.",
+ booking:true, tags:["culture","museum","uncommon","car-only"]},
+
+{id:"rouffignac", base:"dordogne", type:"cave", name:"Grotte de Rouffignac",
+ desc:"An electric train carries you a kilometre into the hillside, past bear hibernation hollows, to a ceiling carrying more than 250 engravings and drawings — mammoths above all, the largest such group anywhere. Privately run, unfussy, and far less besieged than the Lascaux operation.",
+ uncommon:"A kilometre underground by narrow-gauge train to the biggest mammoth assemblage in cave art.",
+ url:"https://www.grottederouffignac.fr/index.php/fr/reservations", time:"1h15", drive:"40 min north-west of Sarlat",
+ oct:"VERIFIED: 2026 season 29 March to 1 NOVEMBER. September/October hours are 10:00-11:30 and 14:00-17:00 — note the long midday closure, which catches people out. Ticket numbers are limited per departure, so book ahead. Like Padirac and Pech Merle, it shuts the day after your window closes.",
+ booking:true, tags:["culture","museum","nature","uncommon","car-only"]},
+
+{id:"lascaux", base:"dordogne", type:"museum", name:"Lascaux IV",
+ desc:"A complete facsimile of the sealed original, built to millimetre accuracy with the pigments reproduced by hand. Purists resist replicas, but the execution is extraordinary and the interpretation is the best in the valley. Pair it with Font-de-Gaume and the contrast — perfect copy against imperfect original — is the actual intellectual reward.",
+ uncommon:"Worth it specifically as the counterpoint to seeing real pigment at Font-de-Gaume.",
+ url:"https://lascaux.fr/en/opening-hours-and-prices/", time:"2h", drive:"30 min north of Sarlat",
+ oct:"VERIFIED: open seven days a week with hours varying by season, last admission two hours before closing. Booking advised online for a guaranteed timeslot and a lower rate than the door. October falls in the run-up to the Toussaint school holidays, so weekday mornings are markedly quieter than weekends.",
+ booking:true, tags:["museum","culture"]},
+
+{id:"marqueyssac", base:"dordogne", type:"garden", name:"Jardins Suspendus de Marqueyssac",
+ desc:"150,000 hand-clipped boxwoods rolling over a spur 130 m above the Dordogne, with six kilometres of cliff-edge paths and a belvedere looking down on Castelnaud and Beynac. In October the valley below turns and the crowds vanish. Go late in the afternoon — the low light on the box parterres is the whole point.",
+ uncommon:"Six kilometres of clifftop walking, not a garden you look at from a terrace.",
+ url:"https://www.marqueyssac.com/practical-information/?lang=en", time:"2-3h", drive:"20 min south-west of Sarlat",
+ oct:"VERIFIED: open every day of the year, with hours shortening seasonally — confirm the specific day's closing time, as autumn hours are materially shorter than summer. The on-site restaurant runs to 11 November 2026, so it is open across the window. The candlelit evenings are a July-August fixture and will NOT be running.",
+ booking:false, tags:["nature","hiking","romantic","culture"]},
+
+{id:"stcirq", base:"dordogne", type:"cave & village", name:"Pech Merle and Saint-Cirq-Lapopie",
+ desc:"Pech Merle holds original Palaeolithic painting — the spotted horses, the negative hand stencils, a set of human footprints preserved in clay floor. Twenty minutes on, Saint-Cirq-Lapopie clings to a cliff over a bend of the Lot. Mid-October strips the village of its summer crush and leaves it to autumn light and a handful of off-season travellers.",
+ uncommon:"The Lot valley gets a fraction of the Dordogne's traffic for comparable cave art and better villages.",
+ url:"https://en.pechmerle.com/practical-informations/", time:"half day", drive:"1h30 south of Sarlat; 30 min east of Cahors",
+ oct:"VERIFIED: Pech Merle's 2026 season runs 4 April to 1 NOVEMBER. Places are strictly limited and advance online booking is necessary — the operator recommends several days ahead and there is no booking by email. Saint-Cirq-Lapopie: verified that visitor numbers drop sharply from mid-October and that most restaurants stay open until Toussaint before winter closure. You are inside the last operating window.",
+ booking:true, tags:["culture","museum","nature","romantic","car-only","uncommon"]},
+
+{id:"cahors", base:"dordogne", type:"winery", name:"Cahors Malbec — Château du Cèdre and Mas del Périé",
+ desc:"Cahors is Malbec's actual homeland, making dense, iron-edged black wine that Argentina's version only distantly resembles. Château du Cèdre works organically at over 90% Malbec; Fabien Jouves at Mas del Périé makes biodynamic, low-sulphur cuvées with a serious sommelier following. Prices are a fraction of Bordeaux's and the growers pour for you themselves.",
+ uncommon:"The original Malbec, from growers who will spend an hour with you for the price of a Saint-Émilion parking space.",
+ url:"https://www.chateauducedre.com/en/", time:"half day", drive:"20-30 min west of Cahors",
+ oct:"PARTLY VERIFIED: both estates receive visitors year-round and Château du Cèdre publishes morning slots. October is immediately post-harvest in Cahors — cellars are busy with fermentation, which usually makes for an interesting rather than restricted visit, but appointments are essential and walk-ins are unwelcome. UNVERIFIED: specific October 2026 slots; email both directly.",
+ booking:true, tags:["wine","food","car-only","uncommon"]},
+
+{id:"canoe", base:"dordogne", type:"paddling", name:"Canoeing below the castles",
+ desc:"The classic run drifts from Carsac down past Castelnaud, Beynac and La Roque-Gageac — fortresses on limestone cliffs seen from water level, which is the angle they were built to command. Gentle current, no whitewater, and in October the river is empty of the summer flotilla.",
+ uncommon:"The castle stretch without the July armada — but only if you go in the first half of the month.",
+ url:"https://www.vallee-dordogne.com/vallee-dordogne/activites/canoe-kayak", time:"3-5h", drive:"15-30 min from Sarlat",
+ oct:"VERIFIED AND TIME-CRITICAL: one major operator runs only to 12 OCTOBER 2026; others advertise 'to October' without a firm date. Realistically viable in the first half of the window and increasingly unlikely after roughly 15-20 October, when most rental bases close and shuttles stop. If canoeing matters, front-load it to the opening days of the Dordogne leg and phone ahead. Water is cold and late-October levels can rise after rain.",
+ booking:true, tags:["adventure","nature","car-only","romantic"]},
+
+{id:"sarlatmarket", base:"dordogne", type:"market", name:"Sarlat market — walnut and cèpe season",
+ desc:"Saturday morning fills the medieval core from 8am to 1pm: Périgord walnuts fresh off the autumn harvest, cèpes if the rains have come, chestnuts, Cabécou, duck and goose in every preparation. Wednesday is the smaller, better version — fewer stalls, mostly actual producers, no crush. Buy for a picnic rather than eating in town.",
+ uncommon:"Wednesday is the growers' market. Saturday is the show.",
+ url:"https://www.sarlat-tourisme.com/", time:"2h", drive:"in Sarlat",
+ oct:"VERIFIED: markets run Wednesday and Saturday year-round, Saturday 08:00-13:00. October is walnut-harvest and cèpe season. IMPORTANT CORRECTION: the famous Sarlat truffle markets do NOT run in October — the controlled market starts MID-NOVEMBER and runs to mid-March. A lot of general travel content implies otherwise. Do not plan around truffles.",
+ booking:false, tags:["food","culture","romantic"]},
+
+/* ============ TOULOUSE ============ */
+{id:"machine", base:"toulouse", type:"mechanical theatre", name:"Halle de La Machine",
+ desc:"The Nantes machine-builders' Toulouse outpost: a hangar on the old Montaudran airfield housing Astérion, a 14 m, 47-tonne walking Minotaur, plus a spider, a flying carpet and dozens of absurd small machines demonstrated by machinists in overalls. Book the separate ride ticket and you sit in a howdah on his back while he walks the runway.",
+ uncommon:"You ride the giant, rather than photograph it from a rope line.",
+ url:"https://www.halledelamachine.fr/", time:"2-3h", drive:"15 min south-east of centre",
+ oct:"VERIFIED season: high season runs March-October, Tue-Sun, CLOSED MONDAYS, roughly 10:00-18:00, though some shoulder weeks are Tue-Fri afternoons only. Minotaur rides are separate timed tickets with limited places. October 2026 programming includes a Chilly Gonzales concert on 26 Oct. Confirm exact daily departure times on the ticketing site.",
+ booking:true, tags:["culture","uncommon","music"]},
+
+{id:"airbus", base:"toulouse", type:"industrial tour", name:"Airbus A350 final assembly line",
+ desc:"You stand on a gantry above the A350 final assembly line while wings, fuselage sections and tails are married together — real production, not a visitor-centre mock-up. Ninety minutes, guides who know the programme, in English or French. The single most Toulouse thing you can do, and there is no equivalent anywhere else in Europe.",
+ uncommon:"Live widebody assembly, not a museum replica.",
+ url:"https://www.manatour.fr/en/airbus", time:"1h30 plus 30 min check-in", drive:"25 min north-west, Blagnac",
+ oct:"UNVERIFIED for specific October 2026 slots — the operator publishes rolling availability and the A350 tour sells out fastest. Runs year-round, several slots weekly. Booking closes at least two full working days ahead. Valid passport or national ID is mandatory on the day for every visitor; security screening and restricted bags.",
+ booking:true, tags:["culture","uncommon","museum"]},
+
+{id:"abattoirs", base:"toulouse", type:"contemporary art", name:"Les Abattoirs",
+ desc:"A 19th-century slaughterhouse in Toulouse brick, converted into the region's contemporary art museum and Frac. The permanent draw is Picasso's vast 1936 stage curtain for Romain Rolland's play, unrolled periodically; the rest is a serious, unshowy collection hung in raw industrial volumes, with a Garonne-side garden.",
+ uncommon:"Picasso's 14 m theatre curtain, shown in a former abattoir.",
+ url:"https://www.lesabattoirs.org/", time:"2h", drive:"in city, west bank",
+ oct:"VERIFIED: Wed-Fri 12:00-18:00 with Thursday until 20:00, Sat-Sun 10:00-18:00, CLOSED MONDAY AND TUESDAY. Open throughout October 2026. Free entry for all on the first Sunday of the month, which is 4 October — just before the window.",
+ booking:false, tags:["museum","culture"]},
+
+{id:"taquin", base:"toulouse", type:"jazz club", name:"Le Taquin",
+ desc:"A 145-seat room in the Amidonniers quarter, heir to the old Mandala club, running about 150 gigs a year — jazz at the core but wide open to improvised, soul, electro and West African music. Musicians play a metre from the front row, there is a back terrace, and tickets are cheap. The local scene, not a tourist jazz brunch.",
+ uncommon:"A working neighbourhood jazz club with 145 seats, Wednesday to Saturday.",
+ url:"https://www.le-taquin.fr/concerts-a-venir/", time:"evening, sets from 21:00", drive:"15 min walk from the Capitole",
+ oct:"VERIFIED pattern: concerts Wednesday to Saturday, four nights a week, from 21:00, year-round. UNVERIFIED: the specific October 2026 line-up, which is posted a few weeks ahead. Book online once dates appear — the room is small and sells out.",
+ booking:true, tags:["music","culture","uncommon"]},
+
+{id:"victorhugo", base:"toulouse", type:"covered market", name:"Marché Victor Hugo and the first floor",
+ desc:"Toulouse's belly since 1892: a brutal concrete slab hiding a hundred stalls of Gascon duck, Pyrenean cheese, Lauragais game and Atlantic fish. The trick is the first floor, where half a dozen small restaurants cook lunch only, from the stalls below. Shop at opening, then go upstairs at 11:45 for a table.",
+ uncommon:"Lunch-only restaurants stacked directly above the butchers who supply them.",
+ url:"https://www.marche-victor-hugo.fr/restaurants/", time:"2h including lunch", drive:"in city, centre",
+ oct:"VERIFIED: market open Tuesday-Sunday 07:00-13:30, CLOSED MONDAYS, year-round. First-floor restaurants serve lunch only, roughly 11:45-14:00, some extending to 15:00 at weekends. No dinner service. Arrive by 11:45 or after 13:00 to get a table without queueing.",
+ booking:false, tags:["food","culture"]},
+
+{id:"plageoles", base:"toulouse", type:"winery", name:"Domaine Plageoles, Gaillac",
+ desc:"Seven generations at Cahuzac-sur-Vère, and the family that single-handedly rescued Gaillac's near-extinct grapes — Prunelart, Ondenc, Mauzac Noir, Verdanel — from an on-site ampelographic conservatory. Organic, low-intervention, and the Mauzac Nature pét-nat predates the fashion by decades. Florent or Romain usually pour it themselves.",
+ uncommon:"A private conservatory of resurrected grape varieties, poured by the family who saved them.",
+ url:"https://www.vins-plageoles.com/", time:"1h30-2h plus drive", drive:"1h15 north-east of Toulouse",
+ oct:"VERIFIED standard hours: Mon-Sat 09:00-12:00 and 15:00-18:00, tasting free, no formal booking system. October is immediately post-harvest so the cellar is working — phone or email a day or two ahead to be sure someone can spend time with you rather than turning up cold.",
+ booking:false, tags:["wine","food","car-only","uncommon"]},
+
+{id:"castera", base:"toulouse", type:"farm cooking course", name:"Ferme En Castéra — duck and foie gras stage",
+ desc:"A working Gers duck farm that teaches the whole animal: day one is deveining foie gras and breaking down a duck into magret, aiguillettes, manchons and carcass; day two is confit, rillettes and preserving. You cook, you sterilise your own jars, you take them home. The real Gascon curriculum, not a demo kitchen.",
+ uncommon:"Two days butchering and preserving on the farm — you leave with your own jars.",
+ url:"https://fermeencastera.com/nos-stages-gastronomiques/", time:"2 days, Tue-Wed", drive:"1h30 north-west into the Gers",
+ oct:"VERIFIED: the two-day stage runs Tuesdays and Wednesdays, and October is one of only four months offered — February, March, April and October. On-farm accommodation available by reservation. Dates are few and places limited: contact them for the 13-14, 20-21 or 27-28 October slots.",
+ booking:true, tags:["cooking","food","car-only","uncommon"]},
+
+{id:"canalmidi", base:"toulouse", type:"cycling", name:"Canal du Midi to Port-Lauragais",
+ desc:"Riquet's 17th-century canal leaves Toulouse at Port Saint-Sauveur and runs east through the Lauragais under plane trees, past hand-cranked locks and ochre lock-keepers' houses to the Seuil de Naurouze watershed. Fully surfaced greenway on the Haute-Garonne stretch, dead flat, and in mid-October it is empty, gold and about 20°C.",
+ uncommon:"Honest caveat: canker has felled 30,000+ planes canal-wide, so the canopy here is good but now patchy.",
+ url:"https://www.lauragais-tourisme.fr/en/les-incontournables/canal-du-midi/le-canal-du-midi-a-velo/", time:"half to full day", drive:"starts in city",
+ oct:"VERIFIED as the recommended season: autumn is advised for mild temperatures and no crowds. Open access, free, no ticket, year-round. The Toulouse-Port-Lauragais section is fully developed as a cycle path by the département, and bike hire in Toulouse operates year-round.",
+ booking:false, tags:["nature","romantic","hiking"]},
+
+{id:"albi", base:"toulouse", type:"art museum", name:"Musée Toulouse-Lautrec, Albi",
+ desc:"The world's largest Lautrec holding — around a thousand works, given by his mother — inside the Palais de la Berbie, a 13th-century fortified bishops' palace with terraced gardens over the Tarn. The lithographs and the brothel studies read completely differently seen as a single body of work.",
+ uncommon:"The complete Lautrec, in the fortress his mother gave it to.",
+ url:"https://www.musee-toulouse-lautrec.com/en/preparer-sa-visite/informations-pratiques/", time:"2-3h, half day with Albi", drive:"1h15 north-east of Toulouse",
+ oct:"PARTLY VERIFIED: open daily in October, roughly 10:00-12:30 and 14:00-18:00. Sources conflict on the weekly closing day for October — one gives Tuesday, another Monday from 1 Oct. Confirm on the museum site before driving. No advance booking needed at this season.",
+ booking:false, tags:["museum","culture","car-only"]},
+
+{id:"citeespace", base:"toulouse", type:"science park · skippable", name:"Cité de l'Espace — verdict: skip",
+ desc:"Honest verdict: it mostly does not earn its place. Four hectares of family science park, IMAX and two planetariums, pitched at children. What redeems it for adults is the hardware in the gardens — a genuine Mir station module you walk through, a full-scale Ariane 5, a Soyuz. If you skip one Toulouse day, skip this and do the Airbus line instead.",
+ uncommon:"Walk-through Mir module. Otherwise a conventional family science park.",
+ url:"https://www.cite-espace.com/", time:"half to full day", drive:"20 min east of centre",
+ oct:"VERIFIED: October 2026 open daily except Mondays, and daily including Mondays during the Toussaint school holidays, 17 Oct - 2 Nov 2026. Opening times vary by date, generally 09:30/10:00 to 17:00-19:30. No risk of selling out in October.",
+ booking:false, tags:["museum","culture"]},
+
+/* ============ ARIÈGE ============ */
+{id:"niaux", base:"ariege", type:"painted cave · book first", name:"Grotte de Niaux — the Salon Noir",
+ desc:"One of the last great Palaeolithic caves where you see the originals, not a facsimile. You walk 700 m into unlit rock carrying a hand lamp, and the Salon Noir opens out — a natural rotunda of Magdalenian bison, ibex, horses and deer in manganese black, 14,000 years old, lit only by your own beam. No electric lighting, no crowd, no glass.",
+ uncommon:"Original paintings, by hand-lamp, in the dark. The anti-Lascaux.",
+ url:"https://www.sites-touristiques-ariege.fr/grotte-de-niaux/", time:"1h45", drive:"10 min from Tarascon",
+ oct:"VERIFIED — BOOK THIS FIRST. Open daily 9 Feb - 31 October 2026 inclusive; November drops to weekends only. So every day of 11-30 Oct operates, but you are in the last three weeks of the season. Only 2-10 departures per day in shoulder season and groups are capped at 25 for conservation. Booking is mandatory and ONLINE-ONLY — you will be refused at the door. Toussaint holidays from 17 Oct overlap most of the window, so book weeks ahead. Adult ~€17, cave is 12°C, 700 m on uneven ground.",
+ booking:true, tags:["culture","uncommon","adventure","car-only","museum"]},
+
+{id:"bedeilhac", base:"ariege", type:"cave", name:"Grotte de Bédeilhac",
+ desc:"The porch is 35 m high and 50 m wide — so vast the Germans put an aircraft factory inside it in 1943 and a light plane was landed in the entrance chamber in 1970. Beyond the industrial concrete floor the cave runs into enormous natural galleries with clay engravings, paintings and modelled bison. A completely different register from Niaux: scale rather than intimacy.",
+ uncommon:"A cave mouth big enough that a plane once landed inside it.",
+ url:"https://www.sites-touristiques-ariege.fr/grotte-de-bedeilhac/", time:"1h30", drive:"15 min north-west of Tarascon",
+ oct:"VERIFIED from the official 2026 calendar: season 30 March - 1 November. From 31 August to 18 October it opens every day EXCEPT Fridays; from 19 October to 1 November it opens every day. So Friday 16 Oct is closed and everything else in the window runs. Online booking strongly advised. Around 12°C inside.",
+ booking:true, tags:["culture","uncommon","car-only","adventure"]},
+
+{id:"labouiche", base:"ariege", type:"underground boat", name:"Rivière souterraine de Labouïche",
+ desc:"Europe's longest navigable underground river open to the public. You descend 60 m, get into a flat punt, and a guide hauls the boat along fixed chains through 1.5 km of low limestone galleries and concretion chambers, past a small underground waterfall. Faintly ridiculous, genuinely atmospheric, and unlike a standard walk-through cave.",
+ uncommon:"Punted 60 m underground on a chain-hauled boat.",
+ url:"https://www.labouiche.com/preparez-votre-visite/", time:"1h15", drive:"25 min from Tarascon",
+ oct:"VERIFIED and date-sensitive: from 1 October to 11 November visits run only at weekends and public holidays, EXCEPT during French school holidays when it opens daily. Toussaint 2026 runs 17 Oct - 2 Nov, so from 17 October it is open daily, roughly 10:00-11:15 and 14:00-16:30. Before 17 October, weekends only. Book online; capacity per boat is small.",
+ booking:true, tags:["adventure","uncommon","car-only","nature"]},
+
+{id:"masdazil", base:"ariege", type:"drive-through cave", name:"Grotte du Mas-d'Azil",
+ desc:"The D119 runs straight through the mountain: a 400 m natural tunnel with the Arize river beside you and a 65 m-high porch at each end. You simply drive through it, free, whenever you like — and it is one of the strangest pieces of road in Europe. The side galleries are the type-site of the Azilian culture, with a museum of the finds.",
+ uncommon:"The only cave in Europe you drive a car through.",
+ url:"https://grotte-du-mas-d-azil.arize-leze.fr/", time:"20 min drive-through, +1h15 guided", drive:"1h north-west of Tarascon",
+ oct:"VERIFIED, two separate things. The road through the porch is public, free and open 24/7 year-round — zero October risk. The guided cave and museum in October open only on Sundays, public holidays and during the Toussaint school holidays, 14:00-18:00. Toussaint 2026 begins 17 Oct, so daily afternoons from then; before that, Sunday 11 Oct only.",
+ booking:false, tags:["car-only","uncommon","nature","museum"]},
+
+{id:"montsegur", base:"ariege", type:"ruined castle", name:"Montségur, with Roquefixade as the free fallback",
+ desc:"The Cathar endgame: 225 perfecti burned at the foot of this 1,207 m limestone pog in 1244. The climb is 20-30 minutes of steep rock and scree, and the ruin at the top is bare — the point is the exposure and the silence. If Montségur's hours defeat you, Roquefixade 25 km west is free, ungated, always open and nearly as dramatic.",
+ uncommon:"Roquefixade gives you the same ridge-top Cathar drama with no ticket and no hours.",
+ url:"https://www.montsegur.fr/", time:"2-3h including the climb", drive:"50 min east of Foix",
+ oct:"PARTLY VERIFIED — check before driving. The official site confirms October opening but reported hours are reduced and sources conflict on which days: one gives Mon-Wed 11:00-16:00 through 31 Oct. Verify the week before. Summit access requires a ticket from the car park hut. Roquefixade has no gate, no ticket and no season — a guaranteed fallback.",
+ booking:false, tags:["hiking","culture","nature","car-only"]},
+
+{id:"corniches", base:"ariege", type:"scenic drive", name:"Route des Corniches, D20",
+ desc:"The old high road from Bompas to the Col de Marmare, cut as a shelf along the flank of the Tabe massif above the Ariège valley — the route people used before the N20 was built in the floor. Eighty kilometres of switchbacks linking Axiat, Lordat, Unac, Vèbre and Urs, each a handful of stone houses and a Romanesque church, with the Pyrenees opposite.",
+ uncommon:"The pre-modern road, still public, with nobody on it.",
+ url:"https://www.ariegepyrenees.com/en/roadtrips-itineraires/la-route-des-corniches/", time:"2-3h driving, half day with stops", drive:"starts at Tarascon",
+ oct:"VERIFIED: free public road, open year-round, no seasonal closure — it is a valley-side corniche, not a high col. Around 80 km end to end, roughly 2h without stops. October gives low sun on the Tabe cliffs and beech colour. Narrow and winding; not for anyone nervous of exposure.",
+ booking:false, tags:["car-only","nature","romantic","uncommon"]},
+
+{id:"lers", base:"ariege", type:"mountain lake", name:"Étang de Lers and the Col d'Agnès",
+ desc:"A glacial tarn at 1,274 m on a shelf of black peridotite, sitting at the junction of three valleys and reached only by hairpin roads over the Port de Lers or the Col d'Agnès. A gentle interpretive loop circles the lake; harder trails climb to the Tuc de l'Etang. The geology is genuinely odd — mantle rock at the surface — and in October the isards come low.",
+ uncommon:"Exposed mantle peridotite, and three cols no coach could get up.",
+ url:"https://www.etang-de-lers.fr/infos/carte-acces-etang-de-lers", time:"2-4h", drive:"50 min west of Tarascon",
+ oct:"Free, unrestricted access. The D18 to the lake normally stays passable through autumn; the Port de Lers and Col d'Agnès close only with persistent snow, typically from late November. Mid-to-late October is usually clear but an early cold snap can shut the cols overnight — check inforoute09.fr the morning you drive. No facilities open at the lake in October.",
+ booking:false, tags:["nature","hiking","car-only","romantic"]},
+
+{id:"bethmale", base:"ariege", type:"autumn hiking", name:"Lac de Bethmale and the Couserans",
+ desc:"The deepest, least-visited corner of the Ariège: a 1,074 m lake ringed by dense beech that turns copper-red in the second half of October, on the road up to the Col de la Core. A ten-minute stroll circles the water; the serious option climbs 800 m to the Étang d'Ayès and the Mont Valier reserve, where griffon vultures, lammergeier and golden eagle are routine.",
+ uncommon:"Peak beech colour and lammergeier over a lake almost nobody drives to.",
+ url:"https://www.tourisme-couserans-pyrenees.com/en/randonnees/ayet-lac-de-bethmale/", time:"1h to full day", drive:"1h30 west of Tarascon",
+ oct:"Free access year-round, small free car park at the lakeside. The D17 from Castillon-en-Couserans to the lake and on toward the Col de la Core is normally open in October, and the second half of the month is peak colour. GR10 and GR10D pass through. UNVERIFIED: whether guided raptor walks run in late October — contact local operators directly.",
+ booking:false, tags:["nature","hiking","car-only","romantic"]},
+
+{id:"couloubret", base:"ariege", type:"thermal baths", name:"Les Bains du Couloubret, Ax-les-Thermes",
+ desc:"Sulphurous water at 77°C comes out of the mountain here and has done since Roman times; the modern bath house channels it into indoor and outdoor pools, jet benches and a hammam circuit, with the Pyrenees rising straight out of the far side of the terrace. Go at dusk in October when the air is cold and the outdoor pool steams.",
+ uncommon:"An outdoor sulphur pool steaming under the peaks on a cold October evening.",
+ url:"https://acqs.com/les-bains-du-couloubret/horaires-bains-couloubret/", time:"2-3h", drive:"35 min south-east of Tarascon",
+ oct:"VERIFIED and important: the annual technical shutdown runs 5-9 October inclusive, reopening on the 10th — your window is entirely clear. Otherwise open daily, roughly 10:00-19:00 with later evening slots on some days. Book online during Toussaint week from 17 Oct when it fills with families. Swimsuit required, no shorts.",
+ booking:true, tags:["romantic","nature","uncommon"]},
+
+{id:"mirepoix", base:"ariege", type:"market town", name:"Mirepoix Monday market",
+ desc:"A 13th-century bastide whose central square is enclosed on all four sides by wooden galleries on carved oak posts — some of them grotesque medieval heads. Monday morning it fills with one of the largest producer markets in the region: Ariège cheese, mountain charcuterie, cider apples, mushrooms. Come Monday or the square is just pretty and empty.",
+ uncommon:"Carved medieval beam-ends over a working producers' market, not a craft market.",
+ url:"https://en.pyreneescathares.com/discover/typical-villages-and-hamlets/medieval-city-of-mirepoix/", time:"half day", drive:"50 min north-east of Foix",
+ oct:"VERIFIED: market runs year-round every Monday, 08:00-13:00. Mondays inside the window are 12, 19 and 26 October 2026. UNVERIFIED for 2026: the town's apple festival, which the tourist board places on the third weekend of October — that would be 17-18 Oct. Confirm with the Pyrénées Cathares tourist office.",
+ booking:false, tags:["food","culture","car-only"]},
+
+/* ============ VALL DE BOÍ ============ */
+{id:"taull", base:"vall-de-boi", type:"Romanesque church", name:"Sant Climent de Taüll",
+ desc:"Consecrated in 1123, and the source of the Pantocrator that anchors Barcelona's MNAC. Rather than hang a copy, the church projects the original apse painting back onto its own stonework in exact register, blended with the fragments still in situ. The six-storey Lombard campanile outside is the emblem of the whole valley.",
+ uncommon:"Projection mapping that restores a looted apse to the exact wall it was cut from.",
+ url:"https://www.centreromanic.com/en/video-mapping/", time:"1h", drive:"5 min from Boí",
+ oct:"VERIFIED schedule: video mapping at 10:15, 11:00, 12:00, 12:45, 13:30, 16:15, 17:00, 17:45 and 18:30. The extra 19:00 and 19:30 sessions run ONLY at Easter and in July-August, so in October you get the standard nine-session day with a last projection at 18:30. €5 including church entry. UNVERIFIED: whether any single day in the window is affected by reduced winter staffing.",
+ booking:false, tags:["culture","museum","uncommon"]},
+
+{id:"churches", base:"vall-de-boi", type:"UNESCO circuit", name:"The other eight Romanesque churches",
+ desc:"Eight more inside a twelve-kilometre stretch of one valley: Santa Maria de Taüll barely a hundred metres from its famous neighbour, Sant Joan de Boí with its murals of stone-throwers and a bestiary, Santa Eulàlia d'Erill la Vall's slender six-storey campanile, plus Cardet, Coll, Barruera, Durro and the Assumpció.",
+ uncommon:"Nine UNESCO churches in one valley, and eight of them have no queue at all.",
+ url:"https://www.centreromanic.com/en/", time:"half day", drive:"5-20 min from Boí",
+ oct:"UNVERIFIED in detail: the Centre del Romànic operates a combined ticket and staffs the churches on a rotating basis that contracts outside high season, and which churches are staffed on which October 2026 days could not be confirmed. Assume Sant Climent and Santa Maria de Taüll are reliably open and the outlying six are variable. Phone the Centre the morning you go.",
+ booking:false, tags:["culture","museum","car-only","uncommon"]},
+
+{id:"aiguestortes", base:"vall-de-boi", type:"national park", name:"Aigüestortes by 4x4 taxi from Boí",
+ desc:"Private cars stop at Palanca de la Molina; beyond that the national park belongs to a co-operative of battered 4x4s that grind up to the Planell d'Aigüestortes at 1,800 m. From the drop-off it is a nearly flat walk through braided streams and beaver-flat meadows to Estany Llong, passing the Sant Esperit waterfall. Enormous mountains, almost no gradient.",
+ uncommon:"A high glacial basin with no private cars in it, reached by a village taxi collective.",
+ url:"https://www.taxisvalldeboi.com/", time:"4-6h including transfers", drive:"5 min to Plaça del Treio, Boí",
+ oct:"VERIFIED and the key finding for this base: the Vall de Boí taxi association's timetable for 16 September to 31 OCTOBER is 09:00-18:00, running the whole window. €11.50 adult, 15-20 min each way, no booking — buy on the spot at Plaça del Treio. Explicit official caveat: 'if it snows it is difficult for the taxis to go up', so October snowfall can suspend it at no notice. Private vehicles may not proceed past Palanca de la Molina.",
+ booking:false, tags:["nature","hiking","car-only","uncommon"]},
+
+{id:"cavallers", base:"vall-de-boi", type:"hike", name:"Estany de Cavallers and Refugi Ventosa",
+ desc:"The one high place in this park you can still drive to yourself: a narrow asphalt track climbs past Caldes de Boí to the Cavallers dam at about 1,780 m. From the car park a pole-marked path along the reservoir's west shore reaches Refugi Ventosa i Calvell in roughly 2h15, under the granite walls of Punta Alta, with Estany Negre beyond it.",
+ uncommon:"The high-mountain entrance with no taxi, no shuttle and no ticket.",
+ url:"https://parcsnaturals.gencat.cat/en/xarxa-de-parcs/aiguestortes/", time:"5-6h return", drive:"25 min from Boí",
+ oct:"VERIFIED in principle: Cavallers sits in the park's peripheral zone, the road is public asphalt and private vehicles are permitted right to the dam car parks — no shuttle dependency, so no seasonal service to fail. This is your weather-proof fallback if the 4x4s stop. UNVERIFIED: whether Refugi Ventosa i Calvell is staffed in the window; assume not and carry your own food and water. The access road is not winter-maintained.",
+ booking:false, tags:["nature","hiking","adventure","car-only"]},
+
+{id:"caldesboi", base:"vall-de-boi", type:"thermal spa", name:"Balneari Caldes de Boí",
+ desc:"Thirty-seven separate springs surfacing between roughly 4°C and 56°C within a few hundred metres — reputedly the widest range of thermal waters anywhere — in a Belle Époque complex at about 1,500 m ringed by larch and pine. This is not a modern wellness box: it is faintly institutional, comprehensively unfashionable, patronised by Catalan pensioners, and all the better for it.",
+ uncommon:"A 19th-century Pyrenean water-cure resort still run as one, not as a hotel spa.",
+ url:"https://www.caldesdeboi.com/en/", time:"2-4h", drive:"20 min from Boí",
+ oct:"UNVERIFIED — the weakest link in this base. The published season is broadly May to October, with the operator explicitly stating that opening varies by season and by which hotel in the complex is running, and advising direct confirmation. Several Pyrenean balnearis of this type close in the first half of October. Phone before committing a half-day; treat as likely-but-not-certain for late October.",
+ booking:true, tags:["romantic","culture"]},
+
+{id:"santmaurici", base:"vall-de-boi", type:"national park", name:"Estany de Sant Maurici and Amitges",
+ desc:"The park's eastern gateway, and the one with the postcard: Estany de Sant Maurici with the twin Encantats spires standing behind it. Take the Espot 4x4 to the lake shore, then keep walking and climbing to the Amitges lakes at about 2,380 m, where the day-trippers evaporate entirely and you are in proper granite-and-tarn country for the rest of the afternoon.",
+ uncommon:"Everyone photographs the lake; almost nobody carries on the 800 m up to Amitges.",
+ url:"https://taxisespot.com/en/", time:"6-7h including transfer", drive:"1h50 from Boí — a committed full day",
+ oct:"VERIFIED: the Espot 4x4 taxis run year-round and operate 09:00-17:00 in October — an hour earlier last-return than the Boí side, do not miss it. €11.50 adult return, first-come first-served or buy online. Private cars stop at Prat de Pierró. LIVE RISK: an August 2026 storm-landslide destroyed roughly half the Prat de Pierró car park and the park director estimated several weeks to restore, so October capacity may still be reduced — the park advises parking in Espot village.",
+ booking:false, tags:["nature","hiking","car-only"]},
+
+/* ============ ANDORRA ============ */
+{id:"madriu", base:"andorra", type:"UNESCO valley hike", name:"Vall del Madriu-Perafita-Claror",
+ desc:"Andorra's fourth valley has no road at all: 42 km² of glacial trough, drystone shepherds' huts and charcoal-burning platforms, UNESCO-listed as a living cultural landscape rather than scenery. Walk in from Entremesaigües above Escaldes and the traffic noise dies within twenty minutes. Bordes de Ràmio and the Fontverd hut make a natural turnaround.",
+ uncommon:"A UNESCO site you can only enter on foot, ten minutes from a duty-free strip.",
+ url:"https://www.madriu-perafita-claror.ad/", time:"5-8h", drive:"10 min to the Entremesaigües trailhead",
+ oct:"VERIFIED: no gates, no season, no ticket — the valley is permanently open and car-free. The lower valley between 1,100 and 1,900 m is reliably walkable through October. Above roughly 2,300 m expect the first snow. Andorran government guided excursions run May-October only, so they stop from November.",
+ booking:false, tags:["nature","hiking","culture","uncommon","car-only"]},
+
+{id:"refugilla", base:"andorra", type:"mountain refuge", name:"Refugi de l'Illa",
+ desc:"Andorra's highest guarded refuge at 2,488 m, tucked under the Illa dam at the head of the Madriu. Reached in about two hours from Grau Roig over the Pessons cirque, past a chain of glacial tarns. Bunk rooms, one long shared table, and a night where the only light below you is the Pessons lakes.",
+ uncommon:"The only way to spend a night inside the Madriu World Heritage valley.",
+ url:"https://www.refugidelilla.ad/", time:"overnight, 2h walk in", drive:"35 min to Grau Roig",
+ oct:"VERIFIED: under the current concession the refuge stays open without interruption until the END OF OCTOBER, with the declared summer season running to 1 November. So the window sits inside the staffed season — but the season ends within days of the trip's end. Book direct; from November it is groups of 15+ by reservation only.",
+ booking:true, tags:["nature","hiking","adventure","romantic","uncommon"]},
+
+{id:"tristaina", base:"andorra", type:"hike", name:"Estany de Tristaina lakes circuit",
+ desc:"Three stacked glacial lakes in a granite amphitheatre below Pic de Tristaina, right on the French border. With the gondola shut for the season you drive the open mountain road to La Coma at roughly 2,600 m and pick up the circuit on foot — about 2h30 for the loop over a low col between the upper two lakes.",
+ uncommon:"In October the lift is dead and the road is free, so the lakes are empty.",
+ url:"https://www.ordinoarcalis.com/en/faqs/general-information/tristaina-lakes", time:"2h30-3h30", drive:"50 min to La Coma at 2,600 m",
+ oct:"VERIFIED, and better than it first looks: the Tristaina gondola ran summer 2026 only from 4 July to 13 September, so it is CLOSED in October and you walk. Crucially the road access restriction to La Coma applies only on days the gondola operates — with the lift shut, road access is open and unrestricted, so you drive to 2,600 m and start there. The road is not winter-maintained; a snowfall closes it.",
+ booking:false, tags:["nature","hiking","car-only","uncommon"]},
+
+{id:"sorteny", base:"andorra", type:"nature park", name:"Vall de Sorteny",
+ desc:"A side valley of hay meadows, granite and larch that Andorra runs as a natural park, threaded with hand-cut irrigation canals and shepherds' bordes. The botanic garden's 300 species are long past flowering by October, which is rather the point: the larches turn copper, the summer crowds are gone, and the refuge kitchen is still running for lunch.",
+ uncommon:"A working transhumance valley, not a viewpoint — and it keeps a staffed refuge into late autumn.",
+ url:"https://www.sorteny.ad/", time:"3-6h", drive:"40 min to the El Serrat car park",
+ oct:"VERIFIED: Refugi Borda de Sorteny's staffed season runs 1 June to the end of October, daily — open for the whole window. It closes in November, with a free 8-place unstaffed area covering the gaps. NOTE the park's own visitor equipment runs 10:00-16:00 only to 4 October, so after that expect an unstaffed park with the refuge as the only service. Trails are unrestricted.",
+ booking:false, tags:["nature","hiking","food","uncommon"]},
+
+{id:"comapedrosa", base:"andorra", type:"hike", name:"Parc Natural del Comapedrosa",
+ desc:"The wildest corner of the country: a communal natural park above Arinsal rising to Andorra's highest point, Pic de Comapedrosa at 2,942 m. From the village it is a serious 1,000 m-plus climb past Estany Negre and the refuge. Even without the summit, the walk up to the lake and back is the best half-day in the western valleys.",
+ uncommon:"A whole country's high point, reachable and back in a day, with no lift involved.",
+ url:"https://www.comapedrosa.ad/", time:"4-8h", drive:"25 min to Arinsal",
+ oct:"VERIFIED — and this one bites: Refugi Comapedrosa's 2026 staffed season is 1 June to 12 OCTOBER. If you arrive after the 12th the refuge is unstaffed, so no food, no water service and no bail-out. Plan a self-sufficient day trip from Arinsal, not an overnight. Trails are open, but above 2,500 m October snow and verglas are realistic.",
+ booking:false, tags:["nature","hiking","adventure","uncommon"]},
+
+{id:"auvinya", base:"andorra", type:"winery", name:"Casa Auvinyà",
+ desc:"Vines terraced at 1,200 m on 40-60% slopes above Sant Julià de Lòria, west-facing under the Rabassa forest — among the highest commercial vineyards in Europe, and a genuine curiosity, because almost nobody knows Andorra makes wine at all. Monovarietal Pinot Noir and Syrah reds, and a white called Imagine Blanc de Neu.",
+ uncommon:"Andorran wine exists, is good, and is made on slopes you would not walk down.",
+ url:"https://www.casaauvinya.com/", time:"1h30-2h", drive:"25 min from Andorra la Vella",
+ oct:"UNVERIFIED: October harvest-season availability and tasting-room hours could not be confirmed directly. Visits are by appointment year-round rather than seasonal, so October should be workable, but email or call to fix a slot — mid-October may coincide with the tail of harvest, which can either enrich or block the visit.",
+ booking:true, tags:["wine","food","uncommon","car-only"]},
+
+{id:"bordasabate", base:"andorra", type:"winery & restaurant", name:"Borda Sabaté 1944 / Le Domaine",
+ desc:"The other Andorran wine story: a family that swapped livestock for organic Riesling and Swiss Cornalin at 1,119 m. The visit opens with a 4x4 grind up gradients no rental car should attempt, straight into the vineyard, then drops to their restaurant to eat and drink the results. Small groups only, always on demand.",
+ uncommon:"A vineyard tour that requires a 4x4 because the slope is genuinely undrivable.",
+ url:"https://www.bordasabate.com/en/", time:"2-3h", drive:"20 min from Andorra la Vella",
+ oct:"UNVERIFIED: no published seasonal calendar could be confirmed. The winery states visits are always 'on demand and in groups' rather than on fixed dates, which implies October is possible but entirely dependent on booking ahead. Treat the 4x4 vineyard leg as weather-dependent — the tracks are steep and unsurfaced.",
+ booking:true, tags:["wine","food","adventure","uncommon","car-only"]},
+
+{id:"columba", base:"andorra", type:"museum", name:"Espai Columba and Santa Coloma",
+ desc:"The Romanesque murals stripped from Santa Coloma in 1930, sold abroad, and finally repatriated in 2007 — now shown in a purpose-built room a few metres from the church that lost them. The 12th-century apse is then reconstructed inside the church itself by projection, so you see the fragments and the whole. The free-standing circular bell tower outside is one of very few in the Pyrenees.",
+ uncommon:"A restitution story with the stolen frescoes and their empty wall in the same visit.",
+ url:"https://museus.ad/museus/espai-columba", time:"1h15", drive:"8 min from Andorra la Vella",
+ oct:"VERIFIED from the published 2026 calendar: October to December is Tuesday to Saturday, 10:00-14:00 and 15:00-18:00. €7 / €3.50 reduced. CLOSED SUNDAYS AND MONDAYS in October — plan around that. The church interior is seen as part of the Espai Columba visit.",
+ booking:false, tags:["culture","museum","uncommon"]},
+
+{id:"engolasters", base:"andorra", type:"church & lake", name:"Sant Miquel d'Engolasters and the lake",
+ desc:"A 12th-century church with a severe, disproportionately tall Lombard bell tower on a wooded shelf high above the capital, paired with a reservoir-lake and an easy circuit through black pine. It is also the practical northern gateway into the Madriu.",
+ uncommon:"The one Romanesque interior in Andorra you can actually walk into in October, free.",
+ url:"https://museus.ad/monuments/sant-miquel-d-engolasters", time:"2h", drive:"20 min from Escaldes",
+ oct:"VERIFIED: during October and November, Sant Miquel d'Engolasters and Sant Romà de les Bons are open FREE of charge, Tuesday to Saturday, 10:00-14:00 and 15:00-18:00, with free guided visits bookable. By contrast Sant Joan de Caselles opens only 15 June to 15 September — in October its interior is shut to walk-ins and needs prior arrangement. Lake path open year-round.",
+ booking:false, tags:["culture","hiking","nature","uncommon"]},
+
+{id:"caldea", base:"andorra", type:"thermal spa", name:"Inúu at Caldea",
+ desc:"Ignore the family lagoon under the glass spire — Inúu is the adults-only half of the complex: dark water, low light, outdoor pools looking straight up the valley, and a strict 18-plus door. Two unhurried hours here after a long day on the Madriu is the correct and only defensible use of Andorra la Vella. Weekday morning or late evening, never a Saturday afternoon.",
+ uncommon:"The quiet adults-only wing most visitors never buy a ticket for.",
+ url:"https://www.caldea.com/en/timetable", time:"3h", drive:"5 min from Andorra la Vella",
+ oct:"VERIFIED as far as published: the documented 2026 maintenance shutdown was 7 April to 2 July, and there is NO October closure on record. The complex runs roughly 10:00-22:00 weekdays and to midnight Friday and Saturday. Inúu is 18+, around €84 solo or €125 for two. UNVERIFIED: exact October 2026 daily hours — confirm before booking a slot.",
+ booking:true, tags:["romantic","adventure"]},
+
+/* ============ CERDANYA ============ */
+{id:"nuria", base:"cerdanya", type:"rack railway", name:"Cremallera de Núria",
+ desc:"The only way into Núria — no road has ever been built to it, and none is planned. A rack railway hauls you a thousand metres up the Freser gorge in forty minutes to a closed high basin holding a sanctuary, a lake, a hotel and nothing else at all. October is the sweet spot: full daily service, low autumn light on the cirque, and none of the summer families.",
+ uncommon:"A populated Pyrenean valley with no road access whatsoever.",
+ url:"https://turistren.cat/en/trains/cremallera-de-nuria/", time:"half to full day", drive:"55 min from Puigcerdà to Queralbs",
+ oct:"VERIFIED and this is the key finding for the base: the autumn timetable runs DAILY TO THE END OF OCTOBER, with nine circulations on weekdays and fourteen at weekends. The annual maintenance shutdown falls in NOVEMBER, not October — the line drops to weekends only from around 3-4 November. Your window is entirely inside full daily service. Fares include the Coma del Clot cable car and the basilica.",
+ booking:false, tags:["nature","culture","romantic","uncommon"]},
+
+{id:"camivell", base:"cerdanya", type:"hike", name:"Camí Vell de Núria, Queralbs to Núria",
+ desc:"The medieval pilgrim path the railway replaced: 7.7 km and about 930 m of ascent from Queralbs, cut into the gorge walls above the Freser, past the Salt del Sastre and Cua de Cavall waterfalls with the rack railway occasionally visible far below. Walk up, ride the train down. Steep, rocky, genuinely exposed in places, and one of the finest half-days in Catalonia.",
+ uncommon:"You climb the gorge on foot and let the cog railway do the descent.",
+ url:"https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ter-freser/", time:"4h up, 40 min train down", drive:"55 min from Puigcerdà to Queralbs",
+ oct:"VERIFIED by inference from two confirmed facts: the path is a public GR-11 variant with no gate or season, and the Cremallera runs full daily service to end of October — so walk-up, train-down works throughout the window. Buy the one-way descent at the top. From about November the route needs snow gear. Wet rock after October rain is the real hazard on the exposed sections.",
+ booking:false, tags:["hiking","nature","adventure","uncommon"]},
+
+{id:"llivia", base:"cerdanya", type:"enclave town", name:"Llívia",
+ desc:"A Spanish town of about 1,500 people marooned entirely inside France since 1659, when the Treaty of the Pyrenees ceded 33 Cerdanya villages to France but not towns — and Llívia, uniquely, held town status. The municipal museum holds the Farmàcia Esteva, documented from 1594 and among the oldest surviving pharmacies in Europe, its Renaissance painted apothecary boxes intact.",
+ uncommon:"A genuine sovereign enclave, six kilometres deep inside another country.",
+ url:"https://museullivia.net/visitans/", time:"2-3h with lunch", drive:"12 min from Puigcerdà",
+ oct:"PARTLY VERIFIED: published low-season museum hours are Wednesday to Friday 09:30-14:00 and 15:30-18:00, which covers October. UNVERIFIED: Saturday, Sunday and Monday hours, and whether the museum takes a Monday-Tuesday closure — call before building a day around it. The town itself, the neutral road to it and the border oddity need no opening hours at all.",
+ booking:false, tags:["culture","museum","food","uncommon","car-only"]},
+
+{id:"dorres", base:"cerdanya", type:"hot springs", name:"Bains Romains de Dorres",
+ desc:"Three granite basins and two single tubs cut straight into the hillside at about 1,450 m, fed by a sulphur spring surfacing at 37-40°C, open to the sky and to the entire Cerdagne plain. Six euros. No spa architecture, no piped music, no booking, no robes — just villagers, hikers and steam rising against the Carlit massif as the light goes.",
+ uncommon:"A communal open-air sulphur bath at 1,450 m for the price of a coffee.",
+ url:"https://dorres66.com/decouvrir/bains-romains", time:"1h30-2h", drive:"30 min from Puigcerdà",
+ oct:"VERIFIED from the published 2026 calendar: open every day, Monday to Sunday, 09:00-19:30 from 1 January to 15 November — so the whole of October is open daily, with the only 2026 closure falling 16-22 November. €6 adult. Cold air plus 40°C water is the point in late October; go for the last two hours before closing.",
+ booking:false, tags:["nature","romantic","uncommon","car-only"]},
+
+{id:"enginyers", base:"cerdanya", type:"balcony hike", name:"Camí dels Enginyers, Núria to Coma de Vaca",
+ desc:"A balcony path blasted out for the hydroelectric engineers, contouring east from Núria at around 2,200 m to the Coma de Vaca refuge high above the Freser gorge — roughly six kilometres of near-level traverse with the whole Ripollès dropping away on your right. Combine with the descent of the Gorges del Freser back to Queralbs for a long, serious, entirely non-technical day.",
+ uncommon:"An engineered contour line at 2,200 m that almost no foreign walker has heard of.",
+ url:"https://parcsnaturals.gencat.cat/ca/xarxa-de-parcs/ter-freser/", time:"7-8h full traverse", drive:"55 min to Queralbs, then the railway",
+ oct:"PARTLY VERIFIED: access depends on the Cremallera, which is verified at full daily service through end of October, and the path itself is unrestricted. UNVERIFIED: whether Refugi de Coma de Vaca is staffed in mid-to-late October — FGC publishes a live opening-status page, so check before you go and carry food regardless. The traverse is exposed and unsuitable after the first significant snowfall.",
+ booking:false, tags:["hiking","nature","adventure","uncommon"]},
+
+/* ============ PENEDÈS ============ */
+{id:"recaredo", base:"penedes", type:"grower sparkling", name:"Recaredo, Sant Sadurní d'Anoia",
+ desc:"The clearest argument against thinking of cava as a category. Fully biodynamic, entirely estate-grown, every bottle disgorged by hand without freezing, and lees ageing that runs past a decade on the top cuvées. Small groups through working cellars rather than a visitor centre. If you visit one producer in the Penedès, the case for this one is technical, not scenic.",
+ uncommon:"Hand-disgorged, no dosage shortcuts, ten-plus years on lees — a house that opted out of the industrial model.",
+ url:"https://recaredo.com", time:"2h", drive:"45 min west of Barcelona",
+ oct:"UNVERIFIED: the October 2026 tour calendar could not be confirmed. Context that IS verified — harvest runs late August to early October, so a mid or late October visit is post-harvest: presses are quiet, but cellar work, disgorging and blending are visible and staff have time to talk. Book ahead regardless.",
+ booking:true, tags:["wine","food","culture","romantic"]},
+
+{id:"gramona", base:"penedes", type:"grower sparkling", name:"Gramona, Sant Sadurní d'Anoia",
+ desc:"Five generations, biodynamic farming, and an underground cellar holding library bottles going back decades. Tastings here are unusually generous with aged material — the point of the visit is vertical depth, tasting what fifteen years on lees actually does. Vineyard views run to the Montserrat massif you drove past that morning, which ties the day together.",
+ uncommon:"One of the few places you can taste a genuinely old sparkling wine at source.",
+ url:"https://www.gramona.com", time:"2h", drive:"10 min from Recaredo",
+ oct:"UNVERIFIED: October 2026 visit slots and languages could not be confirmed. Advance reservation is required year-round — these are small-group tastings, not drop-in. Post-harvest October means full cellar access without harvest disruption.",
+ booking:true, tags:["wine","food","culture","romantic"]},
+
+{id:"raventos", base:"penedes", type:"estate winery", name:"Raventós i Blanc",
+ desc:"The family walked out of the cava DO to create their own appellation, Conca del Riu Anoia, on the argument that estate-grown and geographically defined mattered more than the label. Single estate farmed since the sixteenth century, a modernist winery built around a vast old oak tree, and wines that read far closer to grower champagne than supermarket cava.",
+ uncommon:"A producer who quit the appellation rather than dilute it — the politics are as interesting as the wine.",
+ url:"https://www.raventos.com", time:"1.5-2h", drive:"Sant Sadurní, on the AP-7 approach",
+ oct:"UNVERIFIED: October 2026 opening days and tour times could not be confirmed. Reservation required. October is post-harvest, so vineyard walks are still the draw, with autumn colour in the vines.",
+ booking:true, tags:["wine","food","culture","uncommon"]},
+
+{id:"canrafols", base:"penedes", type:"estate winery", name:"Can Ràfols dels Caus",
+ desc:"Not a cava house at all, and the more interesting for it. A fifteenth-century fortified farmhouse on a Roman villa, an ageing cellar cut directly into Garraf limestone, and twenty-six grape varieties farmed organically on hard karst. Xarel·lo and Incroccio Manzoni here taste like nothing else in the region.",
+ uncommon:"Twenty-six varieties on bare limestone, in a cellar quarried out of the rock.",
+ url:"https://canrafols.com/en/wine-tourism/", time:"2h", drive:"south of Vilafranca, pairs with a Garraf exit",
+ oct:"PARTLY VERIFIED: the estate wine bar, La Bodegueta, operates Mon-Fri 09:30-17:00 with booking recommended; weekends and holidays always require prior reservation. UNVERIFIED: the October 2026 guided-tour schedule specifically.",
+ booking:true, tags:["wine","food","nature","uncommon"]},
+
+{id:"vinseum", base:"penedes", type:"market town & museum", name:"Vilafranca del Penedès and VINSEUM",
+ desc:"The working capital of the Penedès rather than its shop window — a Saturday market, a serious old town, and VINSEUM housed in a medieval royal palace. Use it as the anchor for lunch and for buying from producers too small to run visits. Far more rewarding than Sant Sadurní's centre, which is mostly a rail stop with cava logos on it.",
+ uncommon:"A wine museum inside a 13th-century royal palace, in a town that still farms.",
+ url:"https://www.vinseum.cat", time:"2-3h", drive:"40 min from Barcelona",
+ oct:"UNVERIFIED: VINSEUM's October 2026 hours could not be confirmed; it typically closes Mondays. NOTE — Escumostra, the renamed Cavatast cava and gastronomy fair, falls 2-4 October 2026, which is BEFORE the trip window. You will miss it; do not plan around it.",
+ booking:false, tags:["wine","food","museum","culture"]},
+
+/* ============ THE RUN-IN TO BARCELONA ============ */
+{id:"segre", base:"barcelona", type:"whitewater park", name:"Parc Olímpic del Segre, La Seu d'Urgell",
+ desc:"Ten minutes past the Andorran customs post, the 1992 Olympic slalom channel still runs as a working whitewater park — an artificial rapid cut through river cobbles under the Cadí wall. Rafting and open-boat sessions run on release schedules rather than daily. The adjacent Alt Urgell dairy country is Catalonia's real cheese belt.",
+ uncommon:"An Olympic venue you can actually paddle, ten minutes from a duty-free border.",
+ url:"https://www.parcolimpic.cat", time:"2-3h", drive:"first stop after Andorra, 10 min south of the border",
+ oct:"UNVERIFIED: the October 2026 water-release calendar and rafting operating days could not be confirmed. The park itself is year-round, but whitewater sessions are release-dependent and thin out after summer — confirm by phone before committing.",
+ booking:true, tags:["adventure","nature","food","car-only"]},
+
+{id:"pedraforca", base:"barcelona", type:"mountain", name:"Pedraforca and the Gósol road",
+ desc:"The forked limestone massif that gives Catalan mountaineering its emblem. The approach road from Saldes to Gósol is the point as much as the summit — a high, empty balcony road through the Cadí-Moixeró park with beech and pine turning through October. Full ascent is a grade II scramble; the Gresolet beech wood loop gives the scenery without the exposure.",
+ uncommon:"Picasso spent the summer of 1906 in Gósol, and the light he found there is still there.",
+ url:"https://parcs.gencat.cat/ca/cadi/", time:"3h drive-and-walk, or a full day for the summit", drive:"40 min west off the C-16, before the Cadí tunnel",
+ oct:"VERIFIED as a recommended season: late spring and early autumn are the advised windows for Pedraforca — good temperatures, fewer people. UNVERIFIED: specific late-October 2026 trail and refuge status. First snow above 2,000 m is possible.",
+ booking:false, tags:["hiking","nature","car-only","adventure"]},
+
+{id:"queralt", base:"barcelona", type:"clifftop viewpoint", name:"Santuari de Queralt, Berga",
+ desc:"A sanctuary pinned to a cliff edge at 1,200 m, reached by a tight switchback road above Berga, known locally as the balcony of Catalonia. The building is modest; the ledge is not. A short circular path continues to the Garreta and Tres Creus viewpoints where the whole Berguedà basin opens out. Go late afternoon.",
+ uncommon:"A drive-up 1,200 m viewpoint with a bar attached and almost no foreign visitors.",
+ url:"http://www.turismeberga.cat", time:"1-1.5h", drive:"on the C-16, 25 min south of the Cadí tunnel",
+ oct:"VERIFIED: interior open daily 09:00-18:00, free entry — the extended 20:00 close is summer only, so October is the 18:00 close. The road is low-altitude enough to be reliably open.",
+ booking:false, tags:["nature","culture","romantic","car-only"]},
+
+{id:"cardona", base:"barcelona", type:"salt mine", name:"Muntanya de Sal, Cardona",
+ desc:"A genuine underground salt mountain — 500 m of galleries through translucent halite folded into ribbons, at a constant 17°C, entered by minibus and hard hat. Above it sits an 11th-century fortress-collegiate now run as a Parador. The geology is unlike anything else in Europe at this scale.",
+ uncommon:"A diapir of solid salt pushed to the surface — you walk inside the crystal.",
+ url:"https://cardonaturisme.cat/en/activitats/guided-tour-to-the-salt-mountain/", time:"2h including the castle", drive:"35 min west of the C-16 axis",
+ oct:"UNVERIFIED for October 2026 exactly. Secondary sources give Tue-Fri 10:00-15:00 and Sat 10:00-18:00 with limited places and advance online booking required — that is a narrow window, so confirm on the official site before routing your day around it.",
+ booking:true, tags:["adventure","culture","uncommon","car-only"]},
+
+{id:"montserrat", base:"barcelona", type:"mountain hike · anchor", name:"Montserrat — Sant Jeroni ridge at dawn",
+ desc:"The monastery is a coach-park and fails the test outright. The mountain does not. Drive up before the first Barcelona train, skip the basilica entirely, and take the Sant Joan side to the Sant Jeroni ridge — conglomerate pinnacles, sheer drops, and by mid-morning you are walking away from the crowd rather than into it. Back down by 11:00.",
+ uncommon:"Same mountain, opposite experience: arrive at first light and treat the abbey as a car park.",
+ url:"https://www.montserratvisita.com", time:"4-5h on foot from the top station", drive:"50 min from Manresa on the C-55",
+ oct:"PARTLY VERIFIED: 1-27 October is high season for the rack railway and funiculars; 28-31 October drops to low season with reduced frequency — a real difference if you travel in the last days of the month. UNVERIFIED: exact first-departure times. If you are hiking Sant Jeroni you should drive up rather than depend on the funicular anyway.",
+ booking:false, tags:["hiking","nature","car-only"]},
+
+{id:"salnitre", base:"barcelona", type:"cave", name:"Coves del Salnitre, Collbató",
+ desc:"The underside of Montserrat, on the quiet south-west flank the tour buses never reach. Around 400 m of developed passage through the massif's conglomerate, and the birthplace of Catalan speleology — this is where the discipline was effectively invented. Small guided groups on fixed slots, a village with decent lunch, and none of the monastery's traffic.",
+ uncommon:"Montserrat from the inside, in a village that ignores the mountain's fame.",
+ url:"https://www.collbato.cat/coves-de-montserrat/informacio.htm", time:"1.5h", drive:"Collbató, on the A-2 side en route to the Penedès",
+ oct:"UNVERIFIED: October 2026 slot times could not be confirmed. Visits run on fixed timed slots, typically late-morning and mid-afternoon, with advance online reservation required — the caves are not walk-up.",
+ booking:true, tags:["adventure","nature","uncommon","car-only"]},
+
+{id:"garraf", base:"barcelona", type:"coast road", name:"The Garraf corniche and Sitges",
+ desc:"The C-31 between Sitges and Castelldefels is cut into sea cliffs above the Mediterranean — a genuinely good driving road and the only ocean on this axis. Sitges itself is busy but October empties it considerably; the Garraf coves and the odd Gaudí-adjacent Celler de Garraf are the quieter draws. Time it for sunset into Barcelona.",
+ uncommon:"The Costa Brava is north-east of Barcelona, the wrong direction entirely from Andorra. This is the correct coast for this route.",
+ url:"https://www.sitgesanytime.com", time:"2-3h including a stop", drive:"the natural final leg into Barcelona",
+ oct:"UNVERIFIED: October 2026 beach-service status. The general point holds — the sea is still swimmable in October, crowds are well down from August, and the corniche is open year-round. Nothing here needs confirming; just drive it.",
+ booking:false, tags:["ocean","nature","romantic","car-only"]},
+
+{id:"santmiquelfai", base:"barcelona", type:"cliff monastery", name:"Sant Miquel del Fai",
+ desc:"A monastery built into a cliff overhang above a waterfall gorge, with paths running behind the falling water and through tufa caves. Closed for years, restored and reopened by the Diputació de Barcelona with a properly managed access system. Genuinely strange architecture-in-geology, and still relatively unknown to non-Catalan visitors.",
+ uncommon:"Free entry and free parking, both by advance reservation — a rare combination that keeps numbers down.",
+ url:"https://parcs.diba.cat/web/santmiqueldelfai", time:"2h", drive:"OFF-AXIS — only worth it if you route via Vic and the C-17 rather than the Cadí tunnel; adds ~1h otherwise",
+ oct:"VERIFIED: open every day. From 1 September to 30 April the hours are 10:00-16:30 — the 10:00-18:00 schedule is 1 May to 31 August only — so October is the shorter day. Reservation required via the website and is free, as is parking.",
+ booking:true, tags:["nature","hiking","culture","uncommon","car-only"]}
+];
+
+/* ================================================================
+   ENGINE
+   ================================================================ */
+
+const TAGS = ["nature","hiking","ocean","adventure","wine","food","cooking","music","culture","museum","romantic","car-only","uncommon"];
+const MAX_ELEV = 2500;
+const LONG_DRIVE = 3;           // hours — user-set amber threshold
+const COUNTRY = {ES:"Spain", FR:"France", AD:"Andorra"};
+
+const byId = {};
+DATA.bases.forEach(b => byId[b.id] = b);
+
+/* ---- elevation colour band ---- */
+function band(e){
+  if(e < 100)  return {v:"--e0", i:0, label:"0–100 m"};
+  if(e < 300)  return {v:"--e1", i:1, label:"100–300 m"};
+  if(e < 900)  return {v:"--e2", i:2, label:"300–900 m"};
+  if(e < 1600) return {v:"--e3", i:3, label:"900–1600 m"};
+  return {v:"--e4", i:4, label:"1600 m +"};
+}
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const bandColor = e => cssVar(band(e).v);
+
+/* ---- dates (UTC throughout to dodge timezone drift) ---- */
+const D    = s => new Date(s + "T00:00:00Z");
+const iso  = d => d.toISOString().slice(0,10);
+const addD = (d,n) => new Date(d.getTime() + n*864e5);
+const diffD= (a,b) => Math.round((b - a)/864e5);
+const DOW  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MON  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmt  = d => DOW[d.getUTCDay()] + " " + d.getUTCDate() + " " + MON[d.getUTCMonth()];
+const fmtS = d => d.getUTCDate() + " " + MON[d.getUTCMonth()];
+
+/* ---- state ---- */
+let state = null;
+function defaultState(){
+  const p = DATA.presets[0];
+  return {
+    arrive:"2026-10-11", target:"2026-10-30", cruise:"2026-11-02",
+    nights:Object.assign({}, p.nights),
+    locks:{}, picks:p.picks.slice(), preset:p.id, filters:[]
+  };
+}
+
+/* ---- sequence & schedule ---- */
+function sequence(){
+  return DATA.bases
+    .filter(b => b.terminal || state.nights[b.id] !== undefined)
+    .sort((a,b) => a.order - b.order);
+}
+function legKey(a,b){ return a + ">" + b; }
+function legFor(a,b){
+  const k = legKey(a,b);
+  if(DATA.legs[k]) return Object.assign({est:false}, DATA.legs[k]);
+  const r = DATA.legs[legKey(b,a)];
+  if(r) return Object.assign({est:false}, r);
+  // great-circle fallback, inflated for real roads
+  const A = byId[a], B = byId[b], R = 6371;
+  const rad = x => x*Math.PI/180;
+  const dLat = rad(B.lat-A.lat), dLon = rad(B.lon-A.lon);
+  const h = Math.sin(dLat/2)**2 + Math.cos(rad(A.lat))*Math.cos(rad(B.lat))*Math.sin(dLon/2)**2;
+  const km = Math.round(2*R*Math.asin(Math.sqrt(h)) * 1.32);
+  const hilly = Math.max(A.elev, B.elev) > 900;
+  return {km, h:+(km/(hilly?58:78)).toFixed(2), toll:Math.round(km*0.06), road:"estimated", est:true};
+}
+
+function schedule(){
+  const seq = sequence();
+  const arrive = D(state.arrive), cruise = D(state.cruise), target = D(state.target);
+  const budget = Math.max(0, diffD(arrive, target));
+
+  const pre = seq.filter(b => !b.terminal);
+  const allocated = pre.reduce((s,b) => s + (state.nights[b.id]||0), 0);
+
+  const bcnActual = addD(arrive, allocated);
+  const bcnNights = Math.max(0, diffD(bcnActual, cruise));
+
+  let cur = arrive;
+  const stops = [];
+  pre.forEach(b => {
+    const n = state.nights[b.id]||0;
+    stops.push({base:b, nights:n, start:cur, end:addD(cur,n)});
+    cur = addD(cur,n);
+  });
+  const bcn = byId["barcelona"];
+  stops.push({base:bcn, nights:bcnNights, start:bcnActual, end:addD(bcnActual,bcnNights), terminal:true});
+
+  const legs = [];
+  for(let i=1;i<stops.length;i++){
+    const L = legFor(stops[i-1].base.id, stops[i].base.id);
+    legs.push(Object.assign({}, L, {
+      from:stops[i-1].base, to:stops[i].base, date:stops[i].start
+    }));
+  }
+  return {seq, stops, legs, budget, allocated, bcnActual, bcnNights,
+          delta:allocated - budget, totalNights:allocated + bcnNights};
+}
+
+/* ---- rebalancing ---------------------------------------------
+   Adding a night when the budget is full takes one from the last
+   unlocked base above its floor, so the trade-off is always visible.
+---------------------------------------------------------------- */
+let flashIds = [];
+function bump(id, dir){
+  const b = byId[id];
+  const S = schedule();
+  flashIds = [];
+
+  if(dir < 0){
+    if((state.nights[id]||0) <= b.min) return;
+    state.nights[id]--;
+    flashIds = [id];
+  } else {
+    if(S.allocated >= S.budget){
+      const donor = donorFor(id);
+      if(!donor){ toast("Everything else is locked or at its floor — free a night first."); shake(id); return; }
+      state.nights[donor]--;
+      flashIds = [id, donor];
+      toast("Took a night from " + byId[donor].name + ".");
+    } else {
+      flashIds = [id];
+    }
+    state.nights[id]++;
+  }
+  state.preset = null;
+  render();
+}
+function donorFor(skip){
+  const pre = sequence().filter(b => !b.terminal && b.id !== skip);
+  for(let i = pre.length-1; i >= 0; i--){
+    const b = pre[i];
+    if(state.locks[b.id]) continue;
+    if((state.nights[b.id]||0) > b.min) return b.id;
+  }
+  return null;
+}
+function shake(id){
+  const el = document.querySelector('[data-row="'+id+'"]');
+  if(!el) return;
+  el.animate([{transform:"translateX(0)"},{transform:"translateX(-4px)"},{transform:"translateX(4px)"},{transform:"translateX(0)"}],{duration:220});
+}
+
+function toggleSat(id){
+  const b = byId[id];
+  if(state.nights[id] !== undefined){
+    delete state.nights[id];
+    delete state.locks[id];
+  } else {
+    const S = schedule();
+    const want = Math.min(b.rec[0], Math.max(b.min, S.budget - S.allocated));
+    state.nights[id] = Math.max(b.min, want);
+    // pull the nights it needs from the tail, so the budget stays honest
+    let need = (state.nights[id]) - Math.max(0, S.budget - S.allocated);
+    while(need > 0){
+      const d = donorFor(id);
+      if(!d) break;
+      state.nights[d]--; need--;
+      flashIds.push(d);
+    }
+  }
+  state.preset = null;
+  render();
+}
+
+function loadPreset(pid){
+  const p = DATA.presets.find(x => x.id === pid);
+  if(!p) return;
+  state.nights = Object.assign({}, p.nights);
+  state.locks = {};
+  state.picks = p.picks.slice();
+  state.preset = p.id;
+  render();
+  toast("Loaded “" + p.name + "”. Edit away.");
+}
+
+/* ---- preset scoring for the cards ---- */
+function scorePreset(p){
+  const save = {nights:state.nights, locks:state.locks};
+  state.nights = p.nights; state.locks = {};
+  const S = schedule();
+  const longest = S.legs.reduce((m,l) => Math.max(m,l.h), 0);
+  const outdoor = S.stops.filter(s => s.base.outdoor).reduce((n,s) => n+s.nights, 0);
+  state.nights = save.nights; state.locks = save.locks;
+  return {drives:S.legs.length, longest, outdoor};
+}
+
+/* ================================================================
+   RENDER
+   ================================================================ */
+function render(){
+  const S = schedule();
+  renderRoute(S); renderTransect(S); renderMeter(S); renderRows(S);
+  renderSats(S); renderMetrics(S); renderWarns(S); renderPlan(S);
+  renderPresets(); syncDates(); writeHash();
+  document.querySelectorAll(".preset").forEach(el =>
+    el.setAttribute("aria-pressed", el.dataset.preset === state.preset));
+  flashIds = [];
+}
+
+function renderRoute(S){
+  const el = document.getElementById("routestrip");
+  el.innerHTML = S.stops.map(s =>
+    '<b><span class="flagdot" style="background:'+bandColor(s.base.elev)+'"></span>'+
+    s.base.name + ' <span style="color:var(--ink-3)">'+s.nights+'</span></b>'
+  ).join('<i>&rarr;</i>');
+}
+
+/* ---- the hero: elevation transect with nights as width ---- */
+function renderTransect(S){
+  const svg = document.getElementById("transect");
+  const W = Math.max(320, svg.clientWidth || svg.parentNode.clientWidth);
+  const H = W < 620 ? 262 : 322;
+  const padL = 34, padR = 12, padT = 26, padB = 62;
+  const CONN = 0.62;                       // day-units given to each ramp
+
+  const units = S.stops.reduce((n,s) => n + Math.max(s.nights, .55), 0) + CONN*S.legs.length;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const SEA = 22;                          // sea level sits this far above the axis,
+  const X = u => padL + (u/units)*iw;      // so coastal bases still have visible mass
+  const Y = e => padT + ih - SEA - (Math.min(e,MAX_ELEV)/MAX_ELEV)*(ih - SEA);
+  const base = padT + ih;
+
+  let s = '';
+  s += '<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">'+
+       '<stop offset="0" stop-color="'+cssVar('--surface')+'"/>'+
+       '<stop offset="1" stop-color="'+cssVar('--surface-2')+'"/></linearGradient></defs>';
+  s += '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="url(#sky)"/>';
+
+  // elevation gridlines
+  for(let e=0; e<=MAX_ELEV; e+=500){
+    s += '<line x1="'+padL+'" y1="'+Y(e)+'" x2="'+(W-padR)+'" y2="'+Y(e)+'" stroke="'+cssVar('--rule-2')+'" stroke-width="1"/>';
+    s += '<text x="'+(padL-6)+'" y="'+(Y(e)+3.5)+'" text-anchor="end" font-family="DM Mono, monospace" font-size="9" fill="'+cssVar('--ink-3')+'">'+e+'</text>';
+  }
+
+  // build the profile
+  let u = 0;
+  const pts = [], plateaus = [], ramps = [];
+  S.stops.forEach((st,i) => {
+    const w = Math.max(st.nights, .55);
+    const y = Y(st.base.elev);
+    pts.push([X(u), y], [X(u+w), y]);
+    plateaus.push({st, x0:X(u), x1:X(u+w), y, cx:X(u+w/2)});
+    u += w;
+    if(i < S.legs.length){
+      const L = S.legs[i], x0 = X(u), x1 = X(u+CONN);
+      if(L.peak && L.peak > Math.max(st.base.elev, S.stops[i+1].base.elev) + 120){
+        pts.push([(x0+x1)/2, Y(L.peak)]);
+        ramps.push({L, x0, x1, peakY:Y(L.peak)});
+      } else ramps.push({L, x0, x1, peakY:null});
+      u += CONN;
+    }
+  });
+
+  // filled area under the profile
+  const line = pts.map(p => p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+  s += '<polygon points="'+X(0)+','+base+' '+line+' '+X(units)+','+base+'" fill="'+cssVar('--ink')+'" opacity="0.05"/>';
+
+  // country strip — runs of consecutive same-country bases, with border ticks
+  let cu = 0; const runs = [];
+  S.stops.forEach((st,i) => {
+    const w = Math.max(st.nights,.55) + (i < S.legs.length ? CONN : 0);
+    const last = runs[runs.length-1];
+    if(last && last.c === st.base.country) last.u1 = cu + w;
+    else runs.push({c:st.base.country, u0:cu, u1:cu + w});
+    cu += w;
+  });
+  runs.forEach((r,i) => {
+    const x0 = X(r.u0), x1 = X(Math.min(r.u1, units));
+    s += '<rect x="'+x0+'" y="'+(base+7)+'" width="'+Math.max(x1-x0,1)+'" height="5" fill="'+cssVar('--ink')+'" opacity="'+[0.13,0.26,0.40][i%3]+'"/>';
+    if(x1-x0 > 46)
+      s += '<text x="'+((x0+x1)/2)+'" y="'+(base+49)+'" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" letter-spacing="1.4" fill="'+cssVar('--ink-3')+'">'+esc(COUNTRY[r.c].toUpperCase())+'</text>';
+    if(i) s += '<line x1="'+x0+'" y1="'+(base+3)+'" x2="'+x0+'" y2="'+(base+16)+'" stroke="'+cssVar('--ink')+'" stroke-width="1.2"/>';
+  });
+
+  // plateau blocks
+  plateaus.forEach(p => {
+    const c = bandColor(p.st.base.elev), w = p.x1 - p.x0;
+    s += '<rect x="'+p.x0+'" y="'+p.y+'" width="'+Math.max(w-1.5,2)+'" height="'+Math.max(base-p.y,4)+'" fill="'+c+'" opacity="0.82"/>';
+    s += '<rect x="'+p.x0+'" y="'+(p.y-2.5)+'" width="'+Math.max(w-1.5,2)+'" height="2.5" fill="'+cssVar('--ink')+'"/>';
+    if(w > 30){
+      const nm = p.st.base.name;
+      const label = (w < 74 && nm.length > 10) ? nm.slice(0,8)+"…" : nm;
+      s += '<text x="'+p.cx+'" y="'+(p.y-8)+'" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="'+(w<74?10:11.5)+'" fill="'+cssVar('--ink')+'">'+esc(label)+'</text>';
+      if(w > 44)
+        s += '<text x="'+p.cx+'" y="'+(base+26)+'" text-anchor="middle" font-family="DM Mono, monospace" font-size="9.5" fill="'+cssVar('--ink-3')+'">'+p.st.nights+'n</text>';
+      if(w > 96)
+        s += '<text x="'+p.cx+'" y="'+(base+38)+'" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" fill="'+cssVar('--ink-3')+'">'+fmtS(p.st.start)+'</text>';
+    }
+  });
+
+  // ramps: driving days
+  ramps.forEach(r => {
+    const cx = (r.x0 + r.x1)/2, long = r.L.h > LONG_DRIVE;
+    const col = long ? cssVar('--warn') : cssVar('--ink-3');
+    if(r.peakY !== null){
+      s += '<circle cx="'+cx+'" cy="'+r.peakY+'" r="3" fill="'+cssVar('--e4')+'"/>';
+      s += '<text x="'+cx+'" y="'+(r.peakY-7)+'" text-anchor="middle" font-family="DM Mono, monospace" font-size="8.5" fill="'+cssVar('--ink-3')+'">'+r.L.peak+'</text>';
+    }
+    s += '<text x="'+cx+'" y="'+(base+26)+'" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" fill="'+col+'">'+hrs(r.L.h)+'</text>';
+    s += '<path d="M'+(cx-3.5)+','+(base+31)+' L'+(cx+3.5)+','+(base+34)+' L'+(cx-3.5)+','+(base+37)+'" fill="none" stroke="'+col+'" stroke-width="1.4"/>';
+  });
+
+  // the profile line itself
+  s += '<polyline points="'+line+'" fill="none" stroke="'+cssVar('--ink')+'" stroke-width="1.6" stroke-linejoin="round"/>';
+
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.setAttribute("height",H);
+  svg.innerHTML = s;
+
+  document.getElementById("transect-desc").textContent =
+    "Elevation profile of the route. " + S.stops.map(st =>
+      st.base.name + ", " + st.nights + " nights at " + st.base.elev + " metres"
+    ).join("; ") + ". Total driving " + Math.round(S.legs.reduce((k,l)=>k+l.km,0)) + " kilometres.";
+
+  document.getElementById("legend").innerHTML =
+    [0,1,2,3,4].map(i => {
+      const e = [50,200,600,1200,2000][i];
+      return '<span><i style="background:'+bandColor(e)+'"></i>'+band(e).label+'</span>';
+    }).join('') +
+    '<span style="color:var(--warn)">&#9656; drive over '+LONG_DRIVE+'h</span>';
+}
+
+const hrs = h => Math.floor(h)+"h"+String(Math.round((h%1)*60)).padStart(2,"0");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function renderMeter(S){
+  document.getElementById("m-alloc").textContent = S.allocated;
+  document.getElementById("m-budget").textContent = S.budget;
+  const pct = S.budget ? Math.min(100, S.allocated/S.budget*100) : 0;
+  const over = S.budget ? Math.min(100, Math.max(0, S.delta)/S.budget*100) : 0;
+  document.getElementById("m-fill").style.width = (S.delta > 0 ? 100-over : pct) + "%";
+  document.getElementById("m-overfill").style.width = (S.delta > 0 ? over : 0) + "%";
+  document.getElementById("m-spare").textContent = "+" + S.bcnNights + " in Barcelona";
+
+  const msg = document.getElementById("m-msg");
+  if(S.delta > 0){
+    msg.className = "meter-msg over";
+    msg.innerHTML = "<b>" + S.delta + " night" + (S.delta>1?"s":"") + " past your buffer.</b> You reach Barcelona on " +
+      fmt(S.bcnActual) + ", leaving " + S.bcnNights + " night" + (S.bcnNights===1?"":"s") + " before the ship sails.";
+  } else if(S.delta < 0){
+    msg.className = "meter-msg under";
+    msg.textContent = (-S.delta) + " night" + (S.delta<-1?"s":"") + " unplaced — you would roll into Barcelona early, on " +
+      fmt(S.bcnActual) + ", with " + S.bcnNights + " nights there.";
+  } else {
+    msg.className = "meter-msg ok";
+    msg.textContent = "Balanced. Barcelona on " + fmt(S.bcnActual) + ", " + S.bcnNights + " nights before sailing.";
+  }
+}
+
+function renderRows(S){
+  const host = document.getElementById("rows");
+  host.innerHTML = "";
+  S.stops.forEach(st => {
+    const b = st.base, row = document.createElement("div");
+    row.className = "brow" + (flashIds.includes(b.id) ? " flash" : "");
+    row.dataset.row = b.id;
+
+    const below = !b.terminal && st.nights < b.rec[0];
+    const meta = b.terminal
+      ? "derived &middot; " + fmtS(st.start) + " &ndash; " + fmtS(st.end)
+      : (st.nights ? fmtS(st.start) + " &ndash; " + fmtS(st.end) : "&mdash;") +
+        " &middot; " + b.elev + " m" + (below ? " &middot; below " + b.rec[0] + "n" : "");
+
+    row.innerHTML =
+      '<div class="bswatch" style="background:'+bandColor(b.elev)+'"></div>'+
+      '<div><div class="bname">'+esc(b.name)+(b.sub?' <span style="color:var(--ink-3);font-weight:400;font-size:12.5px">'+esc(b.sub)+'</span>':'')+'</div>'+
+      '<div class="bmeta'+(below?' warn':'')+'">'+meta+'</div></div>';
+
+    if(b.terminal){
+      const f = document.createElement("div");
+      f.className = "bfixed"; f.textContent = st.nights + "n";
+      row.appendChild(f);
+      row.appendChild(document.createElement("div"));
+    } else {
+      const st2 = document.createElement("div");
+      st2.className = "stepper";
+      const minus = mkBtn("&minus;","Remove a night from "+b.name, () => bump(b.id,-1));
+      minus.disabled = st.nights <= b.min;
+      const n = document.createElement("span"); n.className = "n"; n.textContent = st.nights;
+      const plus = mkBtn("+","Add a night to "+b.name, () => bump(b.id,1));
+      st2.append(minus, n, plus);
+      row.appendChild(st2);
+
+      const lk = document.createElement("button");
+      lk.className = "lockbtn";
+      lk.setAttribute("aria-pressed", !!state.locks[b.id]);
+      lk.setAttribute("aria-label","Lock "+b.name+" against rebalancing");
+      lk.title = "Lock against rebalancing";
+      lk.textContent = state.locks[b.id] ? "◆" : "◇";
+      lk.onclick = () => { state.locks[b.id] = !state.locks[b.id]; state.preset=null; render(); };
+      row.appendChild(lk);
+    }
+
+    host.appendChild(row);
+    if(below && !b.terminal){
+      const w = document.createElement("div");
+      w.style.cssText = "font-size:12.5px;color:var(--warn);padding:0 0 8px 23px;line-height:1.4";
+      w.textContent = b.recWhy;
+      host.appendChild(w);
+    }
+  });
+}
+function mkBtn(html,label,fn){
+  const b = document.createElement("button");
+  b.innerHTML = html; b.setAttribute("aria-label",label); b.onclick = fn;
+  return b;
+}
+
+function renderSats(S){
+  const host = document.getElementById("sats");
+  host.innerHTML = "";
+  DATA.bases.filter(b => !b.core).forEach(b => {
+    const on = state.nights[b.id] !== undefined;
+    const el = document.createElement("button");
+    el.className = "sat";
+    el.setAttribute("aria-pressed", on);
+    // detour cost against the direct line it replaces
+    const cost = detourCost(b);
+    el.innerHTML =
+      '<div class="box">✓</div>'+
+      '<div><div class="sname">'+esc(b.name)+(b.sub?' <span style="color:var(--ink-3);font-weight:400">'+esc(b.sub)+'</span>':'')+'</div>'+
+      '<div class="swhy">'+esc(b.satWhy||"")+'</div>'+
+      '<div class="scost'+(cost.km<=40?' free':'')+'">'+(cost.km<=5?'no detour':'+'+cost.km+' km &middot; +'+hrs(Math.max(cost.h,0))) +
+      ' &middot; suggests '+b.rec[0]+'&ndash;'+b.rec[1]+'n</div>'+
+      (b.costNote?'<div class="scost" style="color:var(--ink-2);white-space:normal;line-height:1.35;margin-top:3px">'+esc(b.costNote)+'</div>':'')+
+      '</div>';
+    el.onclick = () => toggleSat(b.id);
+    host.appendChild(el);
+  });
+}
+/* what enabling this base costs against the route without it */
+function detourCost(b){
+  const on = state.nights[b.id] !== undefined;
+  const save = Object.assign({}, state.nights);
+  if(!on) state.nights[b.id] = b.min;
+  const withIt = legTotals();
+  delete state.nights[b.id];
+  const without = legTotals();
+  state.nights = save;
+  return {km: withIt.km - without.km, h: withIt.h - without.h};
+}
+function legTotals(){
+  const seq = DATA.bases.filter(b => b.terminal || state.nights[b.id] !== undefined).sort((a,b)=>a.order-b.order);
+  let km = 0, h = 0, toll = 0;
+  for(let i=1;i<seq.length;i++){
+    const L = legFor(seq[i-1].id, seq[i].id);
+    km += L.km; h += L.h; toll += L.toll||0;
+  }
+  return {km, h, toll};
+}
+
+function renderMetrics(S){
+  const km = S.legs.reduce((n,l)=>n+l.km,0);
+  const h  = S.legs.reduce((n,l)=>n+l.h,0);
+  const toll = S.legs.reduce((n,l)=>n+(l.toll||0),0);
+  const longest = S.legs.reduce((m,l)=>l.h>m.h?l:m, {h:0});
+  const outdoor = S.stops.filter(s=>s.base.outdoor).reduce((n,s)=>n+s.nights,0);
+  const weeks = Math.max(S.totalNights/7, .5);
+
+  const cells = [
+    {v:S.totalNights, k:"nights total"},
+    {v:S.stops.length, k:"bases"},
+    {v:S.legs.length, k:"driving days"},
+    {v:km, k:"kilometres"},
+    {v:hrs(h), k:"behind the wheel"},
+    {v:longest.h?hrs(longest.h):"—", k:"longest drive", amber:longest.h>LONG_DRIVE},
+    {v:(S.legs.length/weeks).toFixed(1), k:"moves / week"},
+    {v:outdoor, k:"nights outdoors"},
+    {v:"€"+toll, k:"tolls, approx"}
+  ];
+  document.getElementById("metrics").innerHTML = cells.map(c =>
+    '<div class="mcell'+(c.amber?' amber':'')+'"><div class="v">'+c.v+'</div><div class="k">'+c.k+'</div></div>'
+  ).join("");
+
+  document.getElementById("legs").innerHTML = S.legs.map(l => {
+    const long = l.h > LONG_DRIVE;
+    return '<div class="legrow'+(long?' long':'')+'">'+
+      '<div class="ldate">'+fmt(l.date)+'</div>'+
+      '<div class="lroute">'+esc(l.from.name)+' &rarr; '+esc(l.to.name)+
+        ' <span class="mono" style="color:var(--ink-3)">'+esc(l.road)+(l.est?" · est":"")+'</span>'+
+        (l.peak?'<br><span class="peak">via '+esc(l.peakName||"")+' '+l.peak+' m</span>':'')+
+      '</div>'+
+      '<div class="lnum">'+l.km+' km &middot; '+hrs(l.h)+'</div></div>';
+  }).join("") + (longest.h>LONG_DRIVE
+    ? '<div style="font-size:12.5px;color:var(--warn);margin-top:8px;line-height:1.4">Longest drive is '+hrs(longest.h)+' on '+fmt(longest.date)+', '+esc(longest.from.name)+' to '+esc(longest.to.name)+'.</div>' : "");
+}
+
+function renderWarns(S){
+  const host = document.getElementById("warns");
+  const active = new Set(S.stops.map(s => s.base.id));
+  S.legs.forEach(l => active.add("leg:" + legKey(l.from.id, l.to.id)));
+
+  const list = DATA.warnings.filter(w => w.on === "always" || active.has(w.on));
+
+  // back-to-back driving days, computed rather than authored
+  const b2b = [];
+  for(let i=1;i<S.legs.length;i++)
+    if(diffD(S.legs[i-1].date, S.legs[i].date) === 1) b2b.push(S.legs[i]);
+
+  let html = list.map(w =>
+    '<div class="warn-item '+(w.level==="alert"?"alert":w.level==="info"?"info":"")+'">'+
+    '<b>'+esc(w.title)+'</b>'+esc(w.body)+
+    (w.src?'<div class="src">'+esc(w.src)+'</div>':'')+'</div>'
+  ).join("");
+
+  if(b2b.length) html +=
+    '<div class="warn-item"><b>'+b2b.length+' back-to-back driving day'+(b2b.length>1?"s":"")+'</b>'+
+    'You move on consecutive days on ' + b2b.map(l=>fmtS(l.date)).join(", ") +
+    '. With this much slack that is usually a sign a base is a night short rather than a genuine constraint.</div>';
+
+  host.innerHTML = html;
+}
+
+function renderPresets(){
+  const host = document.getElementById("presets");
+  if(host.dataset.built) return;
+  host.dataset.built = "1";
+  host.innerHTML = DATA.presets.map(p => {
+    const s = scorePreset(p);
+    return '<button class="preset" data-preset="'+p.id+'" aria-pressed="false">'+
+      '<span class="pname">'+esc(p.name)+'</span>'+
+      '<span class="pdesc">'+esc(p.desc)+'</span>'+
+      '<span class="pstats"><span>'+s.drives+' drives</span><span>max '+hrs(s.longest)+'</span><span>'+s.outdoor+'n outdoors</span></span>'+
+    '</button>';
+  }).join("");
+  host.querySelectorAll(".preset").forEach(el =>
+    el.onclick = () => loadPreset(el.dataset.preset));
+}
+
+/* ---- POI explorer ---- */
+function renderFilters(){
+  const host = document.getElementById("filters");
+  host.innerHTML = TAGS.map(t =>
+    '<button class="tag" data-tag="'+t+'" aria-pressed="'+state.filters.includes(t)+'">'+t+'</button>'
+  ).join("") + '<button class="tag clear" data-tag="__clear">clear</button>';
+  host.querySelectorAll(".tag").forEach(el => el.onclick = () => {
+    const t = el.dataset.tag;
+    if(t === "__clear") state.filters = [];
+    else state.filters = state.filters.includes(t)
+      ? state.filters.filter(x => x !== t) : state.filters.concat(t);
+    renderFilters(); renderExplorer(); writeHash();
+  });
+}
+function renderExplorer(){
+  const host = document.getElementById("explorer");
+  const S = schedule();
+  const activeIds = S.stops.map(s => s.base.id);
+  const ordered = DATA.bases.slice().sort((a,b)=>a.order-b.order);
+  host.innerHTML = "";
+
+  ordered.forEach(b => {
+    let items = POIS.filter(p => p.base === b.id);
+    if(state.filters.length)
+      items = items.filter(p => state.filters.every(t => p.tags.includes(t)));
+    if(!items.length) return;
+
+    const on = activeIds.includes(b.id);
+    const g = document.createElement("div");
+    g.className = "basegroup";
+    g.style.opacity = on ? 1 : .5;
+    g.innerHTML =
+      '<h3><span class="swatch" style="background:'+bandColor(b.elev)+'"></span>'+esc(b.name)+
+        (b.sub?' <span style="font-weight:400;color:var(--ink-3);font-size:15px">'+esc(b.sub)+'</span>':'')+'</h3>'+
+      '<div class="gmeta">'+COUNTRY[b.country]+' &middot; '+b.elev+' m &middot; '+items.length+' entries'+
+        (on ? '' : ' &middot; base not currently in the route')+'</div>';
+
+    const cards = document.createElement("div");
+    cards.className = "cards";
+    items.forEach(p => cards.appendChild(card(p)));
+    g.appendChild(cards);
+    host.appendChild(g);
+  });
+
+  if(!host.children.length)
+    host.innerHTML = '<p class="empty">Nothing matches every one of those tags. Try fewer.</p>';
+}
+function card(p){
+  const el = document.createElement("div");
+  const picked = state.picks.includes(p.id);
+  el.className = "card" + (picked ? " picked" : "");
+  const unver = /^UNVERIFIED|^PARTLY|^PARTIALLY|UNVERIFIED:/.test(p.oct);
+  el.innerHTML =
+    '<div class="ctype">'+esc(p.type)+'</div>'+
+    '<h4>'+esc(p.name)+'</h4>'+
+    '<div class="cdesc">'+esc(p.desc)+'</div>'+
+    '<div class="cunc">'+esc(p.uncommon)+'</div>'+
+    '<div class="coct'+(unver?' unver':'')+'"><b>OCT 2026 &middot; </b>'+esc(p.oct)+'</div>'+
+    '<div class="ctags">'+p.tags.map(t=>'<i>'+t+'</i>').join("")+'</div>'+
+    '<div class="cmeta">'+esc(p.time)+' &middot; '+esc(p.drive)+'</div>'+
+    '<div class="cfoot">'+
+      '<button class="addbtn">'+(picked?"✓ in plan":"+ add")+'</button>'+
+      (p.booking?'<span class="bookflag">book ahead</span>':'')+
+      '<a class="booklink" href="'+esc(p.url)+'" target="_blank" rel="noopener">source ↗</a>'+
+    '</div>';
+  el.querySelector(".addbtn").onclick = () => {
+    state.picks = picked ? state.picks.filter(x=>x!==p.id) : state.picks.concat(p.id);
+    state.preset = null;
+    renderExplorer(); renderPlan(schedule()); writeHash();
+  };
+  return el;
+}
+
+/* ---- day-by-day ---- */
+function renderPlan(S){
+  const host = document.getElementById("plan");
+  host.innerHTML = "";
+  S.stops.forEach((st,i) => {
+    const b = st.base;
+    const row = document.createElement("div");
+    row.className = "planbase";
+    const leg = i > 0 ? S.legs[i-1] : null;
+    const items = POIS.filter(p => p.base === b.id && state.picks.includes(p.id));
+
+    row.innerHTML =
+      '<div class="pleft">'+
+        '<div class="pname"><span class="swatch" style="background:'+bandColor(b.elev)+'"></span>'+esc(b.name)+'</div>'+
+        '<div class="pdate">'+(st.nights? fmt(st.start)+'<br>&ndash; '+fmt(st.end) : "—")+'</div>'+
+        '<div class="pnights">'+st.nights+' night'+(st.nights===1?"":"s")+' &middot; '+b.elev+' m</div>'+
+      '</div><div class="pright"></div>';
+
+    const right = row.querySelector(".pright");
+    if(leg){
+      const d = document.createElement("div");
+      d.className = "travel" + (leg.h > LONG_DRIVE ? " long" : "");
+      d.textContent = "Drive " + fmt(leg.date) + " · " + leg.from.name + " → " + leg.to.name +
+        " · " + leg.km + " km · " + hrs(leg.h) + (leg.peak ? " · over " + (leg.peakName||"") + " " + leg.peak + " m" : "");
+      right.appendChild(d);
+    }
+    if(items.length){
+      const list = document.createElement("div");
+      list.className = "planitems";
+      items.forEach(p => {
+        const it = document.createElement("div");
+        it.className = "planitem";
+        it.innerHTML = '<div class="pi-name">'+esc(p.name)+
+          (p.booking?' <span class="bookflag">book</span>':'')+
+          '<div class="pi-meta" style="white-space:normal;margin-top:2px">'+esc(p.oct.slice(0,120))+(p.oct.length>120?"…":"")+'</div></div>'+
+          '<div class="pi-meta">'+esc(p.time)+'</div>';
+        const rm = document.createElement("button");
+        rm.className = "rm"; rm.innerHTML = "×";
+        rm.setAttribute("aria-label","Remove "+p.name+" from the plan");
+        rm.onclick = () => { state.picks = state.picks.filter(x=>x!==p.id); state.preset=null; renderExplorer(); renderPlan(schedule()); writeHash(); };
+        it.appendChild(rm);
+        list.appendChild(it);
+      });
+      right.appendChild(list);
+    } else if(st.nights) {
+      const e = document.createElement("p");
+      e.className = "empty";
+      e.textContent = "Nothing shortlisted here yet.";
+      right.appendChild(e);
+    }
+    host.appendChild(row);
+  });
+}
+
+/* ---- date inputs ---- */
+function syncDates(){
+  document.getElementById("f-arrive").value = state.arrive;
+  document.getElementById("f-target").value = state.target;
+  document.getElementById("f-cruise").value = state.cruise;
+  const d = D(state.arrive).getUTCDay();               // 2=Tue 4=Thu 6=Sat
+  const direct = (d===2||d===4||d===6);
+  const h = document.getElementById("hint-arrive");
+  h.className = "hint" + (direct ? " good" : "");
+  h.innerHTML = direct
+    ? "Wizz Air flies BUD&ndash;BIO nonstop on Tue/Thu/Sat &mdash; this date is a direct, about 3h."
+    : "No nonstop on this weekday. Realistic one-stops go via Barcelona or Milan, 6&ndash;7h door to door.";
+}
+
+/* ---- URL hash: the whole configuration, no storage APIs ---- */
+function writeHash(){
+  const n = sequence().filter(b=>!b.terminal)
+    .map(b => b.id + ":" + (state.nights[b.id]||0) + (state.locks[b.id] ? "!" : "")).join(",");
+  const parts = [
+    "a=" + state.arrive, "t=" + state.target, "c=" + state.cruise,
+    "n=" + n,
+    "p=" + state.picks.join(","),
+    state.filters.length ? "f=" + state.filters.join(",") : "",
+    state.preset ? "s=" + state.preset : ""
+  ].filter(Boolean);
+  history.replaceState(null, "", "#" + parts.join("&"));
+}
+function readHash(){
+  const h = location.hash.slice(1);
+  if(!h) return false;
+  const q = {};
+  h.split("&").forEach(kv => { const i = kv.indexOf("="); if(i>0) q[kv.slice(0,i)] = decodeURIComponent(kv.slice(i+1)); });
+  if(!q.a || !q.n) return false;
+  const s = defaultState();
+  s.arrive = q.a; s.target = q.t || s.target; s.cruise = q.c || s.cruise;
+  s.nights = {}; s.locks = {};
+  q.n.split(",").forEach(tok => {
+    const lock = tok.endsWith("!");
+    if(lock) tok = tok.slice(0,-1);
+    const [id,v] = tok.split(":");
+    if(byId[id] && !byId[id].terminal){ s.nights[id] = Math.max(0, parseInt(v,10)||0); if(lock) s.locks[id]=true; }
+  });
+  s.picks = q.p ? q.p.split(",").filter(Boolean) : [];
+  s.filters = q.f ? q.f.split(",").filter(t => TAGS.includes(t)) : [];
+  s.preset = q.s || null;
+  if(!Object.keys(s.nights).length) return false;
+  state = s;
+  return true;
+}
+
+/* ---- markdown export ---- */
+function markdown(){
+  const S = schedule();
+  const km = S.legs.reduce((n,l)=>n+l.km,0), h = S.legs.reduce((n,l)=>n+l.h,0);
+  const toll = S.legs.reduce((n,l)=>n+(l.toll||0),0);
+  const longest = S.legs.reduce((m,l)=>l.h>m.h?l:m,{h:0});
+  const L = [];
+
+  L.push("# Bilbao to Barcelona — October 2026", "");
+  L.push("Two travellers, one-way rental car, " + fmt(D(state.arrive)) + " to " + fmt(D(state.cruise)) + ".", "");
+  L.push("| | |","|---|---|");
+  L.push("| Nights | " + S.totalNights + " |");
+  L.push("| Bases | " + S.stops.length + " |");
+  L.push("| Driving days | " + S.legs.length + " |");
+  L.push("| Distance | " + km + " km |");
+  L.push("| Time driving | " + hrs(h) + " |");
+  L.push("| Longest drive | " + (longest.h?hrs(longest.h)+" on "+fmt(longest.date)+", "+longest.from.name+" to "+longest.to.name:"—") + " |");
+  L.push("| Tolls, approx | €" + toll + " |");
+  L.push("| Barcelona | " + fmt(S.bcnActual) + ", " + S.bcnNights + " nights before sailing |");
+  L.push("");
+
+  L.push("## Day by day","");
+  S.stops.forEach((st,i) => {
+    const leg = i>0 ? S.legs[i-1] : null;
+    if(leg){
+      L.push("**Drive " + fmt(leg.date) + "** — " + leg.from.name + " → " + leg.to.name +
+        ", " + leg.km + " km, " + hrs(leg.h) + " via " + leg.road +
+        (leg.peak ? ", over " + (leg.peakName||"") + " at " + leg.peak + " m" : "") +
+        (leg.toll ? ", tolls ~€" + leg.toll : "") + ".");
+      L.push("");
+    }
+    L.push("### " + st.base.name + (st.base.sub ? " (" + st.base.sub + ")" : ""));
+    L.push("*" + (st.nights ? fmt(st.start) + " – " + fmt(st.end) : "—") + " · " +
+      st.nights + " night" + (st.nights===1?"":"s") + " · " + st.base.elev + " m · " + COUNTRY[st.base.country] + "*");
+    L.push("");
+    const items = POIS.filter(p => p.base === st.base.id && state.picks.includes(p.id));
+    if(!items.length){ L.push("- [ ] nothing shortlisted", ""); return; }
+    items.forEach(p => {
+      L.push("- [ ] **" + p.name + "**" + (p.booking ? " — **BOOK AHEAD**" : ""));
+      L.push("    - " + p.desc);
+      L.push("    - Why: " + p.uncommon);
+      L.push("    - Time: " + p.time + " · " + p.drive);
+      L.push("    - October 2026: " + p.oct);
+      L.push("    - <" + p.url + ">");
+    });
+    L.push("");
+  });
+
+  const booked = POIS.filter(p => state.picks.includes(p.id) && p.booking);
+  if(booked.length){
+    L.push("## Book before anything else","");
+    booked.forEach(p => L.push("- [ ] " + p.name + " — <" + p.url + ">"));
+    L.push("");
+  }
+
+  const active = new Set(S.stops.map(s=>s.base.id));
+  S.legs.forEach(l => active.add("leg:" + legKey(l.from.id, l.to.id)));
+  const warns = DATA.warnings.filter(w => w.on === "always" || active.has(w.on));
+  if(warns.length){
+    L.push("## Logistics","");
+    warns.forEach(w => { L.push("### " + w.title); L.push(w.body); if(w.src) L.push("");
+      if(w.src) L.push("> " + w.src); L.push(""); });
+  }
+
+  L.push("---");
+  L.push("Reopen this configuration: <" + location.href + ">");
+  return L.join("\n");
+}
+
+/* ---- misc ui ---- */
+let toastT;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"), 2600);
+}
+
+/* ================================================================
+   BOOT
+   ================================================================ */
+function boot(){
+  if(!readHash()) state = defaultState();
+
+  ["arrive","target","cruise"].forEach(k => {
+    document.getElementById("f-"+k).addEventListener("change", e => {
+      const v = e.target.value; if(!v) return;
+      state[k] = v;
+      // keep the three dates in a sane order
+      if(diffD(D(state.arrive), D(state.target)) < 1) state.target = iso(addD(D(state.arrive),1));
+      if(diffD(D(state.target), D(state.cruise)) < 0) state.cruise = iso(D(state.target));
+      state.preset = null;
+      render();
+    });
+  });
+
+  document.getElementById("btn-export").onclick = () => {
+    document.getElementById("dlg-text").value = markdown();
+    document.getElementById("dlg").showModal();
+    document.getElementById("dlg-text").select();
+  };
+  document.getElementById("dlg-close").onclick = () => document.getElementById("dlg").close();
+  document.getElementById("btn-print").onclick = () => window.print();
+  document.getElementById("btn-reset").onclick = () => { loadPreset("balanced"); };
+  document.getElementById("btn-share").onclick = async () => {
+    writeHash();
+    try { await navigator.clipboard.writeText(location.href); toast("Link copied — the whole configuration travels in it."); }
+    catch(e){ toast("Copy the address bar — the configuration is in the URL."); }
+  };
+
+  renderFilters();
+  render();
+  renderExplorer();
+
+  let rt;
+  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => renderTransect(schedule()), 120); });
+  addEventListener("hashchange", () => { if(readHash()){ renderFilters(); render(); renderExplorer(); } });
+}
+document.fonts && document.fonts.ready.then(() => renderTransect(schedule()));
+boot();
+</script>
