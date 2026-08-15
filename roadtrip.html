@@ -243,6 +243,11 @@ footer .mono{font-size:11px}
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
+/* Shown until the script boots. If you can read this, JS did not run. */
+#js-warning{background:var(--ink);color:var(--surface);padding:16px 18px;margin:18px 0;border-radius:var(--radius);line-height:1.5}
+#js-warning b{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;display:block;margin-bottom:4px;font-size:16px}
+#js-warning code{font-family:"DM Mono",monospace;font-size:.86em;background:rgba(255,255,255,.14);padding:1px 5px;border-radius:2px}
+
 /* ---------- print ---------- */
 @media print{
   :root{--paper:#fff;--surface:#fff;--surface-2:#fff;--rule:#bbb;--rule-2:#ddd}
@@ -268,6 +273,15 @@ footer .mono{font-size:11px}
     <p class="sub">Bilbao to Barcelona over roughly nineteen nights, with twelve hours of unavoidable driving. This tool exists to answer one question: how many nights where, and what does each one cost somewhere else.</p>
     <div class="routestrip" id="routestrip"></div>
   </header>
+
+  <div id="js-warning">
+    <b>This page is not running.</b>
+    Everything below — the elevation chart, the night allocator, the presets and all 112 places —
+    is drawn by JavaScript, so in a preview pane that blocks scripts you get an empty shell with
+    three date boxes that do nothing. Save <code>roadtrip.html</code> to disk and open it in a
+    browser (Chrome, Safari, Firefox) and it will work. Nothing is fetched from the network except
+    the fonts, so it runs fine offline.
+  </div>
 
   <section class="hero">
     <div class="hero-head">
@@ -2035,7 +2049,10 @@ function syncDates(){
     : "No nonstop on this weekday. Realistic one-stops go via Barcelona or Milan, 6&ndash;7h door to door.";
 }
 
-/* ---- URL hash: the whole configuration, no storage APIs ---- */
+/* ---- URL hash: the whole configuration, no storage APIs ----
+   replaceState throws in an opaque-origin sandbox (some preview panes),
+   so keep the string ourselves and let sharing work regardless.        */
+let lastHash = "";
 function writeHash(){
   const n = sequence().filter(b=>!b.terminal)
     .map(b => b.id + ":" + (state.nights[b.id]||0) + (state.locks[b.id] ? "!" : "")).join(",");
@@ -2046,10 +2063,16 @@ function writeHash(){
     state.filters.length ? "f=" + state.filters.join(",") : "",
     state.preset ? "s=" + state.preset : ""
   ].filter(Boolean);
-  history.replaceState(null, "", "#" + parts.join("&"));
+  lastHash = "#" + parts.join("&");
+  try { history.replaceState(null, "", lastHash); } catch(e){ /* sandboxed; lastHash still valid */ }
+}
+function shareURL(){
+  try { if(location.hash === lastHash) return location.href; } catch(e){}
+  return location.href.split("#")[0] + lastHash;
 }
 function readHash(){
-  const h = location.hash.slice(1);
+  let h = "";
+  try { h = location.hash.slice(1); } catch(e){ return false; }
   if(!h) return false;
   const q = {};
   h.split("&").forEach(kv => { const i = kv.indexOf("="); if(i>0) q[kv.slice(0,i)] = decodeURIComponent(kv.slice(i+1)); });
@@ -2152,6 +2175,8 @@ function toast(msg){
    BOOT
    ================================================================ */
 function boot(){
+  const warn = document.getElementById("js-warning");
+  if(warn) warn.remove();                       // we are running; the notice is for when we are not
   if(!readHash()) state = defaultState();
 
   ["arrive","target","cruise"].forEach(k => {
@@ -2167,6 +2192,7 @@ function boot(){
   });
 
   document.getElementById("btn-export").onclick = () => {
+    document.getElementById("dlg-title").textContent = "Markdown export";
     document.getElementById("dlg-text").value = markdown();
     document.getElementById("dlg").showModal();
     document.getElementById("dlg-text").select();
@@ -2176,8 +2202,14 @@ function boot(){
   document.getElementById("btn-reset").onclick = () => { loadPreset("balanced"); };
   document.getElementById("btn-share").onclick = async () => {
     writeHash();
-    try { await navigator.clipboard.writeText(location.href); toast("Link copied — the whole configuration travels in it."); }
-    catch(e){ toast("Copy the address bar — the configuration is in the URL."); }
+    const url = shareURL();
+    try { await navigator.clipboard.writeText(url); toast("Link copied — the whole configuration travels in it."); }
+    catch(e){
+      document.getElementById("dlg-title").textContent = "Shareable link";
+      document.getElementById("dlg-text").value = url;
+      document.getElementById("dlg").showModal();
+      document.getElementById("dlg-text").select();
+    }
   };
 
   renderFilters();
