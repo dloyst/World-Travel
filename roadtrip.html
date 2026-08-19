@@ -222,6 +222,90 @@ button{font:inherit;color:inherit;cursor:pointer}
 .planitem .rm:hover{color:var(--alert)}
 .empty{font-size:13.5px;color:var(--ink-3);font-style:italic}
 
+/* ---------- getting there ---------- */
+.bookend{margin-bottom:22px}
+.flights{display:grid;gap:9px}
+.frow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;border:1px solid var(--rule);border-radius:var(--radius);padding:11px 13px;background:var(--surface)}
+.fttl{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.fsub{font-size:13.5px;color:var(--ink-2);line-height:1.4;margin-top:3px;font-weight:300;max-width:62ch}
+.fopts{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.fopt{font-family:"DM Mono",monospace;font-size:11px;padding:5px 11px;border:1px solid var(--rule);background:var(--surface);border-radius:99px;transition:all var(--dur)}
+.fopt:hover{border-color:var(--ink-3)}
+.fopt.direct{border-color:var(--ok);color:var(--ok)}
+.fopt[aria-pressed=true]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.fopt[aria-pressed=true].direct{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.lockbtn2{font-family:"DM Mono",monospace;font-size:11px;padding:5px 11px;border:1px solid var(--rule);background:var(--surface);border-radius:99px;white-space:nowrap}
+.lockbtn2[aria-pressed=true]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.fpin{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;padding-top:3px}
+
+/* ---------- conflicts ---------- */
+.issues{display:grid;gap:7px;margin-bottom:16px}
+.issue{display:grid;grid-template-columns:82px 1fr auto;gap:11px;align-items:center;border-left:3px solid var(--alert);background:var(--surface);padding:9px 13px;font-size:13.5px;line-height:1.4}
+.issue.soft{border-left-color:var(--warn)}
+.issue.info{border-left-color:var(--accent)}
+.issue .ibadge{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.ifixes{display:flex;gap:6px;flex-wrap:wrap}
+.ifix{font-family:"DM Mono",monospace;font-size:11px;padding:4px 10px;border:1px solid var(--ink-3);background:var(--surface);border-radius:99px;white-space:nowrap;transition:all var(--dur)}
+.ifix:hover{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+@media (max-width:640px){.issue{grid-template-columns:1fr;gap:5px}}
+
+/* ---------- day grid ---------- */
+.daygrid{border-top:1px solid var(--rule)}
+.dayrow{display:grid;grid-template-columns:88px 128px repeat(3,minmax(0,1fr));gap:1px;background:var(--rule-2);border-bottom:1px solid var(--rule)}
+.dayrow > *{background:var(--surface);padding:7px 9px;min-height:54px}
+.dayrow.travelday .dcity{box-shadow:inset 3px 0 0 var(--warn)}
+.ddate{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink-3);line-height:1.35}
+.ddate b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14px;color:var(--ink);letter-spacing:-.01em}
+.dcity{font-size:13px;line-height:1.3}
+.dcity .cname{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;display:flex;align-items:center;gap:6px;letter-spacing:-.01em}
+.dcity .cname i{width:7px;height:14px;border-radius:1px;display:block;flex:none}
+.dcity .dtravel{font-family:"DM Mono",monospace;font-size:10px;color:var(--ink-3);margin-top:4px;line-height:1.3}
+.dcity .dtravel.long{color:var(--warn)}
+.dayhead > *{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);min-height:0;padding:6px 9px;background:var(--surface-2)}
+.slot .slabel{display:none;font-family:"DM Mono",monospace;font-size:8.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);opacity:.55}
+.placed{margin-top:4px;font-size:12.5px;line-height:1.3;border:1px solid var(--rule);border-radius:2px;padding:5px 7px;background:var(--surface-2)}
+.placed.locked{border-color:var(--ink);border-width:2px;padding:4px 6px}
+.placed.bad{border-color:var(--alert)}
+.placed.warn{border-color:var(--warn)}
+.placed.cont{color:var(--ink-3);font-family:"DM Mono",monospace;font-size:10px;border-style:dashed;background:transparent}
+.placed .pname2{font-weight:400}
+.placed .pwhy{font-family:"DM Mono",monospace;font-size:9.5px;color:var(--alert);margin-top:3px;line-height:1.3}
+.placed .pwhy.soft{color:var(--warn)}
+.placed .pctl{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
+.placed .pctl button{font-family:"DM Mono",monospace;font-size:9.5px;padding:2px 6px;border:1px solid var(--rule);background:var(--surface);border-radius:99px;line-height:1.5}
+.placed .pctl button:hover{border-color:var(--ink)}
+.placed .pctl button[aria-pressed=true]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+@media (max-width:820px){
+  .dayrow{grid-template-columns:1fr 1fr}
+  .dayrow.dayhead{display:none}
+  .dayrow .slot{grid-column:1 / -1;min-height:0;padding-top:2px}
+  .slot .slabel{display:block}                     /* stacked: each slot names itself */
+  .slot:not(:has(.placed)){display:none}           /* hide empty slots on a phone */
+}
+
+/* ---------- card states & day picker ---------- */
+.cstate{display:flex;gap:5px;flex-wrap:wrap}
+.cstate:empty{display:none}
+.stbadge{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;border:1px solid currentColor}
+.stbadge.short{color:var(--ink-3)}
+.stbadge.planned{color:var(--accent)}
+.stbadge.locked{color:var(--surface);background:var(--ink);border-color:var(--ink)}
+.card.scheduled{border-color:var(--ink);border-width:2px;padding:12px 13px}
+.addbtn.go{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.dropbtn{font-family:"DM Mono",monospace;font-size:11px;width:26px;height:26px;border:1px solid var(--rule);background:var(--surface);border-radius:99px;line-height:1}
+.dropbtn:hover{border-color:var(--alert);color:var(--alert)}
+.picker{margin-top:9px;border-top:1px solid var(--rule);padding-top:9px;display:grid;gap:4px}
+.pnone{font-size:12.5px;color:var(--ink-3);font-style:italic;line-height:1.4}
+.pickday{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;font-family:"DM Mono",monospace;font-size:11px;padding:5px 8px;border:1px solid var(--rule);border-radius:2px;background:var(--surface);text-align:left;width:100%;transition:border-color var(--dur)}
+.pickday:hover:not(:disabled){border-color:var(--ink)}
+.pickday b{font-weight:500}
+.pickday:disabled{opacity:.6;cursor:not-allowed}
+.pickday.hardbad b{text-decoration:line-through;text-decoration-color:var(--alert)}
+.pickday .pwhy2{color:var(--alert);font-size:10px;line-height:1.3;display:block}
+.pickday.softbad .pwhy2{color:var(--warn)}
+.pickday .pnote2{color:var(--ink-3);font-size:10px;line-height:1.3;display:block}
+.pickday .pmark{color:var(--ink-3);font-size:12px}
+
 /* ---------- actions ---------- */
 .actions{display:flex;flex-wrap:wrap;gap:9px;margin:22px 0 12px}
 .btn{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:14px;padding:9px 17px;border:1.5px solid var(--ink);background:var(--surface);border-radius:var(--radius);transition:all var(--dur)}
@@ -252,10 +336,15 @@ footer .mono{font-size:11px}
 @media print{
   :root{--paper:#fff;--surface:#fff;--surface-2:#fff;--rule:#bbb;--rule-2:#ddd}
   body{font-size:10.5pt}
-  .presets,.filters,.explorer,.actions,.sats,.hero-head .note,.lockbtn,.stepper button,.addbtn,dialog,.toast{display:none !important}
+  .presets,.filters,.explorer,.actions,.sats,.hero-head .note,.lockbtn,.stepper button,
+  .addbtn,.dropbtn,.picker,dialog,.toast,.placed .pctl,.fopts,.lockbtn2,.ifixes,
+  .issue.info{display:none !important}
   .bench{grid-template-columns:1fr 1fr;gap:12px}
   .mast{padding-top:0;page-break-after:avoid}
-  .planbase{page-break-inside:avoid}
+  .dayrow{break-inside:avoid;grid-template-columns:78px 116px repeat(3,1fr)}
+  .dayrow > *{min-height:36px}
+  .placed{background:#fff;border-color:#999}
+  .issue{border-left-width:2px}
   #transect{border:1px solid #bbb}
   .card{break-inside:avoid}
   a{color:inherit;text-decoration:none}
@@ -311,6 +400,11 @@ footer .mono{font-size:11px}
     </div>
   </section>
 
+  <section class="panel bookend" aria-label="Getting there and away">
+    <h3>Getting there and away</h3>
+    <div class="flights" id="flights"></div>
+  </section>
+
   <section aria-label="Itinerary presets">
     <div class="section-head" style="margin-top:8px">
       <h2>Six ways to spend it</h2>
@@ -360,10 +454,11 @@ footer .mono{font-size:11px}
 
   <section>
     <div class="section-head">
-      <h2>Day by day</h2>
-      <p>Built from your allocation and shortlist.</p>
+      <h2>The itinerary</h2>
+      <p>One row per day. Empty slots are not a gap to fill — with this much slack they are the point.</p>
     </div>
-    <div class="plan" id="plan"></div>
+    <div class="issues" id="issues"></div>
+    <div class="daygrid" id="plan"></div>
     <div class="actions">
       <button class="btn primary" id="btn-export">Export Markdown</button>
       <button class="btn" id="btn-share">Copy shareable link</button>
@@ -1379,6 +1474,136 @@ const POIS = [
  booking:true, tags:["nature","hiking","culture","uncommon","car-only"]}
 ];
 
+/* ---- OPEN — the October research as machine-readable rules -----------
+   Keyed by POI id. Only entries with a real constraint appear; anything
+   absent is treated as open every day. Day numbers are October 2026;
+   prefix "n" for November (n1 = 1 Nov). Terse on purpose — hand-editable.
+
+     closed:"Mon,Tue"   open only on the other days
+     open:"Wed-Sun"     open only on these days
+     only:"24,25"       runs on these dates and no others
+     from / until       season bounds inside the trip window
+     exclude:"12"       otherwise open, but not on this date
+     slot:"am|pm|eve"   pinned to one part of the day
+     slots:2            occupies a whole day
+     then:{...}         rules change mid-window (from that date on)
+     soft:true          derived from an UNVERIFIED source — warn, don't assert
+     note:"..."         phrasing used in the warning
+------------------------------------------------------------------------ */
+const OPEN = {
+ /* Bilbao & Bizkaia */
+ bellasartes:{soft:true, note:"reopening 5 Oct; post-reopening closed days unconfirmed"},
+ guggenheim:{closed:"Mon"},
+ kafe:{slot:"eve"},
+ cookbilbao:{open:"Tue-Sat", soft:true, note:"book Tue–Sat so the Ribera market is running"},
+ oma:{soft:true, note:"reservation mandatory; guided slots reported Fri–Sun only"},
+ birdcenter:{closed:"Mon", soft:true, note:"weekday hours unconfirmed — weekends are the safe bet"},
+ gaztelugatxe:{note:"free timed ticket needed on weekends and on Mon 12 Oct; weekdays need none"},
+ kayak:{soft:true, until:"18", note:"operators wind down mid-October"},
+ gernika:{only:"26"},
+ doniene:{soft:true, note:"minimum group of 4; harvest runs to 16 Oct"},
+ encartada:{closed:"Mon", until:"31", note:"summer hours end 31 Oct"},
+
+ /* Rioja Alavesa */
+ ysios:{soft:true, note:"may pause tours during vendimia"},
+ baigorri:{closed:"Sun,Mon"},
+ remelluri:{open:"Tue-Sat", note:"Tue–Sat, strictly by prior appointment"},
+ fabulista:{note:"Sundays are mornings only"},
+
+ /* Basque coast */
+ flyschboat:{soft:true, note:"season tails off through October and sailings are sea-state dependent"},
+ txomin:{open:"Mon-Sat", exclude:"12", note:"Mon–Sat, closed public holidays — Mon 12 Oct is one"},
+ balenciaga:{closed:"Mon"},
+
+ /* San Sebastián */
+ txoko:{soft:true, note:"4-person minimum; operators confirm only 24–48h ahead"},
+ albaola:{closed:"Mon"},
+ chillida:{closed:"Tue"},
+ dabadaba:{slot:"eve"},
+
+ /* French Basque */
+ espelette:{only:"24,25", slots:2},
+ rhune:{note:"online booking only, at least 24h ahead — sells out at weekends"},
+ irouleguy:{slot:"pm", soft:true, note:"Arretxea receives 14:30–18:00, by appointment"},
+ sjpp:{open:"Mon", note:"the market and the pelota are what make it a Monday"},
+ zugarramurdi:{closed:"Mon"},
+
+ /* Arcachon */
+ phare:{open:"Wed-Sun", slot:"pm", note:"Wed–Sun, 14:00–17:00 only"},
+ oysters:{soft:true, note:"year-round growers only; phone the morning of"},
+ pinasse:{soft:true, note:"October sailings thin out — confirm before driving"},
+ surf:{soft:true, note:"school staffing in late October unconfirmed"},
+
+ /* Bordeaux */
+ castillon:{soft:true, note:"estate visit hours unconfirmed — book direct"},
+ vendanges:{only:"11", note:"the Sunday is the only catchable day, and only if you land on the 11th"},
+ bassins:{until:"29", note:"the Matisse and Kahlo shows close 29 Oct"},
+ rocher:{only:"16,17,27,29,31", slot:"eve", note:"confirmed October gig nights"},
+ capucins:{closed:"Mon", slot:"am", note:"Tue–Sun mornings"},
+
+ /* Dordogne & Lot */
+ padirac:{until:"n1", note:"season ends 1 Nov"},
+ fontdegaume:{closed:"Sat", note:"closed Saturdays; online-only, 78 tickets a day"},
+ rouffignac:{until:"n1", note:"season ends 1 Nov; long midday closure 11:30–14:00"},
+ stcirq:{until:"n1", note:"Pech Merle's season ends 1 Nov"},
+ cahors:{soft:true, note:"post-harvest — appointment essential, walk-ins unwelcome"},
+ canoe:{until:"12", soft:true, note:"most rental bases close around 12 Oct"},
+ sarlatmarket:{open:"Wed,Sat", slot:"am", note:"Wednesday is the growers' market, Saturday the show"},
+
+ /* Toulouse */
+ machine:{closed:"Mon"},
+ airbus:{soft:true, note:"slots sell out; booking closes two working days ahead"},
+ abattoirs:{closed:"Mon,Tue"},
+ taquin:{open:"Wed-Sat", slot:"eve"},
+ victorhugo:{closed:"Mon", slot:"am", note:"Tue–Sun mornings; the first floor serves lunch only"},
+ plageoles:{closed:"Sun"},
+ castera:{open:"Tue", slots:2, note:"a two-day stage running Tue–Wed; October is one of only four months offered"},
+ albi:{soft:true, note:"sources disagree on the October closing day — confirm before driving"},
+ citeespace:{closed:"Mon", then:{from:"17", note:"open daily during the Toussaint holidays"}},
+
+ /* Ariège */
+ niaux:{until:"31", note:"daily only to 31 Oct, then weekends; online-only, capped at 25"},
+ bedeilhac:{closed:"Fri", until:"18", then:{from:"19", note:"open daily from 19 Oct"}},
+ labouiche:{open:"Sat,Sun", until:"16", then:{from:"17", note:"daily once the Toussaint holidays start"}},
+ masdazil:{open:"Sun", until:"16", slot:"pm", then:{from:"17", note:"daily afternoons from 17 Oct"}},
+ montsegur:{soft:true, note:"reduced October hours and sources conflict — Roquefixade is the ungated fallback"},
+
+ /* Vall de Boí */
+ churches:{soft:true, note:"outlying churches are staffed on a rotating basis off-season"},
+ aiguestortes:{until:"31", note:"the 4x4 timetable runs to 31 Oct, and snow suspends it without notice"},
+ caldesboi:{soft:true, note:"balnearis of this type often close in early October — phone first"},
+ santmaurici:{slots:2, note:"1h50 from Boí — a committed full day"},
+
+ /* Andorra */
+ refugilla:{until:"31", slots:2, note:"staffed season ends within days of your trip"},
+ comapedrosa:{soft:true, until:"12", note:"the refuge is staffed only to 12 Oct — after that go self-sufficient"},
+ auvinya:{soft:true, note:"by appointment; mid-October may clash with harvest"},
+ bordasabate:{soft:true, note:"on demand and in groups only"},
+ columba:{open:"Tue-Sat"},
+ engolasters:{open:"Tue-Sat", note:"free Tue–Sat in October"},
+ caldea:{soft:true, note:"exact October hours unconfirmed"},
+
+ /* Cerdanya */
+ nuria:{until:"31", note:"full daily service to end of October; maintenance starts in November"},
+ camivell:{until:"31", slots:2, note:"depends on the rack railway, which runs daily to 31 Oct"},
+ llivia:{open:"Wed-Fri", soft:true, note:"weekend museum hours unconfirmed"},
+ dorres:{until:"n15"},
+ enginyers:{until:"31", slots:2, soft:true, note:"long exposed traverse; refuge staffing unconfirmed"},
+
+ /* Penedès */
+ recaredo:{soft:true, note:"October tour calendar unconfirmed — book ahead"},
+ gramona:{soft:true, note:"reservation required year-round"},
+ raventos:{soft:true, note:"October opening days unconfirmed"},
+ canrafols:{open:"Mon-Fri", soft:true, note:"the wine bar runs Mon–Fri; weekends need prior reservation"},
+ vinseum:{closed:"Mon", soft:true},
+
+ /* The run-in */
+ segre:{soft:true, note:"whitewater sessions are release-dependent"},
+ cardona:{open:"Tue-Sat", soft:true, note:"narrow published window and limited places"},
+ montserrat:{slot:"am", note:"the entire point is being on the ridge at first light"},
+ salnitre:{soft:true, note:"fixed timed slots, advance reservation only"}
+};
+
 /* ================================================================
    ENGINE
    ================================================================ */
@@ -1412,6 +1637,246 @@ const MON  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov",
 const fmt  = d => DOW[d.getUTCDay()] + " " + d.getUTCDate() + " " + MON[d.getUTCMonth()];
 const fmtS = d => d.getUTCDate() + " " + MON[d.getUTCMonth()];
 
+/* ================================================================
+   OPENING RULES — compile the terse OPEN table into date tests
+   ================================================================ */
+const DOWN = {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+const DOWFULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const SLOTS = ["am","pm","eve"];
+const SLOTNAME = {am:"morning", pm:"afternoon", eve:"evening"};
+const POI_BY = {};
+POIS.forEach(p => POI_BY[p.id] = p);
+const poi = id => POI_BY[id];
+
+function parseDays(spec){
+  const out = new Set();
+  String(spec).split(",").forEach(part => {
+    part = part.trim();
+    const m = part.match(/^(\w{3})-(\w{3})$/);
+    if(m){
+      const a = DOWN[m[1]], b = DOWN[m[2]];
+      for(let i=0;i<7;i++){ const d = (a+i)%7; out.add(d); if(d === b) break; }
+    } else if(DOWN[part] !== undefined) out.add(DOWN[part]);
+  });
+  return out;
+}
+/* "24" -> 24 Oct 2026, "n1" -> 1 Nov 2026 */
+function odate(v){
+  v = String(v).trim();
+  return v[0] === "n" ? D("2026-11-" + String(+v.slice(1)).padStart(2,"0"))
+                      : D("2026-10-" + String(+v).padStart(2,"0"));
+}
+const inList = (spec, date) => String(spec).split(",").some(v => +odate(v) === +date);
+
+/* which rule segment applies on a given date — `then` replaces the day rules */
+function segFor(id, date){
+  const r = OPEN[id];
+  if(!r) return null;
+  if(r.then && date >= odate(r.then.from)){
+    const t = r.then;
+    return {closed:t.closed, open:t.open, only:t.only, exclude:t.exclude,
+            from:t.from, until:t.until,
+            slot:t.slot !== undefined ? t.slot : r.slot,
+            slots:t.slots !== undefined ? t.slots : r.slots,
+            soft:t.soft !== undefined ? t.soft : r.soft,
+            note:t.note || r.note};
+  }
+  return r;
+}
+/* {ok, why, soft} for a POI on a date */
+function openOn(id, date){
+  const s = segFor(id, date);
+  if(!s) return {ok:true};
+  const soft = !!s.soft, note = s.note;
+  const dow = date.getUTCDay();
+  if(s.only && !inList(s.only, date))
+    return {ok:false, soft, why: note || ("runs only on " + String(s.only).split(",").map(v => fmtS(odate(v))).join(" and "))};
+  if(s.from && date < odate(s.from))
+    return {ok:false, soft, why: note || ("not open until " + fmtS(odate(s.from)))};
+  if(s.until && date > odate(s.until))
+    return {ok:false, soft, why: note || ("season ends " + fmtS(odate(s.until)))};
+  if(s.exclude && inList(s.exclude, date))
+    return {ok:false, soft, why: note || ("closed on " + fmtS(date))};
+  if(s.closed && parseDays(s.closed).has(dow))
+    return {ok:false, soft, why: note || ("closed " + DOWFULL[dow] + "s")};
+  if(s.open && !parseDays(s.open).has(dow))
+    return {ok:false, soft, why: note || ("closed " + DOWFULL[dow] + "s")};
+  return {ok:true, soft, note};
+}
+/* how much of a day an item eats, derived from `time` unless overridden */
+function spanOf(p, date){
+  const s = segFor(p.id, date || D(state.arrive)) || {};
+  if(s.slots) return {n:s.slots, fixed:s.slot || null};
+  if(s.slot)  return {n:1, fixed:s.slot};
+  const t = (p.time || "").toLowerCase();
+  if(/evening/.test(t)) return {n:1, fixed:"eve"};
+  if(/half/.test(t))    return {n:1, fixed:null};
+  if(/2 days|full day|overnight/.test(t)) return {n:2, fixed:null};
+  const m = t.match(/(\d+(?:\.\d+)?)\s*(?:-\s*(\d+(?:\.\d+)?))?\s*h/);
+  if(m) return {n: parseFloat(m[2] || m[1]) >= 5 ? 2 : 1, fixed:null};
+  return {n:1, fixed:null};
+}
+
+/* ================================================================
+   DAY MODEL & PLACEMENT
+   ================================================================ */
+function tripDays(S){
+  const out = [], end = D(state.cruise);
+  let d = D(state.arrive);
+  while(d <= end){
+    const stop = S.stops.find(s => d >= s.start && d < s.end) ||
+                 (+d === +end ? S.stops[S.stops.length-1] : null);
+    out.push({date:new Date(d), iso:iso(d), stop,
+              leg:S.legs.find(l => +l.date === +d) || null,
+              sail:+d === +end});
+    d = addD(d,1);
+  }
+  return out;
+}
+/* which days you are actually in this POI's base */
+function eligibleDays(p, S){
+  return tripDays(S).filter(d => d.stop && d.stop.base.id === p.base && !d.sail);
+}
+/* date -> {am:[ids], pm:[ids], eve:[ids]} */
+function occupancy(){
+  const occ = {};
+  for(const id in state.plan){
+    const p = poi(id); if(!p) continue;
+    const pl = state.plan[id], sp = spanOf(p, D(pl.d));
+    const slots = sp.n === 2 ? ["am","pm"] : [pl.s];
+    occ[pl.d] = occ[pl.d] || {am:[], pm:[], eve:[]};
+    slots.forEach(s => { if(occ[pl.d][s]) occ[pl.d][s].push(id); });
+  }
+  return occ;
+}
+function freeSlot(p, dateISO){
+  const sp = spanOf(p, D(dateISO));
+  const occ = occupancy()[dateISO] || {am:[], pm:[], eve:[]};
+  if(sp.fixed) return sp.fixed;
+  if(sp.n === 2) return "am";
+  return SLOTS.find(s => !occ[s].length) || "pm";
+}
+function place(id, dateISO, slot){
+  const p = poi(id); if(!p) return;
+  state.plan[id] = {d:dateISO, s:slot || freeSlot(p, dateISO), lock:false};
+  if(!state.picks.includes(id)) state.picks.push(id);
+  state.preset = null;
+}
+function unplan(id){ delete state.plan[id]; state.preset = null; }
+
+function setDate(key, v){
+  if(key === "arrive" && state.flight.lock && v !== state.arrive){
+    toast("The outbound flight is marked booked. Unlock it to change the arrival date.");
+    syncDates(); return;
+  }
+  const mutate = () => {
+    state[key] = v;
+    // keep the three dates in a sane order
+    if(diffD(D(state.arrive), D(state.target)) < 1) state.target = iso(addD(D(state.arrive),1));
+    if(diffD(D(state.target), D(state.cruise)) < 0) state.cruise = iso(D(state.target));
+    state.preset = null;
+  };
+  if(!guarded(mutate, "changing the " + (key === "arrive" ? "arrival date" : key === "cruise" ? "sailing date" : "Barcelona target"))){
+    syncDates(); return;
+  }
+  render();
+}
+
+/* ---- locked items defend the night allocation ---- */
+let blocked = null, pendingFn = null;
+function locksBrokenBy(mutate){
+  const save = JSON.stringify({n:state.nights, l:state.locks, a:state.arrive, t:state.target, c:state.cruise});
+  mutate();
+  const S = schedule(), byISO = {};
+  tripDays(S).forEach(d => byISO[d.iso] = d);
+  const broken = [];
+  for(const id in state.plan){
+    const pl = state.plan[id]; if(!pl.lock) continue;
+    const p = poi(id), day = byISO[pl.d];
+    if(!day || !day.stop || day.stop.base.id !== p.base) broken.push(p);
+  }
+  const s = JSON.parse(save);
+  state.nights = s.n; state.locks = s.l; state.arrive = s.a; state.target = s.t; state.cruise = s.c;
+  return broken;
+}
+/* run a mutation unless it would strand a locked booking */
+function guarded(mutate, what){
+  const broken = locksBrokenBy(mutate);
+  if(broken.length){
+    blocked = {what, names:broken.map(p => p.name), ids:broken.map(p => p.id)};
+    pendingFn = mutate;
+    render();
+    return false;
+  }
+  blocked = null; pendingFn = null;
+  mutate();
+  return true;
+}
+function overrideBlock(){
+  if(!pendingFn) return;
+  blocked.ids.forEach(id => { if(state.plan[id]) state.plan[id].lock = false; });
+  pendingFn();
+  blocked = null; pendingFn = null;
+  render();
+  toast("Unlocked and applied. Check the itinerary for anything now orphaned.");
+}
+
+/* ================================================================
+   CONFLICTS
+   ================================================================ */
+function issues(S){
+  const out = [], byISO = {};
+  tripDays(S).forEach(d => byISO[d.iso] = d);
+
+  for(const id in state.plan){
+    const p = poi(id); if(!p) continue;
+    const pl = state.plan[id], day = byISO[pl.d];
+
+    if(!day || !day.stop || day.stop.base.id !== p.base){
+      out.push({lv:"bad", id, badge:"orphaned",
+        msg:p.name + " sits on " + fmtS(D(pl.d)) + ", but you are not in " + byId[p.base].name + " that day.",
+        fix:"Move"});
+      continue;
+    }
+    const o = openOn(id, D(pl.d));
+    if(!o.ok) out.push({lv:o.soft ? "soft" : "bad", id, badge:o.soft ? "check" : "closed",
+      msg:p.name + " on " + fmt(D(pl.d)) + " — " + o.why, fix:"Move"});
+
+    if(day.leg && spanOf(p, D(pl.d)).n === 2 && day.leg.h > 1.5)
+      out.push({lv:"soft", id, badge:"travel day",
+        msg:p.name + " is a full day, but " + fmtS(D(pl.d)) + " is also a " + hrs(day.leg.h) + " drive to " + day.leg.to.name + ".",
+        fix:"Move"});
+
+    if(p.booking && !pl.lock)
+      out.push({lv:"info", id, badge:"unbooked",
+        msg:p.name + " has to be booked ahead and is still only pencilled in.", fix:"Lock"});
+  }
+
+  const occ = occupancy();
+  for(const d in occ) SLOTS.forEach(s => {
+    const ids = occ[d][s].filter(i => poi(i));
+    if(ids.length > 1) out.push({lv:"soft", id:ids[ids.length-1], badge:"clash",
+      msg:ids.map(i => poi(i).name).join(" and ") + " are both on " + fmtS(D(d)) + ", " + SLOTNAME[s] + ".",
+      fix:"Move"});
+  });
+
+  /* a base where every shortlisted thing is shut on every day you are there */
+  S.stops.forEach(st => {
+    if(!st.nights) return;
+    const shortlisted = POIS.filter(p => p.base === st.base.id && state.picks.includes(p.id) && !state.plan[p.id]);
+    if(!shortlisted.length) return;
+    const days = eligibleDays({base:st.base.id}, S);
+    if(!days.length) return;
+    const anyOpen = shortlisted.some(p => days.some(d => openOn(p.id, d.date).ok));
+    if(!anyOpen) out.push({lv:"soft", badge:"all shut",
+      msg:"Everything still shortlisted for " + st.base.name + " is closed on all " + st.nights + " day" +
+          (st.nights === 1 ? "" : "s") + " you are there."});
+  });
+
+  const order = {bad:0, soft:1, info:2};
+  return out.sort((a,b) => order[a.lv] - order[b.lv]);
+}
+
 /* ---- state ---- */
 let state = null;
 function defaultState(){
@@ -1419,7 +1884,8 @@ function defaultState(){
   return {
     arrive:"2026-10-11", target:"2026-10-30", cruise:"2026-11-02",
     nights:Object.assign({}, p.nights),
-    locks:{}, picks:p.picks.slice(), preset:p.id, filters:[]
+    locks:{}, picks:p.picks.slice(), plan:{}, flight:{lock:false},
+    preset:p.id, filters:[]
   };
 }
 
@@ -1481,7 +1947,7 @@ function schedule(){
    Adding a night when the budget is full takes one from the last
    unlocked base above its floor, so the trade-off is always visible.
 ---------------------------------------------------------------- */
-let flashIds = [];
+let flashIds = [], pickerFor = null;
 function bump(id, dir){
   const b = byId[id];
   const S = schedule();
@@ -1489,19 +1955,18 @@ function bump(id, dir){
 
   if(dir < 0){
     if((state.nights[id]||0) <= b.min) return;
-    state.nights[id]--;
+    if(!guarded(() => { state.nights[id]--; }, "removing a night from " + b.name)) return;
     flashIds = [id];
   } else {
+    let donor = null;
     if(S.allocated >= S.budget){
-      const donor = donorFor(id);
+      donor = donorFor(id);
       if(!donor){ toast("Everything else is locked or at its floor — free a night first."); shake(id); return; }
-      state.nights[donor]--;
-      flashIds = [id, donor];
-      toast("Took a night from " + byId[donor].name + ".");
-    } else {
-      flashIds = [id];
     }
-    state.nights[id]++;
+    if(!guarded(() => { if(donor) state.nights[donor]--; state.nights[id]++; },
+                "adding a night to " + b.name)) return;
+    flashIds = donor ? [id, donor] : [id];
+    if(donor) toast("Took a night from " + byId[donor].name + ".");
   }
   state.preset = null;
   render();
@@ -1523,22 +1988,26 @@ function shake(id){
 
 function toggleSat(id){
   const b = byId[id];
-  if(state.nights[id] !== undefined){
-    delete state.nights[id];
-    delete state.locks[id];
-  } else {
-    const S = schedule();
-    const want = Math.min(b.rec[0], Math.max(b.min, S.budget - S.allocated));
-    state.nights[id] = Math.max(b.min, want);
-    // pull the nights it needs from the tail, so the budget stays honest
-    let need = (state.nights[id]) - Math.max(0, S.budget - S.allocated);
-    while(need > 0){
-      const d = donorFor(id);
-      if(!d) break;
-      state.nights[d]--; need--;
-      flashIds.push(d);
+  const on = state.nights[id] !== undefined;
+  const mutate = () => {
+    if(state.nights[id] !== undefined){
+      delete state.nights[id];
+      delete state.locks[id];
+    } else {
+      const S = schedule();
+      const want = Math.min(b.rec[0], Math.max(b.min, S.budget - S.allocated));
+      state.nights[id] = Math.max(b.min, want);
+      // pull the nights it needs from the tail, so the budget stays honest
+      let need = (state.nights[id]) - Math.max(0, S.budget - S.allocated);
+      while(need > 0){
+        const d = donorFor(id);
+        if(!d) break;
+        state.nights[d]--; need--;
+        flashIds.push(d);
+      }
     }
-  }
+  };
+  if(!guarded(mutate, (on ? "dropping " : "adding ") + b.name)) return;
   state.preset = null;
   render();
 }
@@ -1546,10 +2015,15 @@ function toggleSat(id){
 function loadPreset(pid){
   const p = DATA.presets.find(x => x.id === pid);
   if(!p) return;
-  state.nights = Object.assign({}, p.nights);
-  state.locks = {};
-  state.picks = p.picks.slice();
-  state.preset = p.id;
+  const mutate = () => {
+    state.nights = Object.assign({}, p.nights);
+    state.locks = {};
+    // keep anything already scheduled; the preset only tops up the shortlist
+    const keep = Object.keys(state.plan);
+    state.picks = [...new Set(p.picks.concat(keep))];
+    state.preset = p.id;
+  };
+  if(!guarded(mutate, "loading “" + p.name + "”")) return;
   render();
   toast("Loaded “" + p.name + "”. Edit away.");
 }
@@ -1571,7 +2045,8 @@ function scorePreset(p){
 function render(){
   const S = schedule();
   renderRoute(S); renderTransect(S); renderMeter(S); renderRows(S);
-  renderSats(S); renderMetrics(S); renderWarns(S); renderPlan(S);
+  renderSats(S); renderMetrics(S); renderWarns(S);
+  renderFlights(); renderIssues(S); renderPlan(S);
   renderPresets(); syncDates(); writeHash();
   document.querySelectorAll(".preset").forEach(el =>
     el.setAttribute("aria-pressed", el.dataset.preset === state.preset));
@@ -1958,8 +2433,15 @@ function renderExplorer(){
 function card(p){
   const el = document.createElement("div");
   const picked = state.picks.includes(p.id);
-  el.className = "card" + (picked ? " picked" : "");
+  const pl = state.plan[p.id];
+  const st = pl ? (pl.lock ? "locked" : "planned") : (picked ? "short" : "none");
+  el.className = "card" + (picked ? " picked" : "") + (pl ? " scheduled" : "");
+  el.dataset.poi = p.id;
   const unver = /^UNVERIFIED|^PARTLY|^PARTIALLY|UNVERIFIED:/.test(p.oct);
+  const badge = st === "locked" ? '<span class="stbadge locked">booked &middot; ' + fmtS(D(pl.d)) + '</span>'
+              : st === "planned" ? '<span class="stbadge planned">' + fmtS(D(pl.d)) + ' &middot; ' + SLOTNAME[pl.s] + '</span>'
+              : st === "short" ? '<span class="stbadge short">shortlisted</span>' : '';
+
   el.innerHTML =
     '<div class="ctype">'+esc(p.type)+'</div>'+
     '<h4>'+esc(p.name)+'</h4>'+
@@ -1968,71 +2450,245 @@ function card(p){
     '<div class="coct'+(unver?' unver':'')+'"><b>OCT 2026 &middot; </b>'+esc(p.oct)+'</div>'+
     '<div class="ctags">'+p.tags.map(t=>'<i>'+t+'</i>').join("")+'</div>'+
     '<div class="cmeta">'+esc(p.time)+' &middot; '+esc(p.drive)+'</div>'+
-    '<div class="cfoot">'+
-      '<button class="addbtn">'+(picked?"✓ in plan":"+ add")+'</button>'+
-      (p.booking?'<span class="bookflag">book ahead</span>':'')+
-      '<a class="booklink" href="'+esc(p.url)+'" target="_blank" rel="noopener">source ↗</a>'+
-    '</div>';
-  el.querySelector(".addbtn").onclick = () => {
-    state.picks = picked ? state.picks.filter(x=>x!==p.id) : state.picks.concat(p.id);
-    state.preset = null;
-    renderExplorer(); renderPlan(schedule()); writeHash();
+    '<div class="cstate">'+badge+'</div>'+
+    '<div class="cfoot"></div>';
+
+  const foot = el.querySelector(".cfoot");
+  const mk = (label, cls, fn, aria) => {
+    const b = document.createElement("button");
+    b.className = cls; b.innerHTML = label;
+    if(aria) b.setAttribute("aria-label", aria);
+    b.onclick = fn; foot.appendChild(b); return b;
   };
+
+  if(st === "none"){
+    mk("+ shortlist", "addbtn", () => {
+      state.picks = state.picks.concat(p.id); state.preset = null;
+      renderExplorer(); render();
+    }, "Shortlist " + p.name);
+  } else {
+    mk(pl ? "Change day" : "Pick a day", "addbtn" + (pl ? "" : " go"), () => {
+      pickerFor = pickerFor === p.id ? null : p.id;
+      renderExplorer();
+    }, (pl ? "Change the day for " : "Choose a day for ") + p.name);
+    mk("&times;", "dropbtn", () => {
+      unplan(p.id);
+      state.picks = state.picks.filter(x => x !== p.id);
+      state.preset = null;
+      renderExplorer(); render();
+    }, "Drop " + p.name + " entirely");
+  }
+
+  if(p.booking) foot.insertAdjacentHTML("beforeend", '<span class="bookflag">book ahead</span>');
+  foot.insertAdjacentHTML("beforeend",
+    '<a class="booklink" href="'+esc(p.url)+'" target="_blank" rel="noopener">source &#8599;</a>');
+
+  if(pickerFor === p.id) el.appendChild(pickerEl(p));
   return el;
 }
 
-/* ---- day-by-day ---- */
+/* ---- the itinerary: one row per day ---- */
 function renderPlan(S){
   const host = document.getElementById("plan");
-  host.innerHTML = "";
-  S.stops.forEach((st,i) => {
-    const b = st.base;
+  host.innerHTML = '<div class="dayrow dayhead"><div>Date</div><div>Based</div>' +
+    '<div>Morning</div><div>Afternoon</div><div>Evening</div></div>';
+  const occ = occupancy();
+
+  tripDays(S).forEach(day => {
+    const b = day.stop ? day.stop.base : null;
     const row = document.createElement("div");
-    row.className = "planbase";
-    const leg = i > 0 ? S.legs[i-1] : null;
-    const items = POIS.filter(p => p.base === b.id && state.picks.includes(p.id));
-
+    row.className = "dayrow" + (day.leg ? " travelday" : "");
     row.innerHTML =
-      '<div class="pleft">'+
-        '<div class="pname"><span class="swatch" style="background:'+bandColor(b.elev)+'"></span>'+esc(b.name)+'</div>'+
-        '<div class="pdate">'+(st.nights? fmt(st.start)+'<br>&ndash; '+fmt(st.end) : "—")+'</div>'+
-        '<div class="pnights">'+st.nights+' night'+(st.nights===1?"":"s")+' &middot; '+b.elev+' m</div>'+
-      '</div><div class="pright"></div>';
+      '<div class="ddate"><b>' + DOW[day.date.getUTCDay()] + '</b>' + fmtS(day.date) + '</div>' +
+      '<div class="dcity">' + (b
+        ? '<div class="cname"><i style="background:'+bandColor(b.elev)+'"></i>'+esc(b.name)+'</div>' +
+          (day.leg ? '<div class="dtravel'+(day.leg.h>LONG_DRIVE?" long":"")+'">arrive · '+day.leg.km+' km · '+hrs(day.leg.h)+'</div>' : '') +
+          (day.sail ? '<div class="dtravel" style="color:var(--accent)">the ship sails</div>' : '')
+        : '<div class="cname" style="color:var(--ink-3);font-weight:400">—</div>') + '</div>';
 
-    const right = row.querySelector(".pright");
-    if(leg){
-      const d = document.createElement("div");
-      d.className = "travel" + (leg.h > LONG_DRIVE ? " long" : "");
-      d.textContent = "Drive " + fmt(leg.date) + " · " + leg.from.name + " → " + leg.to.name +
-        " · " + leg.km + " km · " + hrs(leg.h) + (leg.peak ? " · over " + (leg.peakName||"") + " " + leg.peak + " m" : "");
-      right.appendChild(d);
-    }
-    if(items.length){
-      const list = document.createElement("div");
-      list.className = "planitems";
-      items.forEach(p => {
-        const it = document.createElement("div");
-        it.className = "planitem";
-        it.innerHTML = '<div class="pi-name">'+esc(p.name)+
-          (p.booking?' <span class="bookflag">book</span>':'')+
-          '<div class="pi-meta" style="white-space:normal;margin-top:2px">'+esc(p.oct.slice(0,120))+(p.oct.length>120?"…":"")+'</div></div>'+
-          '<div class="pi-meta">'+esc(p.time)+'</div>';
-        const rm = document.createElement("button");
-        rm.className = "rm"; rm.innerHTML = "×";
-        rm.setAttribute("aria-label","Remove "+p.name+" from the plan");
-        rm.onclick = () => { state.picks = state.picks.filter(x=>x!==p.id); state.preset=null; renderExplorer(); renderPlan(schedule()); writeHash(); };
-        it.appendChild(rm);
-        list.appendChild(it);
+    SLOTS.forEach(s => {
+      const cell = document.createElement("div");
+      cell.className = "slot";
+      cell.innerHTML = '<div class="slabel">' + s + '</div>';
+      const here = occ[day.iso] ? occ[day.iso][s] : [];
+      here.forEach(id => {
+        const p = poi(id); if(!p) return;
+        if(spanOf(p, day.date).n === 2 && s === "pm"){
+          cell.insertAdjacentHTML("beforeend", '<div class="placed cont">&uarr; all day</div>');
+          return;
+        }
+        cell.appendChild(placedEl(p, day));
       });
-      right.appendChild(list);
-    } else if(st.nights) {
-      const e = document.createElement("p");
-      e.className = "empty";
-      e.textContent = "Nothing shortlisted here yet.";
-      right.appendChild(e);
-    }
+      row.appendChild(cell);
+    });
     host.appendChild(row);
   });
+}
+
+function placedEl(p, day){
+  const pl = state.plan[p.id];
+  const o = openOn(p.id, day.date);
+  const sp = spanOf(p, day.date);
+  const astray = !day.stop || day.stop.base.id !== p.base;   // re-allocation moved the trip out from under it
+  const el = document.createElement("div");
+  el.className = "placed" + (pl.lock ? " locked" : "") +
+    (astray || !o.ok ? (!astray && o.soft ? " warn" : " bad") : "");
+  el.innerHTML = '<div class="pname2">' + esc(p.name) + '</div>' +
+    (astray ? '<div class="pwhy">you are not in ' + esc(byId[p.base].name) + ' on this day</div>'
+            : !o.ok ? '<div class="pwhy' + (o.soft ? " soft" : "") + '">' + esc(o.why) + '</div>' : '') +
+    '<div class="pctl"></div>';
+  const ctl = el.querySelector(".pctl");
+
+  if(sp.n === 1 && !sp.fixed) SLOTS.forEach(s => {
+    const btn = document.createElement("button");
+    btn.textContent = s;
+    btn.setAttribute("aria-pressed", pl.s === s);
+    btn.setAttribute("aria-label", "Move " + p.name + " to the " + SLOTNAME[s]);
+    btn.onclick = () => { pl.s = s; state.preset = null; render(); };
+    ctl.appendChild(btn);
+  });
+
+  const lk = document.createElement("button");
+  lk.textContent = pl.lock ? "◆ booked" : "◇ book";
+  lk.setAttribute("aria-pressed", !!pl.lock);
+  lk.setAttribute("aria-label", (pl.lock ? "Unmark" : "Mark") + " " + p.name + " as booked");
+  lk.onclick = () => { pl.lock = !pl.lock; state.preset = null; render(); };
+  ctl.appendChild(lk);
+
+  const rm = document.createElement("button");
+  rm.innerHTML = "&times;";
+  rm.setAttribute("aria-label", "Take " + p.name + " off the itinerary");
+  rm.onclick = () => { unplan(p.id); render(); renderExplorer(); };
+  ctl.appendChild(rm);
+  return el;
+}
+
+/* ---- conflicts ---- */
+function renderIssues(S){
+  const host = document.getElementById("issues");
+  host.innerHTML = "";
+
+  if(blocked){
+    const el = document.createElement("div");
+    el.className = "issue bad";
+    el.innerHTML = '<span class="ibadge">blocked</span><span>' +
+      esc(blocked.what.charAt(0).toUpperCase() + blocked.what.slice(1)) +
+      ' would move you out of town on a date you have marked booked: <b>' +
+      esc(blocked.names.join(", ")) + '</b>.</span>';
+    const box = document.createElement("span");
+    box.className = "ifixes";
+    const ok = document.createElement("button");
+    ok.className = "ifix"; ok.textContent = "Unlock and proceed"; ok.onclick = overrideBlock;
+    const no = document.createElement("button");
+    no.className = "ifix"; no.textContent = "Cancel";
+    no.onclick = () => { blocked = null; pendingFn = null; render(); };
+    box.append(ok, no);
+    el.appendChild(box);
+    host.appendChild(el);
+  }
+
+  const list = issues(S);
+  if(!list.length && !blocked){
+    const n = Object.keys(state.plan).length;
+    host.innerHTML = '<div class="issue info"><span class="ibadge">clear</span><span>' +
+      (n ? "Nothing clashes. " + n + " item" + (n===1?"":"s") + " scheduled."
+         : "Nothing scheduled yet — open a card below and pick a day.") +
+      '</span><span></span></div>';
+    return;
+  }
+
+  list.forEach(it => {
+    const el = document.createElement("div");
+    el.className = "issue " + it.lv;
+    el.innerHTML = '<span class="ibadge">' + esc(it.badge) + '</span><span>' + esc(it.msg) + '</span>';
+    const box = document.createElement("span");
+    box.className = "ifixes";
+    if(it.fix === "Move" && it.id){
+      const b = document.createElement("button");
+      b.className = "ifix"; b.textContent = "Pick another day";
+      b.onclick = () => { pickerFor = it.id; render(); renderExplorer(); scrollToCard(it.id); };
+      box.appendChild(b);
+    }
+    if(it.fix === "Lock" && it.id){
+      const b = document.createElement("button");
+      b.className = "ifix"; b.textContent = "Mark booked";
+      b.onclick = () => { state.plan[it.id].lock = true; state.preset = null; render(); renderExplorer(); };
+      box.appendChild(b);
+    }
+    el.appendChild(box);
+    host.appendChild(el);
+  });
+}
+function scrollToCard(id){
+  const el = document.querySelector('[data-poi="' + id + '"]');
+  if(el) el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"center"});
+}
+
+/* ---- the day picker: the constraint, shown before the mistake ---- */
+function pickerEl(p){
+  const S = schedule();
+  const days = eligibleDays(p, S);
+  const wrap = document.createElement("div");
+  wrap.className = "picker";
+  if(!days.length){
+    wrap.innerHTML = '<div class="pnone">' + esc(byId[p.base].name) +
+      ' is not in the route at the moment — switch it on in Optional bases first.</div>';
+    return wrap;
+  }
+  const occ = occupancy();
+  const cur = state.plan[p.id];
+  days.forEach(d => {
+    const o = openOn(p.id, d.date);
+    const slots = occ[d.iso] || {am:[], pm:[], eve:[]};
+    const full = SLOTS.every(s => slots[s].length);
+    const btn = document.createElement("button");
+    btn.className = "pickday" + (!o.ok ? (o.soft ? " softbad" : " hardbad") : "");
+    btn.disabled = !o.ok && !o.soft;
+    btn.innerHTML =
+      '<b>' + DOW[d.date.getUTCDay()] + ' ' + fmtS(d.date) + '</b>' +
+      '<span>' +
+        (!o.ok ? '<span class="pwhy2">' + esc(o.why) + '</span>'
+               : d.leg ? '<span class="pnote2">arrival day · ' + hrs(d.leg.h) + ' drive</span>'
+               : full ? '<span class="pnote2">day looks full</span>' : '') +
+      '</span>' +
+      '<span class="pmark">' + (cur && cur.d === d.iso ? "&check;" : "+") + '</span>';
+    btn.onclick = () => { place(p.id, d.iso); pickerFor = null; render(); renderExplorer(); };
+    wrap.appendChild(btn);
+  });
+  return wrap;
+}
+
+/* ---- getting there and away ---- */
+function renderFlights(){
+  const host = document.getElementById("flights");
+  const OPTS = ["2026-10-11","2026-10-12","2026-10-13"];
+  const direct = d => [2,4,6].includes(D(d).getUTCDay());   // Wizz Air flies Tue/Thu/Sat
+  const S = schedule();
+
+  let html = '<div class="frow"><div><div class="fttl">Budapest &rarr; Bilbao</div>' +
+    '<div class="fsub">Wizz Air flies it nonstop in about three hours on Tuesdays, Thursdays and Saturdays. ' +
+    'Other days need a stop via Barcelona or Milan, six to seven hours door to door.</div>' +
+    '<div class="fopts">';
+  OPTS.forEach(d => {
+    html += '<button class="fopt' + (direct(d) ? " direct" : "") + '" data-fly="' + d + '"' +
+      ' aria-pressed="' + (state.arrive === d) + '">' + fmt(D(d)) +
+      ' · ' + (direct(d) ? "direct" : "1 stop") + '</button>';
+  });
+  html += '</div></div><button class="lockbtn2" id="fly-lock" aria-pressed="' + state.flight.lock + '">' +
+    (state.flight.lock ? "◆ booked" : "◇ book") + '</button></div>';
+
+  html += '<div class="frow"><div><div class="fttl">Barcelona &rarr; the ship</div>' +
+    '<div class="fsub">Sailing ' + fmt(D(state.cruise)) + '. You reach Barcelona on <b>' + fmt(S.bcnActual) +
+    '</b>, giving ' + S.bcnNights + ' night' + (S.bcnNights === 1 ? "" : "s") + ' in the city beforehand.' +
+    (S.bcnNights < 1 ? ' That is no buffer at all — take a night back from somewhere.' : '') +
+    '</div></div><span class="fpin">fixed</span></div>';
+
+  host.innerHTML = html;
+  host.querySelectorAll("[data-fly]").forEach(el =>
+    el.onclick = () => setDate("arrive", el.dataset.fly));
+  document.getElementById("fly-lock").onclick = () => {
+    state.flight.lock = !state.flight.lock; render();
+  };
 }
 
 /* ---- date inputs ---- */
@@ -2053,13 +2709,21 @@ function syncDates(){
    replaceState throws in an opaque-origin sandbox (some preview panes),
    so keep the string ourselves and let sharing work regardless.        */
 let lastHash = "";
+/* compact date token: 14 Oct -> "14", 1 Nov -> "n1" */
+const dnum = s => { const d = D(s); return (d.getUTCMonth() === 10 ? "n" : "") + d.getUTCDate(); };
 function writeHash(){
   const n = sequence().filter(b=>!b.terminal)
     .map(b => b.id + ":" + (state.nights[b.id]||0) + (state.locks[b.id] ? "!" : "")).join(",");
+  const pl = Object.keys(state.plan).map(id => {
+    const x = state.plan[id];
+    return id + "." + dnum(x.d) + x.s + (x.lock ? "!" : "");
+  }).join(",");
   const parts = [
     "a=" + state.arrive, "t=" + state.target, "c=" + state.cruise,
     "n=" + n,
     "p=" + state.picks.join(","),
+    pl ? "pl=" + pl : "",
+    state.flight.lock ? "fl=1" : "",
     state.filters.length ? "f=" + state.filters.join(",") : "",
     state.preset ? "s=" + state.preset : ""
   ].filter(Boolean);
@@ -2087,6 +2751,14 @@ function readHash(){
     if(byId[id] && !byId[id].terminal){ s.nights[id] = Math.max(0, parseInt(v,10)||0); if(lock) s.locks[id]=true; }
   });
   s.picks = q.p ? q.p.split(",").filter(Boolean) : [];
+  s.plan = {};
+  if(q.pl) q.pl.split(",").forEach(tok => {
+    const m = tok.match(/^([a-z0-9]+)\.(n?\d+)(am|pm|eve)(!)?$/);
+    if(!m || !POI_BY[m[1]]) return;
+    s.plan[m[1]] = {d:iso(odate(m[2])), s:m[3], lock:!!m[4]};
+    if(!s.picks.includes(m[1])) s.picks.push(m[1]);
+  });
+  s.flight = {lock: q.fl === "1"};
   s.filters = q.f ? q.f.split(",").filter(t => TAGS.includes(t)) : [];
   s.preset = q.s || null;
   if(!Object.keys(s.nights).length) return false;
@@ -2116,36 +2788,60 @@ function markdown(){
   L.push("");
 
   L.push("## Day by day","");
-  S.stops.forEach((st,i) => {
-    const leg = i>0 ? S.legs[i-1] : null;
-    if(leg){
-      L.push("**Drive " + fmt(leg.date) + "** — " + leg.from.name + " → " + leg.to.name +
-        ", " + leg.km + " km, " + hrs(leg.h) + " via " + leg.road +
-        (leg.peak ? ", over " + (leg.peakName||"") + " at " + leg.peak + " m" : "") +
-        (leg.toll ? ", tolls ~€" + leg.toll : "") + ".");
-      L.push("");
-    }
-    L.push("### " + st.base.name + (st.base.sub ? " (" + st.base.sub + ")" : ""));
-    L.push("*" + (st.nights ? fmt(st.start) + " – " + fmt(st.end) : "—") + " · " +
-      st.nights + " night" + (st.nights===1?"":"s") + " · " + st.base.elev + " m · " + COUNTRY[st.base.country] + "*");
+  const occ = occupancy();
+  tripDays(S).forEach(day => {
+    const b = day.stop ? day.stop.base : null;
+    L.push("### " + fmt(day.date) + (b ? " — " + b.name + (b.sub ? " (" + b.sub + ")" : "") : ""));
+    if(day.leg) L.push("*Drive " + day.leg.from.name + " → " + day.leg.to.name + ", " + day.leg.km + " km, " +
+      hrs(day.leg.h) + " via " + day.leg.road +
+      (day.leg.peak ? ", over " + (day.leg.peakName || "") + " at " + day.leg.peak + " m" : "") +
+      (day.leg.toll ? ", tolls ~€" + day.leg.toll : "") + ".*");
+    if(day.sail) L.push("*The ship sails today.*");
     L.push("");
-    const items = POIS.filter(p => p.base === st.base.id && state.picks.includes(p.id));
-    if(!items.length){ L.push("- [ ] nothing shortlisted", ""); return; }
-    items.forEach(p => {
-      L.push("- [ ] **" + p.name + "**" + (p.booking ? " — **BOOK AHEAD**" : ""));
-      L.push("    - " + p.desc);
-      L.push("    - Why: " + p.uncommon);
-      L.push("    - Time: " + p.time + " · " + p.drive);
-      L.push("    - October 2026: " + p.oct);
+    let any = false;
+    SLOTS.forEach(s => (occ[day.iso] ? occ[day.iso][s] : []).forEach(id => {
+      const p = poi(id); if(!p) return;
+      if(spanOf(p, day.date).n === 2 && s === "pm") return;   // already listed under the morning
+      any = true;
+      const pl = state.plan[id], o = openOn(id, day.date);
+      L.push("- [" + (pl.lock ? "x" : " ") + "] **" + SLOTNAME[s] + "** · " + p.name +
+        (pl.lock ? " *(booked)*" : p.booking ? " — **BOOK THIS**" : ""));
+      L.push("    - " + p.time + " · " + p.drive);
+      if(!o.ok) L.push("    - **" + (o.soft ? "Check" : "Conflict") + ":** " + o.why);
       L.push("    - <" + p.url + ">");
-    });
+    }));
+    if(!any) L.push("- *nothing scheduled*");
     L.push("");
   });
 
-  const booked = POIS.filter(p => state.picks.includes(p.id) && p.booking);
-  if(booked.length){
+  const loose = POIS.filter(p => state.picks.includes(p.id) && !state.plan[p.id]);
+  if(loose.length){
+    L.push("## Shortlisted, no date yet","");
+    DATA.bases.forEach(b => {
+      const here = loose.filter(p => p.base === b.id);
+      if(!here.length) return;
+      L.push("### " + b.name);
+      here.forEach(p => {
+        L.push("- [ ] " + p.name + (p.booking ? " — **BOOK AHEAD**" : ""));
+        L.push("    - " + p.desc);
+        L.push("    - October 2026: " + p.oct);
+        L.push("    - <" + p.url + ">");
+      });
+      L.push("");
+    });
+  }
+
+  const tobook = Object.keys(state.plan).map(poi).filter(p => p && p.booking && !state.plan[p.id].lock);
+  if(tobook.length){
     L.push("## Book before anything else","");
-    booked.forEach(p => L.push("- [ ] " + p.name + " — <" + p.url + ">"));
+    tobook.forEach(p => L.push("- [ ] " + p.name + " — " + fmt(D(state.plan[p.id].d)) + " — <" + p.url + ">"));
+    L.push("");
+  }
+
+  const probs = issues(S).filter(i => i.lv !== "info");
+  if(probs.length){
+    L.push("## Needs attention","");
+    probs.forEach(i => L.push("- **" + i.badge + "** — " + i.msg));
     L.push("");
   }
 
@@ -2181,13 +2877,8 @@ function boot(){
 
   ["arrive","target","cruise"].forEach(k => {
     document.getElementById("f-"+k).addEventListener("change", e => {
-      const v = e.target.value; if(!v) return;
-      state[k] = v;
-      // keep the three dates in a sane order
-      if(diffD(D(state.arrive), D(state.target)) < 1) state.target = iso(addD(D(state.arrive),1));
-      if(diffD(D(state.target), D(state.cruise)) < 0) state.cruise = iso(D(state.target));
-      state.preset = null;
-      render();
+      if(!e.target.value) return;
+      setDate(k, e.target.value);
     });
   });
 
