@@ -329,6 +329,53 @@ footer .mono{font-size:11px}
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
+/* ---------- how-to ---------- */
+.guide{border:1px solid var(--rule);background:var(--surface);margin:20px 0 4px;border-radius:var(--radius)}
+.guide > summary{list-style:none;cursor:pointer;padding:13px 16px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.guide > summary::-webkit-details-marker{display:none}
+.guide > summary::before{content:"▸";font-size:11px;color:var(--ink-3);transition:transform var(--dur);display:inline-block}
+.guide[open] > summary::before{transform:rotate(90deg)}
+.gtitle{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:16px;letter-spacing:-.01em}
+.ghint{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);letter-spacing:.04em}
+.gbody{padding:0 16px 16px;border-top:1px solid var(--rule-2)}
+.glead{font-size:15px;line-height:1.5;max-width:64ch;margin:13px 0 16px;color:var(--ink-2)}
+.glead b{color:var(--ink);font-weight:400}
+.gcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:820px){.gcols{grid-template-columns:1fr;gap:18px}}
+
+.gsteps{list-style:none;margin:0;padding:0;display:grid;gap:11px;counter-reset:g}
+.gsteps li{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:13.5px;line-height:1.45;counter-increment:g}
+.gsteps li::before{content:counter(g);font-family:"DM Mono",monospace;font-size:10px;color:var(--ink-3);border:1px solid var(--rule);border-radius:99px;width:19px;height:19px;display:grid;place-items:center;margin-top:1px}
+/* both sit in column 2 — otherwise the text lands in the 20px number column */
+.gsteps li > b,.gsteps li > span{grid-column:2}
+.gsteps b{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:14px;letter-spacing:-.01em}
+.gsteps span{color:var(--ink-2);font-weight:300}
+
+.gfig{border:1px solid var(--rule-2);border-radius:var(--radius);padding:11px 12px;background:var(--surface-2)}
+.gfig + .gfig{margin-top:12px}
+.gfig h4{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);font-weight:400;margin-bottom:9px}
+.gflow{display:flex;align-items:stretch;gap:7px;flex-wrap:wrap}
+.gnode{flex:1 1 118px;border:1px solid var(--rule);border-radius:2px;padding:8px 9px;background:var(--surface)}
+.gnode .gn{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;border:1px solid currentColor;display:inline-block;margin-bottom:5px}
+.gnode.s1 .gn{color:var(--ink-3)}
+.gnode.s2 .gn{color:var(--accent)}
+.gnode.s3 .gn{color:var(--surface);background:var(--ink);border-color:var(--ink)}
+.gnode p{margin:0;font-size:12px;line-height:1.4;color:var(--ink-2);font-weight:300}
+.garrow{align-self:center;color:var(--ink-3);font-size:13px}
+@media (max-width:520px){.garrow{display:none}}
+
+.gbars{display:grid;gap:6px}
+.gbar{display:flex;gap:3px;align-items:center}
+.gbar .glab{font-family:"DM Mono",monospace;font-size:9.5px;color:var(--ink-3);width:34px;flex:none}
+.gblk{border-radius:2px;padding:5px 6px;font-family:"DM Mono",monospace;font-size:9.5px;color:var(--surface);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gblk.moved{outline:2px solid var(--ink);outline-offset:-2px}
+.gcap{font-size:12px;color:var(--ink-2);line-height:1.4;margin-top:8px;font-weight:300}
+
+.gnotes{display:grid;gap:7px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule-2)}
+.gnote{display:grid;grid-template-columns:auto 1fr;gap:9px;font-size:13px;line-height:1.45;color:var(--ink-2)}
+.gnote i{font-style:normal;font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding-top:2px;white-space:nowrap}
+.gnote b{color:var(--ink);font-weight:600;font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.01em}
+
 /* Shown until the script boots. If you can read this, JS did not run. */
 #js-warning{background:var(--ink);color:var(--surface);padding:16px 18px;margin:18px 0;border-radius:var(--radius);line-height:1.5}
 #js-warning b{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;display:block;margin-bottom:4px;font-size:16px}
@@ -340,7 +387,7 @@ footer .mono{font-size:11px}
   body{font-size:10.5pt}
   .presets,.filters,.explorer,.actions,.sats,.hero-head .note,.lockbtn,.stepper button,
   .addbtn,.dropbtn,.picker,dialog,.toast,.placed .pctl,.fopts,.lockbtn2,.ifixes,
-  .issue.info{display:none !important}
+  .issue.info,.guide{display:none !important}
   .bench{grid-template-columns:1fr 1fr;gap:12px}
   .mast{padding-top:0;page-break-after:avoid}
   .dayrow{break-inside:avoid;grid-template-columns:78px 116px repeat(3,1fr)}
@@ -364,6 +411,65 @@ footer .mono{font-size:11px}
     <p class="sub">Bilbao to Barcelona over roughly nineteen nights, with twelve hours of unavoidable driving. This tool exists to answer one question: how many nights where, and what does each one cost somewhere else.</p>
     <div class="routestrip" id="routestrip"></div>
   </header>
+
+  <details class="guide" id="guide" open>
+    <summary>
+      <span class="gtitle">How this works</span>
+      <span class="ghint">a minute, then you can forget it</span>
+    </summary>
+    <div class="gbody">
+      <p class="glead">Really only two decisions: <b>how many nights in each town</b>, and <b>what to do on each day</b>.
+        Everything else on the page is worked out from those two. Nothing you tap is permanent, so poke at it.</p>
+
+      <div class="gcols">
+        <ol class="gsteps">
+          <li><b>Dates and flights</b><span>When we land, when we have to be in Barcelona, when the ship goes. Landing a day later means a night less to spend.</span></li>
+          <li><b>Six ways to spend it</b><span>Ready-made starting points — mountains, coast, wine. Tap one and everything fills in. They are starting points, not commitments.</span></li>
+          <li><b>Night allocator</b><span>How many nights each town gets. The number of nights is fixed, so adding one takes one from somewhere else. The ◇ pin protects a town from being raided.</span></li>
+          <li><b>What to actually do</b><span>A hundred-odd places. Filter by the tags — nature, food, wine, ocean. Add one, then choose which day it happens on.</span></li>
+          <li><b>The itinerary</b><span>One row per day, split into morning, afternoon and evening. This is the thing we are building.</span></li>
+        </ol>
+
+        <div>
+          <div class="gfig">
+            <h4>Three states, in order</h4>
+            <div class="gflow">
+              <div class="gnode s1"><span class="gn">shortlisted</span><p>You like the look of it. No day yet.</p></div>
+              <span class="garrow">&rarr;</span>
+              <div class="gnode s2"><span class="gn">planned</span><p>It has a day and a slot. The page checks it is actually open then.</p></div>
+              <span class="garrow">&rarr;</span>
+              <div class="gnode s3"><span class="gn">booked</span><p>Really paid for. Now protected — nights cannot shift us out of town that day.</p></div>
+            </div>
+            <p class="gcap">Move up a state with <b>Pick a day</b> on a card, then <b>◇ book</b> once it is actually reserved.</p>
+          </div>
+
+          <div class="gfig">
+            <h4>Nights are a fixed pot</h4>
+            <div class="gbars">
+              <div class="gbar"><span class="glab">now</span>
+                <span class="gblk" style="background:var(--e0);flex:2">Bilbao 2</span>
+                <span class="gblk" style="background:var(--e0);flex:4">San Sebastián 4</span>
+                <span class="gblk" style="background:var(--e0);flex:3">Bordeaux 3</span>
+              </div>
+              <div class="gbar"><span class="glab">+1 Bx</span>
+                <span class="gblk" style="background:var(--e0);flex:2">Bilbao 2</span>
+                <span class="gblk moved" style="background:var(--e0);flex:3">San Seb 3</span>
+                <span class="gblk moved" style="background:var(--e0);flex:4">Bordeaux 4</span>
+              </div>
+            </div>
+            <p class="gcap">Add a night to Bordeaux and it comes out of somewhere — the page shows you where, and every date after it shifts.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gnotes">
+        <div class="gnote"><i>red</i><span><b>A real clash.</b> Usually the place is shut that day. Amber means worth a phone call — we could not confirm the hours.</span></div>
+        <div class="gnote"><i>blocked</i><span>Nothing is ever forbidden <em>except</em> moving nights out from under something already booked — and even that offers an override.</span></div>
+        <div class="gnote"><i>empty</i><span>Blank afternoons are fine. There are nineteen nights and only twelve hours of driving; the space is the point.</span></div>
+        <div class="gnote"><i>saving</i><span><b>The link is the plan.</b> Everything lives in the web address, so <b>Copy shareable link</b> and send it to share what you have done.</span></div>
+      </div>
+    </div>
+  </details>
 
   <div id="js-warning">
     <b>This page is not running.</b>
