@@ -117,6 +117,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .brow{display:grid;grid-template-columns:14px 1fr auto auto;gap:9px;align-items:center;padding:9px 0;border-top:1px solid var(--rule-2)}
 .brow:first-of-type{border-top:0}
 .brow.flash{animation:flash .85s ease-out}
+.brow.zero .bname,.brow.zero .bswatch{opacity:.42}
+.brow.zero .stepper .n{color:var(--ink-3)}
 @keyframes flash{0%{background:#f5e2b8}100%{background:transparent}}
 .bswatch{width:10px;height:26px;border-radius:1px}
 .bname{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15px;letter-spacing:-.01em;line-height:1.15}
@@ -496,74 +498,74 @@ const DATA = {
 ------------------------------------------------------------------ */
 bases: [
  {id:"bilbao", name:"Bilbao", country:"ES", order:10, elev:19, lat:43.263, lon:-2.935,
-  core:true, min:1, rec:[2,3], outdoor:false,
+  core:true, min:0, rec:[2,3], outdoor:false,
   recWhy:"Two nights covers the reopened Bellas Artes and one day out to Urdaibai or Gorbeia. One night means you see a city and none of Bizkaia."},
 
  {id:"rioja", name:"Rioja Alavesa", sub:"Laguardia", country:"ES", order:12, elev:635, lat:42.553, lon:-2.583,
-  core:false, min:1, rec:[1,2], outdoor:true,
+  core:false, min:0, rec:[1,2], outdoor:true,
   recWhy:"Baigorri shuts Sun–Mon, Remelluri is Tue–Sat by appointment. Two nights is what it takes to fit two cellars and the dolmen half-day.",
   satWhy:"A walled hill town that empties at 18:00 when the day coaches leave. Doing these cellars from Bilbao is a 2h40 round trip on a tasting day — a bad idea.",
   costNote:"Rioja sits south; the Basque coast sits north. Enabling both routes you Bilbao → Laguardia → Getaria, which is the sane order."},
 
  {id:"basque-coast", name:"Basque Coast", sub:"Getaria / Zumaia", country:"ES", order:14, elev:12, lat:43.297, lon:-2.255,
-  core:false, min:1, rec:[1,2], outdoor:true,
+  core:false, min:0, rec:[1,2], outdoor:true,
   recWhy:"The flysch platform at Sakoneta is only walkable near low water, and in late October that often falls early morning or dusk. You need to be sleeping nearby.",
   satWhy:"Working fishing ports with genuine off-season life. Txomin Etxaniz, the Balenciaga archive and the GR-121 trailhead are all inside ten minutes."},
 
  {id:"san-sebastian", name:"San Sebastián", country:"ES", order:20, elev:6, lat:43.318, lon:-1.981,
-  core:true, min:1, rec:[3,4], outdoor:false,
+  core:true, min:0, rec:[3,4], outdoor:false,
   recWhy:"Three nights gets a cooking class, a night in Gros and a day on the coast without rushing any of them."},
 
  {id:"french-basque", name:"French Basque", sub:"Sare / Espelette", country:"FR", order:22, elev:70, lat:43.312, lon:-1.578,
-  core:false, min:1, rec:[2,3], outdoor:true,
+  core:false, min:0, rec:[2,3], outdoor:true,
   recWhy:"La Rhune's first train, Zugarramurdi, Irouléguy and Saint-Jean-Pied-de-Port do not compress into one day.",
   satWhy:"Sits almost on the San Sebastián→Bordeaux line. If you can be here on 24–25 October you can walk into the Fête du Piment instead of driving into a closed village.",
   costNote:"Barely off the direct line — one of the two cheapest satellites on the route."},
 
  {id:"arcachon", name:"Arcachon Basin", sub:"Cap Ferret", country:"FR", order:26, elev:5, lat:44.658, lon:-1.168,
-  core:false, min:1, rec:[1,2], outdoor:true,
+  core:false, min:0, rec:[1,2], outdoor:true,
   recWhy:"Two nights splits ocean side and bay side. One forces a choice between the dune and the oyster villages.",
   satWhy:"October is genuinely the right month here, not a compromise: peak autumn swell, peak bird passage at Le Teich, oysters in season, and the dune without the summer crowd.",
   costNote:"Nearly free — it sits just off the A63 you would drive anyway."},
 
  {id:"bordeaux", name:"Bordeaux", country:"FR", order:30, elev:6, lat:44.837, lon:-0.579,
-  core:true, min:1, rec:[3,4], outdoor:false,
+  core:true, min:0, rec:[3,4], outdoor:false,
   recWhy:"One day right-bank, one day in the city, one spare. Fewer than three and the Castillon estates get cut."},
 
  {id:"dordogne", name:"Dordogne & Lot", sub:"Sarlat", country:"FR", order:34, elev:145, lat:44.889, lon:1.216,
-  core:false, min:2, rec:[3,4], outdoor:true,
+  core:false, min:0, rec:[3,4], outdoor:true,
   recWhy:"Three nights is the floor that justifies the detour: one cave day, one river or garden day, one for the Lot on the way out.",
   satWhy:"Padirac, Pech Merle and Rouffignac all close on 1 November — this window is the last week of their season. Font-de-Gaume is 78 people a day and the hardest ticket in France.",
   costNote:"The one genuinely expensive detour. Route out via Cahors, not back the way you came."},
 
  {id:"toulouse", name:"Toulouse", country:"FR", order:40, elev:146, lat:43.605, lon:1.444,
-  core:true, min:1, rec:[2,3], outdoor:false,
+  core:true, min:0, rec:[2,3], outdoor:false,
   recWhy:"Two nights covers the Halle de La Machine and either the Airbus line or a Gaillac day."},
 
  {id:"ariege", name:"Ariège", sub:"Tarascon / Foix", country:"FR", order:44, elev:480, lat:42.845, lon:1.605,
-  core:false, min:1, rec:[2,3], outdoor:true,
+  core:false, min:0, rec:[2,3], outdoor:true,
   recWhy:"One cave day plus one mountain-road day. Three if you want Bethmale and the Couserans beech valleys, which are 1h30 west.",
   satWhy:"The strongest satellite on the route and it costs nothing. Niaux runs daily only to 31 October; Bédeilhac to 1 November. This is the last of the season.",
   costNote:"Sits directly on the N20 you would drive anyway. Breaking the leg here is faster than the single push."},
 
  {id:"vall-de-boi", name:"Vall de Boí", sub:"Aigüestortes", country:"ES", order:46, elev:1500, lat:42.518, lon:0.847,
-  core:false, min:2, rec:[2,3], outdoor:true,
+  core:false, min:0, rec:[2,3], outdoor:true,
   recWhy:"Two nights minimum — one weather day is not optional at 1,500 m in late October.",
   satWhy:"Nine UNESCO Romanesque churches and the only national park in Catalonia. Spectacular and genuinely uncommon.",
   costNote:"The expensive one. It sits west of Andorra, so it only makes sense reached from Toulouse via the Val d'Aran, not backtracked from Andorra."},
 
  {id:"andorra", name:"Andorra", sub:"la Vella", country:"AD", order:50, elev:1023, lat:42.507, lon:1.521,
-  core:true, min:1, rec:[2,3], outdoor:true,
+  core:true, min:0, rec:[2,3], outdoor:true,
   recWhy:"Two nights means one weather day and no hiking day. Madriu needs a full clear day on its own."},
 
  {id:"cerdanya", name:"Cerdanya", sub:"Puigcerdà", country:"ES", order:54, elev:1202, lat:42.432, lon:1.928,
-  core:false, min:1, rec:[1,2], outdoor:true,
+  core:false, min:0, rec:[1,2], outdoor:true,
   recWhy:"One night is enough unless the Núria railway is running, in which case take two.",
   satWhy:"A high sunlit basin with Llívia, a Spanish enclave marooned inside France, sitting in the middle of it.",
   costNote:"Leaves Andorra eastward over Envalira, then drops to Barcelona through the Cadí."},
 
  {id:"penedes", name:"Penedès", sub:"Sant Sadurní", country:"ES", order:57, elev:218, lat:41.346, lon:1.699,
-  core:false, min:1, rec:[1,2], outdoor:false,
+  core:false, min:0, rec:[1,2], outdoor:false,
   recWhy:"One night is plenty. Two if you want both Recaredo and Gramona without hurrying either.",
   satWhy:"Grower sparkling wine that needs booked, unhurried, mid-week visits. Staying over also removes the drink-driving problem on your last day.",
   costNote:"Montserrat does not justify a base — it justifies a dawn stop on the drive down."},
@@ -605,7 +607,29 @@ legs: {
  "cerdanya>barcelona":        {km:150, h:2.50, toll:0,  road:"Collada de Toses / C-17", peak:1800, peakName:"Collada de Toses"},
  "andorra>penedes":           {km:250, h:3.50, toll:22, road:"C-16 / AP-7", peak:1220, peakName:"Túnel del Cadí"},
  "cerdanya>penedes":          {km:195, h:3.00, toll:12, road:"C-17 / AP-7", peak:1800, peakName:"Collada de Toses"},
- "penedes>barcelona":         {km:55,  h:0.83, toll:4,  road:"AP-7 / C-32"}
+ "penedes>barcelona":         {km:55,  h:0.83, toll:4,  road:"AP-7 / C-32"},
+
+ /* --- bridges used when a base is set to 0 nights and you drive past it --- */
+ "bilbao>french-basque":      {km:145, h:1.90, toll:8,  road:"AP-8 / N-121"},
+ "bilbao>bordeaux":           {km:330, h:3.25, toll:28, road:"AP-8 / A63"},
+ "rioja>bordeaux":            {km:430, h:4.30, toll:32, road:"AP-1 / A63"},
+ "basque-coast>bordeaux":     {km:250, h:2.60, toll:24, road:"AP-8 / A63"},
+ "san-sebastian>toulouse":    {km:400, h:4.00, toll:30, road:"A64 via Pau"},
+ "french-basque>toulouse":    {km:355, h:3.60, toll:26, road:"A64 via Pau"},
+ "french-basque>dordogne":    {km:380, h:4.00, toll:22, road:"A63 / A89"},
+ "arcachon>dordogne":         {km:265, h:2.90, toll:14, road:"A63 / A89"},
+ "arcachon>toulouse":         {km:300, h:3.00, toll:25, road:"A62"},
+ "bordeaux>ariege":           {km:330, h:3.50, toll:26, road:"A62 / A66"},
+ "bordeaux>andorra":          {km:415, h:5.20, toll:32, road:"A62 / N20", peak:2408, peakName:"Port d'Envalira"},
+ "dordogne>ariege":           {km:290, h:3.80, toll:8,  road:"D820 / A66"},
+ "dordogne>andorra":          {km:375, h:5.40, toll:14, road:"D820 / N20", peak:2408, peakName:"Port d'Envalira"},
+ "toulouse>cerdanya":         {km:200, h:2.70, toll:8,  road:"A66 / N20", peak:1915, peakName:"Col de Puymorens"},
+ "toulouse>barcelona":        {km:390, h:4.00, toll:34, road:"A61 / AP-7 via Perpignan"},
+ "ariege>cerdanya":           {km:110, h:1.80, toll:0,  road:"N20", peak:1915, peakName:"Col de Puymorens"},
+ "ariege>barcelona":          {km:370, h:4.30, toll:30, road:"A61 / AP-7 via Perpignan"},
+ "ariege>penedes":            {km:340, h:4.00, toll:32, road:"A61 / AP-7"},
+ "vall-de-boi>cerdanya":      {km:230, h:3.60, toll:0,  road:"N-260", peak:1310, peakName:"Coll de Nargó"},
+ "vall-de-boi>barcelona":     {km:310, h:4.20, toll:15, road:"N-260 / C-16", peak:1310, peakName:"Coll de Nargó"}
 },
 
 /* ---- CONTEXTUAL WARNINGS ---------------------------------------
@@ -1890,9 +1914,11 @@ function defaultState(){
 }
 
 /* ---- sequence & schedule ---- */
+/* every base the allocator shows: the six fixed ones plus enabled satellites.
+   A base sitting at 0 nights stays here — you can always add nights back. */
 function sequence(){
   return DATA.bases
-    .filter(b => b.terminal || state.nights[b.id] !== undefined)
+    .filter(b => b.terminal || b.core || state.nights[b.id] !== undefined)
     .sort((a,b) => a.order - b.order);
 }
 function legKey(a,b){ return a + ">" + b; }
@@ -1923,23 +1949,37 @@ function schedule(){
   const bcnNights = Math.max(0, diffD(bcnActual, cruise));
 
   let cur = arrive;
-  const stops = [];
+  const allStops = [];
   pre.forEach(b => {
     const n = state.nights[b.id]||0;
-    stops.push({base:b, nights:n, start:cur, end:addD(cur,n)});
+    allStops.push({base:b, nights:n, start:cur, end:addD(cur,n)});
     cur = addD(cur,n);
   });
   const bcn = byId["barcelona"];
-  stops.push({base:bcn, nights:bcnNights, start:bcnActual, end:addD(bcnActual,bcnNights), terminal:true});
+  allStops.push({base:bcn, nights:bcnNights, start:bcnActual, end:addD(bcnActual,bcnNights), terminal:true});
+
+  /* You only stop where you sleep. A base at 0 nights drops out of the route
+     entirely, so the drive is computed between its neighbours instead. */
+  const stops = allStops.filter(s => s.nights > 0 || s.terminal);
+
+  /* You still land at Bilbao even with no nights there, so that first drive
+     has to stay in the totals rather than vanishing with the stop. */
+  const drive = stops.slice();
+  let hasOrigin = false;
+  if(allStops[0] && allStops[0].nights === 0 && drive.length && drive[0].base.id !== allStops[0].base.id){
+    drive.unshift({base:allStops[0].base, nights:0, start:arrive, end:arrive});
+    hasOrigin = true;
+  }
 
   const legs = [];
-  for(let i=1;i<stops.length;i++){
-    const L = legFor(stops[i-1].base.id, stops[i].base.id);
+  for(let i=1;i<drive.length;i++){
+    const L = legFor(drive[i-1].base.id, drive[i].base.id);
     legs.push(Object.assign({}, L, {
-      from:stops[i-1].base, to:stops[i].base, date:stops[i].start
+      from:drive[i-1].base, to:drive[i].base, date:drive[i].start,
+      origin: hasOrigin && i === 1        // the airport run, which precedes stop 0
     }));
   }
-  return {seq, stops, legs, budget, allocated, bcnActual, bcnNights,
+  return {seq, stops, allStops, legs, budget, allocated, bcnActual, bcnNights,
           delta:allocated - budget, totalNights:allocated + bcnNights};
 }
 
@@ -1955,13 +1995,20 @@ function bump(id, dir){
 
   if(dir < 0){
     if((state.nights[id]||0) <= b.min) return;
-    if(!guarded(() => { state.nights[id]--; }, "removing a night from " + b.name)) return;
+    const emptying = (state.nights[id]||0) === 1;
+    if(!guarded(() => {
+      state.nights[id]--;
+      // a satellite with no nights is simply not on the trip
+      if(emptying && !b.core){ delete state.nights[id]; delete state.locks[id]; }
+    }, "removing the last night from " + b.name)) return;
+    if(emptying) toast(b.core ? b.name + " is now a drive-through — no overnight there."
+                              : b.name + " dropped off the route.");
     flashIds = [id];
   } else {
     let donor = null;
     if(S.allocated >= S.budget){
       donor = donorFor(id);
-      if(!donor){ toast("Everything else is locked or at its floor — free a night first."); shake(id); return; }
+      if(!donor){ toast("Every other base is down to its last night. Zero one out to free more."); shake(id); return; }
     }
     if(!guarded(() => { if(donor) state.nights[donor]--; state.nights[id]++; },
                 "adding a night to " + b.name)) return;
@@ -1971,12 +2018,14 @@ function bump(id, dir){
   state.preset = null;
   render();
 }
+/* Auto-rebalancing never takes a base's last night — deleting a whole stop
+   is a decision, not a side effect. Zeroing a base stays a manual act. */
 function donorFor(skip){
   const pre = sequence().filter(b => !b.terminal && b.id !== skip);
   for(let i = pre.length-1; i >= 0; i--){
     const b = pre[i];
     if(state.locks[b.id]) continue;
-    if((state.nights[b.id]||0) > b.min) return b.id;
+    if((state.nights[b.id]||0) > Math.max(b.min, 1)) return b.id;
   }
   return null;
 }
@@ -2069,7 +2118,9 @@ function renderTransect(S){
   const padL = 34, padR = 12, padT = 26, padB = 62;
   const CONN = 0.62;                       // day-units given to each ramp
 
-  const units = S.stops.reduce((n,s) => n + Math.max(s.nights, .55), 0) + CONN*S.legs.length;
+  /* ramps sit between plotted stops, so the airport run before stop 0 is not one */
+  const rlegs = S.legs.filter(l => !l.origin);
+  const units = S.stops.reduce((n,s) => n + Math.max(s.nights, .55), 0) + CONN*rlegs.length;
   const iw = W - padL - padR, ih = H - padT - padB;
   const SEA = 22;                          // sea level sits this far above the axis,
   const X = u => padL + (u/units)*iw;      // so coastal bases still have visible mass
@@ -2097,8 +2148,8 @@ function renderTransect(S){
     pts.push([X(u), y], [X(u+w), y]);
     plateaus.push({st, x0:X(u), x1:X(u+w), y, cx:X(u+w/2)});
     u += w;
-    if(i < S.legs.length){
-      const L = S.legs[i], x0 = X(u), x1 = X(u+CONN);
+    if(i < rlegs.length && S.stops[i+1]){
+      const L = rlegs[i], x0 = X(u), x1 = X(u+CONN);
       if(L.peak && L.peak > Math.max(st.base.elev, S.stops[i+1].base.elev) + 120){
         pts.push([(x0+x1)/2, Y(L.peak)]);
         ramps.push({L, x0, x1, peakY:Y(L.peak)});
@@ -2114,7 +2165,7 @@ function renderTransect(S){
   // country strip — runs of consecutive same-country bases, with border ticks
   let cu = 0; const runs = [];
   S.stops.forEach((st,i) => {
-    const w = Math.max(st.nights,.55) + (i < S.legs.length ? CONN : 0);
+    const w = Math.max(st.nights,.55) + (i < rlegs.length ? CONN : 0);
     const last = runs[runs.length-1];
     if(last && last.c === st.base.country) last.u1 = cu + w;
     else runs.push({c:st.base.country, u0:cu, u1:cu + w});
@@ -2206,15 +2257,18 @@ function renderMeter(S){
 function renderRows(S){
   const host = document.getElementById("rows");
   host.innerHTML = "";
-  S.stops.forEach(st => {
+  S.allStops.forEach(st => {
     const b = st.base, row = document.createElement("div");
-    row.className = "brow" + (flashIds.includes(b.id) ? " flash" : "");
+    const zero = !b.terminal && st.nights === 0;
+    row.className = "brow" + (flashIds.includes(b.id) ? " flash" : "") + (zero ? " zero" : "");
     row.dataset.row = b.id;
 
-    const below = !b.terminal && st.nights < b.rec[0];
+    const below = !b.terminal && st.nights > 0 && st.nights < b.rec[0];
     const meta = b.terminal
       ? "derived &middot; " + fmtS(st.start) + " &ndash; " + fmtS(st.end)
-      : (st.nights ? fmtS(st.start) + " &ndash; " + fmtS(st.end) : "&mdash;") +
+      : zero
+      ? "driving through &middot; no overnight"
+      : fmtS(st.start) + " &ndash; " + fmtS(st.end) +
         " &middot; " + b.elev + " m" + (below ? " &middot; below " + b.rec[0] + "n" : "");
 
     row.innerHTML =
@@ -2248,10 +2302,13 @@ function renderRows(S){
     }
 
     host.appendChild(row);
-    if(below && !b.terminal){
+    if((below || zero) && !b.terminal){
       const w = document.createElement("div");
-      w.style.cssText = "font-size:12.5px;color:var(--warn);padding:0 0 8px 23px;line-height:1.4";
-      w.textContent = b.recWhy;
+      w.style.cssText = "font-size:12.5px;color:var(--" + (zero ? "ink-3" : "warn") +
+        ");padding:0 0 8px 23px;line-height:1.4";
+      w.textContent = zero
+        ? "You pass through " + b.name + " without stopping. The drive is now computed straight between its neighbours."
+        : b.recWhy;
       host.appendChild(w);
     }
   });
@@ -2296,7 +2353,7 @@ function detourCost(b){
   return {km: withIt.km - without.km, h: withIt.h - without.h};
 }
 function legTotals(){
-  const seq = DATA.bases.filter(b => b.terminal || state.nights[b.id] !== undefined).sort((a,b)=>a.order-b.order);
+  const seq = DATA.bases.filter(b => b.terminal || (state.nights[b.id]||0) > 0).sort((a,b)=>a.order-b.order);
   let km = 0, h = 0, toll = 0;
   for(let i=1;i<seq.length;i++){
     const L = legFor(seq[i-1].id, seq[i].id);
@@ -2631,8 +2688,11 @@ function pickerEl(p){
   const wrap = document.createElement("div");
   wrap.className = "picker";
   if(!days.length){
-    wrap.innerHTML = '<div class="pnone">' + esc(byId[p.base].name) +
-      ' is not in the route at the moment — switch it on in Optional bases first.</div>';
+    const b = byId[p.base];
+    wrap.innerHTML = '<div class="pnone">' + (state.nights[p.base] === undefined && !b.core
+      ? esc(b.name) + ' is not in the route — switch it on under Optional bases first.'
+      : 'No nights in ' + esc(b.name) + ' right now, so there is no day to put this on. Add one in the allocator.')
+      + '</div>';
     return wrap;
   }
   const occ = occupancy();
