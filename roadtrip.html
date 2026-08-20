@@ -94,6 +94,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .preset:hover{border-color:var(--ink-3);transform:translateY(-1px);box-shadow:var(--shadow)}
 .preset[aria-pressed=true]{border-color:var(--ink);border-width:2px;padding:11px 12px;background:var(--surface-2)}
 .preset .pname{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:15.5px;letter-spacing:-.01em;display:block}
+.preset .pedit{display:none;font-family:"DM Mono",monospace;font-weight:400;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--rule);border-radius:99px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.preset.dirty .pedit{display:inline-block}
 .preset .pdesc{font-size:13px;color:var(--ink-2);line-height:1.4;margin:4px 0 8px;font-weight:300}
 .preset .pstats{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--ink-3);display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid var(--rule-2);padding-top:7px}
 
@@ -1891,9 +1893,8 @@ function place(id, dateISO, slot){
   const p = poi(id); if(!p) return;
   state.plan[id] = {d:dateISO, s:slot || freeSlot(p, dateISO), lock:false};
   if(!state.picks.includes(id)) state.picks.push(id);
-  state.preset = null;
 }
-function unplan(id){ delete state.plan[id]; state.preset = null; }
+function unplan(id){ delete state.plan[id]; }
 
 function setDate(key, v){
   if(key === "arrive" && state.flight.lock && v !== state.arrive){
@@ -1905,7 +1906,6 @@ function setDate(key, v){
     // keep the three dates in a sane order
     if(diffD(D(state.arrive), D(state.target)) < 1) state.target = iso(addD(D(state.arrive),1));
     if(diffD(D(state.target), D(state.cruise)) < 0) state.cruise = iso(D(state.target));
-    state.preset = null;
   };
   if(!guarded(mutate, "changing the " + (key === "arrive" ? "arrival date" : key === "cruise" ? "sailing date" : "Barcelona target"))){
     syncDates(); return;
@@ -1916,7 +1916,7 @@ function setDate(key, v){
 /* ---- locked items defend the night allocation ---- */
 let blocked = null, pendingFn = null;
 function locksBrokenBy(mutate){
-  const save = JSON.stringify({n:state.nights, l:state.locks, a:state.arrive, t:state.target, c:state.cruise});
+  const save = JSON.stringify(state);
   mutate();
   const S = schedule(), byISO = {};
   tripDays(S).forEach(d => byISO[d.iso] = d);
@@ -1926,8 +1926,7 @@ function locksBrokenBy(mutate){
     const p = poi(id), day = byISO[pl.d];
     if(!day || !day.stop || day.stop.base.id !== p.base) broken.push(p);
   }
-  const s = JSON.parse(save);
-  state.nights = s.n; state.locks = s.l; state.arrive = s.a; state.target = s.t; state.cruise = s.c;
+  state = JSON.parse(save);   // a trial run must leave nothing behind
   return broken;
 }
 /* run a mutation unless it would strand a locked booking */
@@ -2122,7 +2121,6 @@ function bump(id, dir){
     flashIds = donor ? [id, donor] : [id];
     if(donor) toast("Took a night from " + byId[donor].name + ".");
   }
-  state.preset = null;
   render();
 }
 /* Auto-rebalancing never takes a base's last night — deleting a whole stop
@@ -2164,7 +2162,6 @@ function toggleSat(id){
     }
   };
   if(!guarded(mutate, (on ? "dropping " : "adding ") + b.name)) return;
-  state.preset = null;
   render();
 }
 
@@ -2182,6 +2179,18 @@ function loadPreset(pid){
   if(!guarded(mutate, "loading “" + p.name + "”")) return;
   render();
   toast("Loaded “" + p.name + "”. Edit away.");
+}
+
+/* Which preset you started from stays on screen once you edit — it is where
+   this plan came from. It just gets marked, rather than silently letting go. */
+function presetDirty(){
+  const p = DATA.presets.find(x => x.id === state.preset);
+  if(!p) return false;
+  const shape = n => Object.keys(n).sort().map(k => k + ":" + n[k]).join(",");
+  if(shape(p.nights) !== shape(state.nights)) return true;
+  // items already on a day were carried across by the load itself, not chosen since
+  const loose = a => a.filter(id => !state.plan[id]).sort().join(",");
+  return loose(p.picks) !== loose(state.picks);
 }
 
 /* ---- preset scoring for the cards ---- */
@@ -2204,8 +2213,12 @@ function render(){
   renderSats(S); renderMetrics(S); renderWarns(S);
   renderFlights(); renderIssues(S); renderPlan(S);
   renderPresets(); syncDates(); writeHash();
-  document.querySelectorAll(".preset").forEach(el =>
-    el.setAttribute("aria-pressed", el.dataset.preset === state.preset));
+  const dirty = presetDirty();
+  document.querySelectorAll(".preset").forEach(el => {
+    const on = el.dataset.preset === state.preset;
+    el.setAttribute("aria-pressed", on);
+    el.classList.toggle("dirty", on && dirty);
+  });
   flashIds = [];
 }
 
@@ -2538,7 +2551,7 @@ function renderPresets(){
   host.innerHTML = DATA.presets.map(p => {
     const s = scorePreset(p);
     return '<button class="preset" data-preset="'+p.id+'" aria-pressed="false">'+
-      '<span class="pname">'+esc(p.name)+'</span>'+
+      '<span class="pname">'+esc(p.name)+'<span class="pedit">edited</span></span>'+
       '<span class="pdesc">'+esc(p.desc)+'</span>'+
       '<span class="pstats"><span>'+s.drives+' drives</span><span>max '+hrs(s.longest)+'</span><span>'+s.outdoor+'n outdoors</span></span>'+
     '</button>';
@@ -2627,7 +2640,7 @@ function card(p){
 
   if(st === "none"){
     mk("+ shortlist", "addbtn", () => {
-      state.picks = state.picks.concat(p.id); state.preset = null;
+      state.picks = state.picks.concat(p.id);
       renderExplorer(); render();
     }, "Shortlist " + p.name);
   } else {
@@ -2638,7 +2651,6 @@ function card(p){
     mk("&times;", "dropbtn", () => {
       unplan(p.id);
       state.picks = state.picks.filter(x => x !== p.id);
-      state.preset = null;
       renderExplorer(); render();
     }, "Drop " + p.name + " entirely");
   }
@@ -2708,7 +2720,7 @@ function placedEl(p, day){
     btn.textContent = s;
     btn.setAttribute("aria-pressed", pl.s === s);
     btn.setAttribute("aria-label", "Move " + p.name + " to the " + SLOTNAME[s]);
-    btn.onclick = () => { pl.s = s; state.preset = null; render(); };
+    btn.onclick = () => { pl.s = s; render(); };
     ctl.appendChild(btn);
   });
 
@@ -2716,7 +2728,7 @@ function placedEl(p, day){
   lk.textContent = pl.lock ? "◆ booked" : "◇ book";
   lk.setAttribute("aria-pressed", !!pl.lock);
   lk.setAttribute("aria-label", (pl.lock ? "Unmark" : "Mark") + " " + p.name + " as booked");
-  lk.onclick = () => { pl.lock = !pl.lock; state.preset = null; render(); };
+  lk.onclick = () => { pl.lock = !pl.lock; render(); };
   ctl.appendChild(lk);
 
   const rm = document.createElement("button");
@@ -2776,7 +2788,7 @@ function renderIssues(S){
     if(it.fix === "Lock" && it.id){
       const b = document.createElement("button");
       b.className = "ifix"; b.textContent = "Mark booked";
-      b.onclick = () => { state.plan[it.id].lock = true; state.preset = null; render(); renderExplorer(); };
+      b.onclick = () => { state.plan[it.id].lock = true; render(); renderExplorer(); };
       box.appendChild(b);
     }
     el.appendChild(box);
