@@ -2491,18 +2491,21 @@ function renderMetrics(S){
   const weeks = Math.max(S.totalNights/7, .5);
 
   const cells = [
-    {v:S.totalNights, k:"nights total"},
-    {v:S.stops.length, k:"bases"},
-    {v:S.legs.length, k:"driving days"},
-    {v:km, k:"kilometres"},
-    {v:hrs(h), k:"behind the wheel"},
-    {v:longest.h?hrs(longest.h):"—", k:"longest drive", amber:longest.h>LONG_DRIVE},
-    {v:(S.legs.length/weeks).toFixed(1), k:"moves / week"},
-    {v:outdoor, k:"nights outdoors"},
-    {v:"€"+toll, k:"tolls, approx"}
+    {v:S.totalNights, k:"nights total", t:"Landing to sailing, including Barcelona."},
+    {v:S.stops.length, k:"bases", t:"Places you actually sleep. A base at 0 nights is not one."},
+    {v:S.legs.length, k:"driving days", t:"Days you change base."},
+    {v:km, k:"kilometres", t:"Transfers only — not day trips once you are there."},
+    {v:hrs(h), k:"behind the wheel", t:"Total transfer time in typical conditions."},
+    {v:longest.h?hrs(longest.h):"—", k:"longest drive", amber:longest.h>LONG_DRIVE,
+     t:"The single worst transfer. Amber over " + LONG_DRIVE + " hours."},
+    {v:(S.legs.length/weeks).toFixed(1), k:"moves / week", t:"Pace. Under 2 feels unhurried; over 3 is a lot of packing."},
+    {v:outdoor, k:"nights in nature",
+     t:"Nights based in mountains, coast or wine country rather than in a city. Nothing to do with camping — it is where you are based, not what you sleep in."},
+    {v:"€"+toll, k:"tolls, approx", t:"Motorway and tunnel tolls at 2026 car rates. An estimate."}
   ];
   document.getElementById("metrics").innerHTML = cells.map(c =>
-    '<div class="mcell'+(c.amber?' amber':'')+'"><div class="v">'+c.v+'</div><div class="k">'+c.k+'</div></div>'
+    '<div class="mcell'+(c.amber?' amber':'')+'" title="'+esc(c.t||"")+'"><div class="v">'+c.v+
+    '</div><div class="k">'+c.k+'</div></div>'
   ).join("");
 
   document.getElementById("legs").innerHTML = S.legs.map(l => {
@@ -2553,7 +2556,9 @@ function renderPresets(){
     return '<button class="preset" data-preset="'+p.id+'" aria-pressed="false">'+
       '<span class="pname">'+esc(p.name)+'<span class="pedit">edited</span></span>'+
       '<span class="pdesc">'+esc(p.desc)+'</span>'+
-      '<span class="pstats"><span>'+s.drives+' drives</span><span>max '+hrs(s.longest)+'</span><span>'+s.outdoor+'n outdoors</span></span>'+
+      '<span class="pstats"><span>'+s.drives+' drives</span><span>max '+hrs(s.longest)+
+        '</span><span title="Nights based in mountains, coast or wine country rather than a city">'+
+        s.outdoor+'n in nature</span></span>'+
     '</button>';
   }).join("");
   host.querySelectorAll(".preset").forEach(el =>
